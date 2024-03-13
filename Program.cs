@@ -29,6 +29,14 @@ namespace Forum
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllerRoute(
+                name: "SignIn",
+                pattern: "signin",
+                defaults: new { controller = "Account", action = "SignIn" });
+            app.MapControllerRoute(
+                name: "SignUp",
+                pattern: "signup",
+                defaults: new { controller = "Account", action = "SignUp" });
 
             app.Run();
         }
