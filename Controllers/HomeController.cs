@@ -1,8 +1,8 @@
-using Forum.Models;
+using Luxa.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Forum.Controllers
+namespace Luxa.Controllers
 {
     public class HomeController : Controller
     {

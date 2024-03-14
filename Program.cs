@@ -1,4 +1,4 @@
-namespace Forum
+namespace Luxa
 {
     public class Program
     {
