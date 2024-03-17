@@ -1,11 +1,18 @@
-﻿using Forum.Models;
+﻿using Luxa.Data;
+using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Forum.Controllers
+namespace Luxa.Controllers
 {
     public class AccountController : Controller
     {
+        private ApplicationDbContext context;
+        public AccountController(ApplicationDbContext context)
+        {
+            this.context = context;
+        }
+
         [Route("signin", Name = "SignIn")]
         public IActionResult SignIn()
         {
@@ -16,5 +23,15 @@ namespace Forum.Controllers
         {
             return View();
         }
+        public IActionResult UsersList()
+        {
+            var users = context.Users.ToList();
+            
+
+
+
+            return View(users);
+        }
+
     }
 }

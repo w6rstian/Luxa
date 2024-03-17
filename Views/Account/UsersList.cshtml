@@ -1,0 +1,49 @@
+﻿@model List<Luxa.Models.UserModel>
+
+@{
+	ViewData["Title"] = "Użytkownicy";
+}
+<h3>@ViewData["Title"]</h3>
+
+
+<form>
+	<button asp-action="Create" asp-controller="Account" class="btn btn-primary">Stwórz</button>
+	<table class="table table-responsive table-hover">
+		<thead>
+			<tr class="table-active">
+				<th>Nazwa użytkownika</th>
+				<th>Hasło</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+				@if (Model != null && Model.Any())
+				{
+					@foreach (var users in Model)
+					{
+					<tr>
+						<td>@users.Nickname</td>
+						<td>@users.Password</td>
+						<td>
+							<div class="btn-group btn-group-sm">
+								<a asp-controller="Account" asp-action="Edit">Edytuj</a>
+								<a asp-controller="Account" asp-action="Delete">Usuń</a>
+							</div>
+
+
+
+						</td>
+					</tr>
+
+					}
+				}
+				else
+				{
+					<tr><td colspan="3">Brak dostępnych danych</td></tr>	
+				}
+
+		</tbody>
+
+
+	</table>
+</form>

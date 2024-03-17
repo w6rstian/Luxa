@@ -1,4 +1,4 @@
-namespace Forum.Models
+namespace Luxa.Models
 {
     public class ErrorViewModel
     {

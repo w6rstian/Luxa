@@ -1,4 +1,7 @@
-namespace Forum
+using Luxa.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace Luxa
 {
     public class Program
     {
@@ -8,6 +11,11 @@ namespace Forum
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options => 
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("LuxaDb"));
+            });
+
 
             var app = builder.Build();
 
