@@ -1,18 +1,23 @@
 ﻿@model List<Luxa.Models.UserModel>
 
 @{
-	ViewData["Title"] = "Użytkownicy";
+	ViewData["Title"] = "Panel administracyjny";
 }
 <h3>@ViewData["Title"]</h3>
 
 
 <form>
-	<button asp-action="Create" asp-controller="Account" class="btn btn-primary">Stwórz</button>
+	<button asp-action="CreateUser" asp-controller="Account" class="btn btn-primary">Stwórz nowego użytkownika</button>
 	<table class="table table-responsive table-hover">
 		<thead>
 			<tr class="table-active">
+				<th>Imie</th>
+				<th>Nazwisko</th>
+				<th>Kraj</th>
+				<th>Numer telefonu</th>
+				<th>E-mail</th>
+				<th>Kategoria</th>
 				<th>Nazwa użytkownika</th>
-				<th>Hasło</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -22,12 +27,17 @@
 					@foreach (var users in Model)
 					{
 					<tr>
+						<td>@users.FirstName</td>
+						<td>@users.LastName</td>
+						<td>@users.Country</td>
+						<td>@users.PhoneNumber</td>
+						<td>@users.Email</td>
+						<td>@users.Category</td>
 						<td>@users.Nickname</td>
-						<td>@users.Password</td>
 						<td>
 							<div class="btn-group btn-group-sm">
-								<a asp-controller="Account" asp-action="Edit">Edytuj</a>
-								<a asp-controller="Account" asp-action="Delete">Usuń</a>
+								<a asp-controller="Account" asp-action="Edit" asp-route-id="@users.Id" class="btn btn-primary">Edytuj</a>
+								<a asp-controller="Account" asp-action="Delete" asp-route-id="@users.Id" class="btn btn-danger">Usuń</a>
 							</div>
 
 
@@ -39,7 +49,7 @@
 				}
 				else
 				{
-					<tr><td colspan="3">Brak dostępnych danych</td></tr>	
+					<tr><td colspan="8">Brak dostępnych danych</td></tr>	
 				}
 
 		</tbody>

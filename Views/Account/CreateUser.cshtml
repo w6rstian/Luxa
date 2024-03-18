@@ -1,0 +1,47 @@
+﻿@using Luxa.Data.Enums
+@model Luxa.Models.UserModel
+
+<form action="CreateUser" method="post">
+	<div class="mb-3">
+		<label asp-for="Nickname"></label>
+		<input asp-for="Nickname"/><br/>
+		<span asp-validation-for="Nickname" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Password"></label>
+		<input type="password" asp-for="Password"/><br/>
+		<span asp-validation-for="Password" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="FirstName"></label>
+		<input asp-for="FirstName"/><br/>
+		<span asp-validation-for="FirstName" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="LastName"></label>
+		<input asp-for="LastName"/><br/>
+		<span asp-validation-for="LastName" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Country"></label>
+		<input asp-for="Country"/><br/>
+		<span asp-validation-for="Country" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Email"></label>
+		<input asp-for="Email"/><br/>
+		<span asp-validation-for="Email" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="PhoneNumber"></label>
+		<input asp-for="PhoneNumber"/><br/>
+		<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+	</div>
+	<label asp-for="Category"></label>
+	@Html.DropDownListFor(model => model.Category, Enum.GetNames(typeof(CategoryOfUser)).Select(e => new SelectListItem { Text = e, Value = e }))
+	</br>
+	<button class="btn btn-primary type="submit">Dodaj użytkownika</button>
+	
+	
+</form>

@@ -4,10 +4,13 @@
 @{
 }
 <h1>Logowanie</h1>
-<br/>
-<p>Podaj nazwę użytkownika: </p>
-<input name="Nickname">
-<p>Podaj hasło: </p>
-<input name="Password">
-<br />
+@model UserModel
+<form method="post" asp-controller="Account" asp-action="SignIn">
+	<label asp-for="Nickname"></label><br />
+	<input asp-for="Nickname" /><br />
+	<label asp-for="Password"></label><br />
+	<input asp-for="Password" /><br />
+	<button type="submit">Zatwierdź</button><br />
+</form>
+
 @Html.ActionLink("Nie masz konta? Zarejestruj się już teraz!", "SignUp", "Account")
