@@ -11,28 +11,30 @@ namespace Luxa.Controllers
 		{
 			_context = context;
 		}
-
+		//Atrybut do routingu (reszta kodu w program.cs)
 		[Route("signin", Name = "SignIn")]
 		public IActionResult SignIn()
 		{
 			return View();
 		}
+
 		[Route("signup", Name = "SignUp")]
 		public IActionResult SignUp()
 		{
 			return View();
 		}
+		//W fazie rozwoju
 		public IActionResult UsersList()
 		{
 			var users = _context.Users.ToList();
 			return View(users);
 		}
-
+		//W fazie rozwoju
 		public IActionResult CreateUser()
 		{
 			return View();
 		}
-
+		//W fazie rozwoju
 		[HttpPost]
 		public IActionResult CreateUser(UserModel userData)
 		{

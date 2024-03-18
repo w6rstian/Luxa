@@ -22,10 +22,10 @@
 			</tr>
 		</thead>
 		<tbody>
-				@if (Model != null && Model.Any())
+			@if (Model != null && Model.Any())
+			{
+				@foreach (var users in Model)
 				{
-					@foreach (var users in Model)
-					{
 					<tr>
 						<td>@users.FirstName</td>
 						<td>@users.LastName</td>
@@ -39,21 +39,14 @@
 								<a asp-controller="Account" asp-action="Edit" asp-route-id="@users.Id" class="btn btn-primary">Edytuj</a>
 								<a asp-controller="Account" asp-action="Delete" asp-route-id="@users.Id" class="btn btn-danger">Usuń</a>
 							</div>
-
-
-
 						</td>
 					</tr>
-
-					}
 				}
-				else
-				{
-					<tr><td colspan="8">Brak dostępnych danych</td></tr>	
-				}
-
+			}
+			else
+			{
+				<tr><td colspan="8">Brak dostępnych danych</td></tr>
+			}
 		</tbody>
-
-
 	</table>
 </form>
