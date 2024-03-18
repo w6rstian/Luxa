@@ -30,6 +30,9 @@ namespace Luxa.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 

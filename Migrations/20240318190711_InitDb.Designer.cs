@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Luxa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240317233512_InitDb")]
+    [Migration("20240318190711_InitDb")]
     partial class InitDb
     {
         /// <inheritdoc />
@@ -32,6 +32,9 @@ namespace Luxa.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
