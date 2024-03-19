@@ -40,18 +40,28 @@ namespace Luxa.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				/*var user = new UserModel()
+				var user = new UserModel()
 				{
-					FirstName = ,
-					LastName = ,
-					Nickname = ,
-					Password = ,
-					Email = ,
-					Country = ,
-					PhoneNumber = ,
-					Category = ,
+					FirstName = userData.FirstName,
+					LastName = userData.LastName,
+					Nickname = userData.Nickname,
+					Password = userData.Password,
+					Email = userData.Email,
+					Country = userData.Country,
+					PhoneNumber = userData.PhoneNumber,
+					Category = userData.Category
+				};
 
-				}*/
+				_context.Users.Add(user);
+				_context.SaveChanges();
+				TempData["successMessage"] = "Powiodło się";
+				return RedirectToAction("UsersList");
+
+			}
+			else 
+			{
+				TempData["errorMessage"] = "Model data is not valid";
+
 			}
 
 			return View();

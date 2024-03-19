@@ -21,8 +21,10 @@ namespace Luxa.Models
 		[Display(Name = "Kraj")]
 		public string? Country { get; set; }
 		[Display(Name = "Imie")]
+		[Required(ErrorMessage = """Pole "Imie" jest wymagane """)]
 		public string FirstName { get; set; }
 		[Display(Name = "Nazwisko")]
+		[Required(ErrorMessage = """Pole "Nazwisko" jest wymagane """)]
 		public string LastName { get; set; }
 		//atrybut do numeru telefonu (też nie wiem jak i czy to działa)
 		[DataType(DataType.PhoneNumber)]
@@ -32,6 +34,7 @@ namespace Luxa.Models
 		[Required(ErrorMessage = """Pole "Nazwa użytkownika" jest wymagane """)]
 		public string Nickname { get; set; }
 		[DataType(DataType.Password)]
+		[Required(ErrorMessage = """Pole "Hasło" jest wymagane """)]
 		[Display(Name = "Hasło")]
 		public string Password { get; set; }
 	}

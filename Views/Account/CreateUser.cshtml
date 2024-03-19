@@ -3,43 +3,43 @@
 
 <form action="CreateUser" method="post">
 	<div class="mb-3">
-		<label asp-for="Nickname"></label>
-		<input asp-for="Nickname"/><br/>
+		<label asp-for="Nickname" class="form-label"></label>
+		<input asp-for="Nickname" class="form-control" /><br />
 		<span asp-validation-for="Nickname" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
-		<label asp-for="Password"></label>
-		<input type="password" asp-for="Password"/><br/>
+		<label asp-for="Password" class="form-label"></label>
+		<input type="password" class="form-control" asp-for="Password" /><br />
 		<span asp-validation-for="Password" class="text-danger"></span>
 	</div>
 
 	<div class="mb-3">
-		<label asp-for="FirstName"></label>
-		<input asp-for="FirstName"/><br/>
+		<label asp-for="FirstName" class="form-label"></label>
+		<input asp-for="FirstName" class="form-control" /><br />
 		<span asp-validation-for="FirstName" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
-		<label asp-for="LastName"></label>
-		<input asp-for="LastName"/><br/>
+		<label asp-for="LastName" class="form-label"></label>
+		<input asp-for="LastName" class="form-control" /><br />
 		<span asp-validation-for="LastName" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
-		<label asp-for="Country"></label>
-		<input asp-for="Country"/><br/>
+		<label asp-for="Country" class="form-label"></label>
+		<input asp-for="Country" class="form-control" /><br />
 		<span asp-validation-for="Country" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
-		<label asp-for="Email"></label>
-		<input asp-for="Email"/><br/>
+		<label asp-for="Email" class="form-label"></label>
+		<input asp-for="Email" class="form-control" /><br />
 		<span asp-validation-for="Email" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
-		<label asp-for="PhoneNumber"></label>
-		<input asp-for="PhoneNumber"/><br/>
+		<label asp-for="PhoneNumber" class="form-label"></label>
+		<input asp-for="PhoneNumber" class="form-control" /><br />
 		<span asp-validation-for="PhoneNumber" class="text-danger"></span>
 	</div>
-	<label asp-for="Category"></label>
-	@Html.DropDownListFor(model => model.Category, Enum.GetNames(typeof(CategoryOfUser)).Select(e => new SelectListItem { Text = e, Value = e }))
+	<label class="form-label" asp-for="Category"></label>
+	@Html.DropDownListFor(model => model.Category, Enum.GetNames(typeof(CategoryOfUser)).Select(e => new SelectListItem { Text = e, Value = e }), new { @class = "form-select form-select-lg mb-3" })
 	</br>
 	<button class="btn btn-primary type="submit">Dodaj użytkownika</button>
 	
