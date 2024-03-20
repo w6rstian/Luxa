@@ -1,4 +1,6 @@
 using Luxa.Data;
+using Luxa.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Luxa
@@ -17,7 +19,18 @@ namespace Luxa
 				//appsettings.json zawiera w sobie connection string skopiowany z w³aœciwoœci z baz danych a "LuxaDb" to odwo³anie do appsettings.json
 				options.UseSqlServer(builder.Configuration.GetConnectionString("LuxaDb"));
 			});
-
+			builder.Services.AddIdentity<AppUser,IdentityRole>(options => 
+			{
+				options.Password.RequiredUniqueChars = 0;
+				options.Password.RequireUppercase = false;
+				options.Password.RequiredLength = 6;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireLowercase = false;
+			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+			builder.Services.ConfigureApplicationCookie(options =>
+			{
+				options.LoginPath = "/SignIn";						 
+			});
 
 			var app = builder.Build();
 

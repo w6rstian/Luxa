@@ -1,4 +1,5 @@
 ﻿using Luxa.Data.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,10 +30,10 @@ namespace Luxa.Models
 		//atrybut do numeru telefonu (też nie wiem jak i czy to działa)
 		[DataType(DataType.PhoneNumber)]
 		[Display(Name = "Numer telefonu")]
-		public int? PhoneNumber { get; set; }
+		public string? PhoneNumber { get; set; }
 		[Display(Name = "Nazwa użytkownika")]
 		[Required(ErrorMessage = """Pole "Nazwa użytkownika" jest wymagane """)]
-		public string Nickname { get; set; }
+		public string UserName { get; set; }
 		[DataType(DataType.Password)]
 		[Required(ErrorMessage = """Pole "Hasło" jest wymagane """)]
 		[Display(Name = "Hasło")]
