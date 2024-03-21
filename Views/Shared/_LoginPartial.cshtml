@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity;
-@inject SignInManager<AppUser> signInManager
+@inject SignInManager<UserModel> signInManager
 
 
 <ul class="navbar-nav">
@@ -7,11 +7,17 @@
 	{
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-				@User.Identity!.Name!
+				@User.Identity!.Name
 			</a>
-			<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 				<li>
 					<a class="dropdown-item" asp-controller="Account" asp-action="Logout">Wyloguj się</a>
+				</li>
+				<li>
+					<a class="dropdown-item">Powiadomienia <span class="badge bg-danger">1</span></a>
+				</li>
+				<li>
+					<a class="dropdown-item">Ustawienia konta</a>
 				</li>
 			</ul>
 		</li>

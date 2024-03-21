@@ -1,4 +1,6 @@
-﻿@using Luxa.Data.Enums
+﻿//Create user
+@{/*
+@using Luxa.Data.Enums
 @model Luxa.Models.UserModel
 
 <form action="CreateUser" method="post">
@@ -42,6 +44,26 @@
 	@Html.DropDownListFor(model => model.Category, Enum.GetNames(typeof(CategoryOfUser)).Select(e => new SelectListItem { Text = e, Value = e }), new { @class = "form-select form-select-lg mb-3" })
 	</br>
 	<button class="btn btn-primary type="submit">Dodaj użytkownika</button>
-	
-	
+
+
 </form>
+
+//
+
+
+		 [Display(Name = "Imie")]
+		[Required(ErrorMessage = """Pole "Imie" jest wymagane """)]
+
+		[Display(Name = "Nazwisko")]
+		[Required(ErrorMessage = """Pole "Nazwisko" jest wymagane """)]
+
+		[Display(Name = "Nazwa użytkownika")]
+		[Required(ErrorMessage = """Pole "Nazwa użytkownika" jest wymagane """)]
+
+		 //atrybut do numeru telefonu (też nie wiem jak i czy to działa)
+		[DataType(DataType.PhoneNumber)]
+		[Display(Name = "Numer telefonu")]
+
+ */}
+ 
+

@@ -9,11 +9,11 @@ namespace Luxa.Controllers
 {
 	public class AccountController : Controller
 	{
-		private readonly SignInManager<AppUser> signInManager;
-		private readonly UserManager<AppUser> userManager;
+		private readonly SignInManager<UserModel> signInManager;
+		private readonly UserManager<UserModel> userManager;
 
 		private readonly ApplicationDbContext _context;
-		public AccountController(ApplicationDbContext context,SignInManager<AppUser> signInManager,UserManager<AppUser> userManager)
+		public AccountController(ApplicationDbContext context,SignInManager<UserModel> signInManager,UserManager<UserModel> userManager)
 		{
 			_context = context;
 			this.signInManager=signInManager;
@@ -52,20 +52,24 @@ namespace Luxa.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				AppUser user = new()
+				UserModel user = new()
 				{
 					UserName=model.UserName,
 					Email=model.Email,
-					Address=model.Address,
 				};
 
-				var result = await userManager.CreateAsync(user,model.Password!);
-				if (result.Succeeded) 
+				var resultAddUser = await userManager.CreateAsync(user, model.Password!);
+				var resultAddRole = await userManager.AddToRoleAsync(user, UserRoles.Regular);
+				if (resultAddUser.Succeeded&&resultAddRole.Succeeded) 
 				{
 					await signInManager.SignInAsync(user, false);
 					return RedirectToAction("Index", "Home");
 				}
-				foreach (var error in result.Errors) 
+				foreach (var error in resultAddUser.Errors) 
+				{
+					ModelState.AddModelError("", error.Description);
+				}
+				foreach (var error in resultAddRole.Errors)
 				{
 					ModelState.AddModelError("", error.Description);
 				}
@@ -79,14 +83,16 @@ namespace Luxa.Controllers
 			return RedirectToAction("Index","Home");
 		}
 
-
+		
         //W fazie rozwoju
-        [Authorize]
-        public IActionResult UsersList()
+		
+		[Authorize(Roles = "admin,moderator")]
+		public IActionResult UsersList()
         {
             var users = _context.Users.ToList();
             return View(users);
         }
+		/*
         //W fazie rozwoju
         [Authorize]
         public IActionResult CreateUser()
@@ -125,7 +131,7 @@ namespace Luxa.Controllers
 
             return View();
         }
+		*/
 
-
-    }
+	}
 }
