@@ -1,0 +1,36 @@
+﻿@model Luxa.ViewModel.SignInVM
+<div class="row d-flex align-itemsalign-content-center justify-content-center">
+	<div class="col col-md-3 card p-3">
+		<h3 class="text-center text-info">Zaloguj się!</h3>
+			<form method="post" asp-controller="Account" asp-action="SignIn">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="mb-1">
+					<label asp-for="UserName" class="form-label"></label>
+					<input asp-for="UserName" class="form-control" /><br />
+					<span asp-validation-for="UserName" class="text-danger"></span>
+				</div>
+				<div class="mb-1">
+					<label asp-for="Password" class="form-label"></label>
+					<input asp-for="Password" class="form-control" /><br />
+					<span asp-validation-for="Password" class="text-danger"></span>
+				</div>
+				<div class="mb-1">
+					<label class="form-check-label">
+						<input asp-for="RememberMe" class="form-check-input" /> @Html.DisplayNameFor(a => a.RememberMe)<br />
+					</label>
+					<input type="submit" value="Zaloguj się" class="btn btn-primary btn-sm float-end" />
+				</div><br><br><br>
+				<div class="mb-1">
+					<label>Nie masz konta?</label>
+					<button type="button" onclick="location.href='@Url.Action("SignUp", "Account")'" class="btn btn-primary btn-sm float-end">Zarejestruj się!</button>
+				</div>
+			</form>
+	</div>
+</div>
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

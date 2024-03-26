@@ -1,0 +1,43 @@
+﻿@model Luxa.ViewModel.SignUpVM
+<div class="row d-flex align-itemsalign-content-center justify-content-center">
+	<div class="col col-md-3 card p-3">
+		<h3 class="text-center text-info">Zarejestruj się!</h3>
+		<form method="post" asp-controller="Account" asp-action="SignUp">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="mb-1">
+				<label asp-for="UserName" class="control-label"></label>
+				<input asp-for="UserName" class="form-control" /><br />
+				<span asp-validation-for="UserName" class="text-danger"></span>
+			</div>
+			<div class="mb-1">
+				<label asp-for="Password" class="control-label"></label>
+				<input asp-for="Password" class="form-control" /><br />
+				<span asp-validation-for="Password" class="text-danger"></span>
+			</div>
+			<div class="mb-1">
+				<label asp-for="ConfirmPassword" class="control-label"></label>
+				<input asp-for="ConfirmPassword" class="form-control" /><br />
+				<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+			</div>
+			<div class="mb-1">
+				<label asp-for="Email" class="control-label"></label>
+				<input asp-for="Email" class="form-control"/><br />
+				<span asp-validation-for="Email" class="text-danger"></span>
+			</div>
+			<div class="mb-1">
+				<input type="submit" value="Zarejestruj się" class="btn btn-primary btn-sm float-end" />
+			</div></br></br></br>
+			<div class="mb-1">
+				<label>Masz już konto?</label>
+				<button type="button" onclick="location.href='@Url.Action("SignIn", "Account")'" class="btn btn-primary btn-sm float-end">Zaloguj się!</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+<!-- 			<div class="mb-1">
+	<label asp-for="Address" class="control-label"></label>
+	<textarea asp-for="Address" class="form-control" rows="2"></textarea><br />
+	<span asp-validation-for="Address" class="text-danger"></span>
+</div> -->
