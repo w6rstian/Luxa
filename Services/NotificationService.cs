@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Luxa.Data;
 using Luxa.Models;
+using Luxa.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,18 @@ namespace Luxa.Services
 			_userManager = userManager;
 			_context = context;
 		}
-		public IQueryable<NotificationModel> GetNotificationsForUser(string userId)
+		public IQueryable<NotificationVM> GetNotificationsForUser(string userId)
 			=> _context.Users
 				.Where(u => u.Id == userId)
 				.SelectMany(u => u.UserNotifiacations)
-				.Select(un => un.Notification);
+				.Select(un => new NotificationVM
+				{
+					Id = un.Notification.Id,
+					Title = un.Notification.Title,
+					Description = un.Notification.Description,
+					IsViewed = un.IsViewed
+				});
+
 		public async Task<int> GetNotificationsCountAsync(string userId)
 		{
 			var user = await _userManager.FindByIdAsync(userId);

@@ -22,7 +22,7 @@ namespace Luxa.Data
 				.HasForeignKey(e => e.UserId);
 			modelBuilder.Entity<UserNotificationModel>()
 				.HasOne(e => e.Notification)
-				.WithMany(e => e.UserNotifiacations)
+				.WithMany(e => e.UserNotifications)
 				.HasForeignKey(e => e.NotificationId);
 			modelBuilder.Entity<UserNotificationModel>()
 				.HasKey(un => new { un.UserId, un.NotificationId });

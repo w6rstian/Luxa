@@ -7,20 +7,19 @@
 <ul class="navbar-nav">
 	@if (signInManager.IsSignedIn(User))
 	{
-		
 		var userId = (User as ClaimsPrincipal)?.FindFirstValue(ClaimTypes.NameIdentifier);
 		var notificationsCount = await notificationService.GetNotificationsCountAsync(userId);
-		
+
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 				@User.Identity!.Name
 			</a>
 			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 				<li>
-					<a class="dropdown-item" asp-controller="Account" asp-action="Logout">Wyloguj się</a>
+					<a class="dropdown-item">Profil</a>
 				</li>
 				<li>
-					<a class="dropdown-item">
+					<a asp-controller="Account" asp-action="UserNotifications" class="dropdown-item">
 						Powiadomienia @if (notificationsCount > 0)
 						{
 							<span class="badge bg-danger">@notificationsCount</span>
@@ -30,6 +29,18 @@
 				<li>
 					<a class="dropdown-item">Ustawienia konta</a>
 				</li>
+				<li>
+					<a class="dropdown-item" asp-controller="Account" asp-action="Logout">Wyloguj się</a>
+				</li>
+				@{
+					var userModel= await signInManager.UserManager.GetUserAsync(User);
+					var isInRoleAdmin = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Admin);
+					var isInRoleModerator = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Moderator);
+					if (isInRoleAdmin || isInRoleModerator)
+					{
+						<partial name="_AdminLoginPartial.cshtml" />
+					}
+				}
 			</ul>
 		</li>
 	}
@@ -43,6 +54,4 @@
 		</li>
 
 	}
-
-
 </ul>
