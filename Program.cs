@@ -15,10 +15,10 @@ namespace Luxa
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
-			//£¹czenie siê z baz¹ danych
+			//ï¿½ï¿½czenie siï¿½ z bazï¿½ danych
 			builder.Services.AddDbContext<ApplicationDbContext>(options =>
 			{
-				//appsettings.json zawiera w sobie connection string skopiowany z w³aœciwoœci z baz danych a "LuxaDb" to odwo³anie do appsettings.json
+				//appsettings.json zawiera w sobie connection string skopiowany z wï¿½aï¿½ciwoï¿½ci z baz danych a "LuxaDb" to odwoï¿½anie do appsettings.json
 				options.UseSqlServer(builder.Configuration.GetConnectionString("LuxaDb"));
 			});
 			builder.Services.AddIdentity<UserModel,IdentityRole>(options => 
