@@ -1,20 +1,25 @@
-﻿//Create user
-@{/*
-@using Luxa.Data.Enums
-@model Luxa.Models.UserModel
+﻿@{
+	ViewData["Title"] = "Tworzenie użytkownika";
+}
+<h3>@ViewData["Title"]</h3>
+@model Luxa.ViewModel.CreateUserVM
 
 <form action="CreateUser" method="post">
 	<div class="mb-3">
-		<label asp-for="UserName" class="form-label"></label>
-		<input asp-for="UserName" class="form-control" /><br />
-		<span asp-validation-for="UserName" class="text-danger"></span>
+		<label asp-for="Username" class="form-label"></label>
+		<input asp-for="Username" class="form-control" /><br />
+		<span asp-validation-for="Username" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
 		<label asp-for="Password" class="form-label"></label>
 		<input type="password" class="form-control" asp-for="Password" /><br />
 		<span asp-validation-for="Password" class="text-danger"></span>
 	</div>
-
+	<div class="mb-3">
+		<label asp-for="ConfirmPassword" class="form-label"></label>
+		<input type="password" class="form-control" asp-for="ConfirmPassword" /><br />
+		<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+	</div>
 	<div class="mb-3">
 		<label asp-for="FirstName" class="form-label"></label>
 		<input asp-for="FirstName" class="form-control" /><br />
@@ -40,30 +45,22 @@
 		<input asp-for="PhoneNumber" class="form-control" /><br />
 		<span asp-validation-for="PhoneNumber" class="text-danger"></span>
 	</div>
-	<label class="form-label" asp-for="Category"></label>
-	@Html.DropDownListFor(model => model.Category, Enum.GetNames(typeof(CategoryOfUser)).Select(e => new SelectListItem { Text = e, Value = e }), new { @class = "form-select form-select-lg mb-3" })
+	<label class="form-label" asp-for="Role"></label>
+		@Html.DropDownListFor(model => model.Role,
+				typeof(Luxa.Data.UserRoles).GetFields()
+				.Select(f => new SelectListItem{Text = f.GetValue(null)
+				.ToString(), Value = f.GetValue(null).ToString()}), new { @class = "form-select form-select-lg mb-3" })
 	</br>
 	<button class="btn btn-primary type="submit">Dodaj użytkownika</button>
 
 
 </form>
 
-//
-
-
-		 [Display(Name = "Imie")]
-		[Required(ErrorMessage = """Pole "Imie" jest wymagane """)]
-
-		[Display(Name = "Nazwisko")]
-		[Required(ErrorMessage = """Pole "Nazwisko" jest wymagane """)]
-
-		[Display(Name = "Nazwa użytkownika")]
-		[Required(ErrorMessage = """Pole "Nazwa użytkownika" jest wymagane """)]
-
-		 //atrybut do numeru telefonu (też nie wiem jak i czy to działa)
-		[DataType(DataType.PhoneNumber)]
-		[Display(Name = "Numer telefonu")]
-
- */}
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
+ 
  
 

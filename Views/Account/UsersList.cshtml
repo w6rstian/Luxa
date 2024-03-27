@@ -1,4 +1,4 @@
-﻿@model List<Luxa.Models.UserModel>
+﻿@model IEnumerable<Luxa.ViewModel.UsersListVM>
 
 @{
 	ViewData["Title"] = "Panel administracyjny";
@@ -11,33 +11,37 @@
 	<table class="table table-responsive table-hover">
 		<thead>
 			<tr class="table-active">
+				<th>Nazwa użytkownika</th>
+				<th>Kategoria</th>
 				<th>Imie</th>
 				<th>Nazwisko</th>
 				<th>Kraj</th>
 				<th>Numer telefonu</th>
 				<th>E-mail</th>
-				<th>Kategoria</th>
-				<th>Nazwa użytkownika</th>
+				<th>Powiadomienia</th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			@if (Model != null && Model.Any())
 			{
-				@foreach (var users in Model)
+				@foreach (var user in Model)
 				{
 					<tr>
-						<td>@users.FirstName</td>
-						<td>@users.LastName</td>
-						<td>@users.Country</td>
-						<td>@users.PhoneNumber</td>
-						<td>@users.Email</td>
-						<td>rola</td>
-						<td>@users.UserName</td>
+						<td>@user.User.UserName</td>
+						<td>@user.Roles.FirstOrDefault()</td>
+						<td>@user.User.FirstName</td>
+						<td>@user.User.LastName</td>
+						<td>@user.User.Country</td>
+						<td>@user.User.PhoneNumber</td>
+						<td>@user.User.Email</td>
+						<td>@user.Notifications.Count()</td>
+
+
 						<td>
 							<div class="btn-group btn-group-sm">
-								<a asp-controller="Account" asp-action="Edit" asp-route-id="@users.Id" class="btn btn-primary">Edytuj</a>
-								<a asp-controller="Account" asp-action="Delete" asp-route-id="@users.Id" class="btn btn-danger">Usuń</a>
+								<a asp-controller="Account" asp-action="Edit" asp-route-id="@user.User.Id" class="btn btn-primary">Edytuj</a>
+								<a asp-controller="Account" asp-action="Delete" asp-route-id="@user.User.Id" class="btn btn-danger">Usuń</a>
 							</div>
 						</td>
 					</tr>
@@ -45,7 +49,7 @@
 			}
 			else
 			{
-				<tr><td colspan="8">Brak dostępnych danych</td></tr>
+				<tr><td colspan="9">Brak dostępnych danych</td></tr>
 			}
 		</tbody>
 	</table>

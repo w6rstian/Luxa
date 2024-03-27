@@ -1,5 +1,6 @@
 using Luxa.Data;
 using Luxa.Models;
+using Luxa.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +33,10 @@ namespace Luxa
 			{
 				options.LoginPath = "/SignIn";						 
 			});
-
+			builder.Services.AddScoped<NotificationService>();
 			var app = builder.Build();
+
+			NotificationsDataInit.SeedNotifications(app);
 			IdentityDataInit.SeedUsersAndRolesAsync(app);
 
 
