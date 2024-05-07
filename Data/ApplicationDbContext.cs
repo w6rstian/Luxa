@@ -3,6 +3,7 @@ using Luxa.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Identity.Client;
 
 namespace Luxa.Data
 {
@@ -36,8 +37,11 @@ namespace Luxa.Data
 
 		}
 
-		//public DbSet<UserModel> Users { get; set; }
+		public DbSet<UserModel> Users { get; set; }
 		public DbSet<UserNotificationModel> UserNotifications { get; set; }
 		public DbSet<NotificationModel> Notifications { get; set; }
+	    public DbSet<Luxa.Models.Photo> Photo { get; set; } = default!;
+
+		
 	}
 }

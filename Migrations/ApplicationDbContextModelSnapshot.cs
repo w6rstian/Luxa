@@ -46,6 +46,35 @@ namespace Luxa.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("Luxa.Models.Photo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserIdId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserIdId");
+
+                    b.ToTable("Photo");
+                });
+
             modelBuilder.Entity("Luxa.Models.UserModel", b =>
                 {
                     b.Property<string>("Id")
@@ -269,6 +298,15 @@ namespace Luxa.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Luxa.Models.Photo", b =>
+                {
+                    b.HasOne("Luxa.Models.UserModel", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserIdId");
+
+                    b.Navigation("UserId");
                 });
 
             modelBuilder.Entity("Luxa.Models.UserNotificationModel", b =>
