@@ -22,8 +22,8 @@ namespace Luxa.Controllers
 		[HttpPost]
 		public async Task<IActionResult> ChangePassword(PasswordChangeVM passwordChange)
 		{
-			var user =await _settingsService.GetCurrentLoggedInUser(User);
-			if (user != null) 
+			var user = await _settingsService.GetCurrentLoggedInUser(User);
+			if (user != null)
 			{
 				if (await _settingsService.SetNewPassword(user, passwordChange.OldPassword, passwordChange.NewPassword))
 				{
@@ -36,7 +36,17 @@ namespace Luxa.Controllers
 		}
 		public IActionResult ChangeData()
 		{
-			return View();
+			var user = _settingsService.GetCurrentLoggedInUser(User);
+			var dataChangeVM = new DataChangeVM
+			{
+				FirstName = user.Result.FirstName,
+				LastName = user.Result.LastName,
+				Country = user.Result.Country,
+				Email = user.Result.Email
+
+			};
+			return View(dataChangeVM);
+
 		}
 	}
 }

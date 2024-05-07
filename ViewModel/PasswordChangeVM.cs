@@ -15,6 +15,7 @@ namespace Luxa.ViewModel
 		[Display(Name = "Potwierdź nowe hasło")]
 		[Required(ErrorMessage = "Wpisz ponownie nowe hasło")]
 		[DataType(DataType.Password)]
+		[Compare("NewPassword", ErrorMessage = "Hasła nie są zgodne")]
 		public string ConfirmNewPassword { get; set; }
 
 	}

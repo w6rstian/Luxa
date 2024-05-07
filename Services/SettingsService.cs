@@ -2,14 +2,13 @@
 using Luxa.Interfaces;
 using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Luxa.Services
 {
 	public class SettingsService : ISettingsService
 	{
-		
+
 
 
 		private readonly SignInManager<UserModel> _signInManager;
@@ -28,13 +27,11 @@ namespace Luxa.Services
 
 
 
-		public async Task<bool> SetNewPassword(UserModel user,string oldPassword,string newPassword)
+		public async Task<bool> SetNewPassword(UserModel user, string oldPassword, string newPassword)
 		{
 			var result = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
 			return result.Succeeded;
 		}
-
-
 		public async Task<UserModel?> GetCurrentLoggedInUser(ClaimsPrincipal user)
 		{
 			var currentUser = await _userManager.GetUserAsync(user);

@@ -1,8 +1,43 @@
-﻿<div class="container">
+﻿@model Luxa.ViewModel.DataChangeVM
+
+<div class="container">
 	<div class="row">
-	@await Component.InvokeAsync("SettingsMenu")
-	<div class="col-md-9">
-		zmien dane
+		@await Component.InvokeAsync("SettingsMenu")
+		<div class="col-md-9">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title" id="itemHead">Zmodyfikuj dane</h5>
+					<form method="post" asp-controller="Settings" asp-action="ChangeData">
+						<div class="mb-1">
+							<label asp-for="Email" class="control-label"></label>
+							<input asp-for="Email" class="form-control" value="@Model.Email" disabled/><br />
+							<span asp-validation-for="Email" class="text-danger"></span>
+						</div>
+						<div class="mb-1">
+							<label asp-for="FirstName" class="control-label"></label>
+							<input asp-for="FirstName" class="form-control" value="@Model.FirstName" disabled/><br />
+							<span asp-validation-for="FirstName" class="text-danger"></span>
+
+						</div>
+						<div class="mb-1">
+							<label asp-for="LastName" class="control-label"></label>
+							<input asp-for="LastName" class="form-control" value="@Model.LastName" disabled/><br />
+							<span asp-validation-for="LastName" class="text-danger"></span>
+						</div>
+						
+						<div class="mb-1">
+							<label asp-for="Country" class="control-label"></label>
+							<input asp-for="Country" class="form-control" value="@Model.Country" disabled/><br />
+							<span asp-validation-for="Country" class="text-danger"></span>
+						</div>
+
+						<input type="submit" value="Zatwierdź zmiany" class="btn btn-primary float-end" />
+					</form>
+				
+					@ViewData["Message"]
+
+				</div>
+			</div>
+		</div>
 	</div>
-</div>
 </div>
