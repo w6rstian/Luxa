@@ -8,8 +8,10 @@ namespace Luxa.Interfaces
 {
 	public interface ISettingsService
 	{
-		Task<UserModel?> GetCurrentLoggedInUser(ClaimsPrincipal user);
+		UserModel? GetCurrentLoggedInUser(ClaimsPrincipal user);
 		Task<bool> SetNewPassword(UserModel user, string oldPassword, string newPassword);
+		Task<bool> SaveUser(UserModel userModel);
+		Task<bool> ChangeEmail(UserModel userModel, string newEmail);
 	}
 }
 

@@ -10,27 +10,30 @@
 					<form method="post" asp-controller="Settings" asp-action="ChangeData">
 						<div class="mb-1">
 							<label asp-for="Email" class="control-label"></label>
-							<input asp-for="Email" class="form-control" value="@Model.Email" disabled/><br />
+							<input asp-for="Email" class="form-control" value="@Model.Email"/><br />
 							<span asp-validation-for="Email" class="text-danger"></span>
 						</div>
 						<div class="mb-1">
 							<label asp-for="FirstName" class="control-label"></label>
-							<input asp-for="FirstName" class="form-control" value="@Model.FirstName" disabled/><br />
+							<input asp-for="FirstName" class="form-control" value="@Model.FirstName"/><br />
 							<span asp-validation-for="FirstName" class="text-danger"></span>
 
 						</div>
 						<div class="mb-1">
 							<label asp-for="LastName" class="control-label"></label>
-							<input asp-for="LastName" class="form-control" value="@Model.LastName" disabled/><br />
+							<input asp-for="LastName" class="form-control" value="@Model.LastName"/><br />
 							<span asp-validation-for="LastName" class="text-danger"></span>
 						</div>
-						
 						<div class="mb-1">
 							<label asp-for="Country" class="control-label"></label>
-							<input asp-for="Country" class="form-control" value="@Model.Country" disabled/><br />
+							<input asp-for="Country" class="form-control" value="@Model.Country"/><br />
 							<span asp-validation-for="Country" class="text-danger"></span>
 						</div>
-
+						<div class="mb-1">
+							<label asp-for="PhoneNumber" class="control-label"></label>
+							<input asp-for="PhoneNumber" class="form-control" value="@Model.PhoneNumber" /><br />
+							<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+						</div>
 						<input type="submit" value="Zatwierdź zmiany" class="btn btn-primary float-end" />
 					</form>
 				

@@ -25,17 +25,27 @@ namespace Luxa.Services
 			_notificationService = notificationService;
 		}
 
-
-
 		public async Task<bool> SetNewPassword(UserModel user, string oldPassword, string newPassword)
 		{
 			var result = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
 			return result.Succeeded;
 		}
-		public async Task<UserModel?> GetCurrentLoggedInUser(ClaimsPrincipal user)
+		public UserModel? GetCurrentLoggedInUser(ClaimsPrincipal user)
 		{
-			var currentUser = await _userManager.GetUserAsync(user);
-			return currentUser;
+			var currentUserTask = _userManager.GetUserAsync(user);
+			currentUserTask.Wait();
+			return currentUserTask.Result;
+		}
+		public async Task<bool> SaveUser(UserModel userModel)
+		{
+			var result = await _userManager.UpdateAsync(userModel);
+			return result.Succeeded;
+		}
+		public async Task<bool> ChangeEmail(UserModel userModel, string newEmail)
+		{
+			var token = await _userManager.GenerateChangeEmailTokenAsync(userModel, newEmail);
+			var result = await _userManager.ChangeEmailAsync(userModel, newEmail, token);
+			return result.Succeeded;
 		}
 	}
 }

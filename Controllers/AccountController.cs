@@ -183,7 +183,11 @@ namespace Luxa.Controllers
 		public async Task<IActionResult> UserNotifications()
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if(userId==null)
+				return RedirectToAction("SignIn");
 			var user = await _userManager.FindByIdAsync(userId);
+			if (user == null)
+				return RedirectToAction("SignIn");
 			var notifications = _notificationService.GetNotificationsForUser(userId);
 			var userNotificationsVM = new UserNotificationsVM
 			{
@@ -211,10 +215,6 @@ namespace Luxa.Controllers
 
 		//Do tworzenia powiadomień ale jeszcze nic z tym nie robiłem
 		public IActionResult AdminNotifications()
-		{
-			return View();
-		}
-		public IActionResult Settings() 
 		{
 			return View();
 		}
