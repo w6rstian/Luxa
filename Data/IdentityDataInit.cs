@@ -35,6 +35,20 @@ namespace Luxa.Data
 						EmailConfirmed = true,
 
 					};
+					/*var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+					var notifications = context.Notifications.ToList();*/
+					var notifacationForAdmin = new NotificationModel 
+					{
+						Title = "Odpowiedzialność",
+						Description = "Strasznie wczoraj się zasiedziałem. Kodowałem do piątej rano." +
+						" Film mi się urwał jak leżałem na fotelu. Teraz mnie krzyż boli." +
+						" Trochę się przespałem ale musiałem wstać rano bo mam obowiązki." +
+						" Mam wf. Niektórzy mówią że nie można długo siedzieć jak się ma wf na rano ale to nie prawda." +
+						" Można, tylko trzeba wypić energola. Na tym polega odpowiedzialność"
+					};
+					newAdminUser.UserNotifiacations.Add(new UserNotificationModel { User = newAdminUser, Notification = notifacationForAdmin });
+					
+
 					await userManager.CreateAsync(newAdminUser, "123456789");
 					await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
 				}

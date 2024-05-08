@@ -1,5 +1,7 @@
 using Luxa.Data;
+using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +34,11 @@ namespace Luxa
 			{
 				options.LoginPath = "/SignIn";						 
 			});
-
+			builder.Services.AddScoped<NotificationService>();
+			builder.Services.AddScoped<ISettingsService,SettingsService>();
 			var app = builder.Build();
+
+			NotificationsDataInit.SeedNotifications(app);
 			IdentityDataInit.SeedUsersAndRolesAsync(app);
 
 
@@ -74,7 +79,10 @@ namespace Luxa
 				name: "SignUp",
 				pattern: "signup",
 				defaults: new { controller = "Account", action = "SignUp" });
-
+			app.MapControllerRoute(
+				name: "UserNotifications",
+				pattern: "Account/UserNotifications/{notificationId}",
+				defaults: new { controller = "Account", action = "UserNotifications" });
 			app.Run();
 		}
 	}

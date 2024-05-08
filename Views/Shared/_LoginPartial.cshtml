@@ -1,37 +1,67 @@
 ﻿@using Microsoft.AspNetCore.Identity;
+@using System.Security.Claims
 @inject SignInManager<UserModel> signInManager
+@inject Luxa.Services.NotificationService notificationService
 
 
-<ul class="navbar-nav">
-	@if (signInManager.IsSignedIn(User))
-	{
+
+@if (signInManager.IsSignedIn(User))
+{
+
+	var userId = (User as ClaimsPrincipal)?.FindFirstValue(ClaimTypes.NameIdentifier);
+	var notificationsCount = await notificationService.GetNotificationsCountAsync(userId);
+	<ul class="navbar-nav flex-grow-1 mx-3">
+		<li>
+			<form class="d-flex" role="search">
+				<input class="form-control me-2" type="search" placeholder="Wyszukaj frazę" aria-label="Search">
+				<button class="btn btn-outline-success" type="submit">Szukaj</button>
+			</form>
+		</li>
+	</ul>
+	<ul class="navbar-nav">
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 				@User.Identity!.Name
 			</a>
 			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 				<li>
+					<a class="dropdown-item">Profil</a>
+				</li>
+				<li>
+					<a asp-controller="Account" asp-action="UserNotifications" class="dropdown-item">
+						Powiadomienia @if (notificationsCount > 0)
+						{
+							<span class="badge bg-danger">@notificationsCount</span>
+						}
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item" asp-controller="Settings" asp-action="Options">Ustawienia konta</a>
+				</li>
+				<li>
 					<a class="dropdown-item" asp-controller="Account" asp-action="Logout">Wyloguj się</a>
 				</li>
-				<li>
-					<a class="dropdown-item">Powiadomienia <span class="badge bg-danger">1</span></a>
-				</li>
-				<li>
-					<a class="dropdown-item">Ustawienia konta</a>
-				</li>
+				@{
+					var userModel = await signInManager.UserManager.GetUserAsync(User);
+					var isInRoleAdmin = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Admin);
+					var isInRoleModerator = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Moderator);
+					if (isInRoleAdmin || isInRoleModerator)
+					{
+						<partial name="_AdminLoginPartial.cshtml" />
+					}
+				}
 			</ul>
 		</li>
-	}
-	else
-	{
+	</ul>
+}
+else
+{
+	<ul class="navbar-nav">
 		<li class="nav-item">
 			<a class="nav-link text-dark" asp-controller="Account" asp-action="SignUp">Zarejestruj się</a>
 		</li>
 		<li class="nav-item">
 			<a class="nav-link text-dark" asp-controller="Account" asp-action="SignIn">Zaloguj się</a>
 		</li>
-
-	}
-
-
-</ul>
+	</ul>
+}

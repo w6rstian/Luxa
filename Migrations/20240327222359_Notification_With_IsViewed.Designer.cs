@@ -4,6 +4,7 @@ using Luxa.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Luxa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240327222359_Notification_With_IsViewed")]
+    partial class Notification_With_IsViewed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +36,9 @@ namespace Luxa.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsViewed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -125,8 +131,8 @@ namespace Luxa.Migrations
                     b.Property<int>("NotificationId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsViewed")
-                        .HasColumnType("bit");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "NotificationId");
 
@@ -271,7 +277,7 @@ namespace Luxa.Migrations
             modelBuilder.Entity("Luxa.Models.UserNotificationModel", b =>
                 {
                     b.HasOne("Luxa.Models.NotificationModel", "Notification")
-                        .WithMany("UserNotifications")
+                        .WithMany("UserNotifiacations")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -340,7 +346,7 @@ namespace Luxa.Migrations
 
             modelBuilder.Entity("Luxa.Models.NotificationModel", b =>
                 {
-                    b.Navigation("UserNotifications");
+                    b.Navigation("UserNotifiacations");
                 });
 
             modelBuilder.Entity("Luxa.Models.UserModel", b =>

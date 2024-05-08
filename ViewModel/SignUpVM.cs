@@ -7,7 +7,7 @@ namespace Luxa.ViewModel
         [Required(ErrorMessage ="Wpisz nazwę użytkownika")]
 		[Display(Name = "Nazwa użytkownika")]
 		public string? UserName { get; set; }
-        [Required(ErrorMessage = "Email")]
+        [Required(ErrorMessage = "Wpisz adres Email")]
         [DataType(DataType.EmailAddress)]
 		[Display(Name = "Adres Email")]
 		public string? Email { get; set; }

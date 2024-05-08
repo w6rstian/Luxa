@@ -1,0 +1,79 @@
+﻿@{
+	ViewData["Title"] = "Powiadomienia";
+}
+<h3>@ViewData["Title"]</h3>
+@model Luxa.ViewModel.UserNotificationsVM
+<div class="container">
+	<div class="row">
+		<!-- Lewa kolumna - lista -->
+		<div class="col-md-2">
+			<div class="list-group">
+				@foreach (var item in Model.Notifications)
+				{
+
+					<a href="#"
+					   class="list-group-item list-group-item-action"
+					   data-notification-id="@item.Id"
+					   data-status="@item.IsViewed"
+					   data-description="@item.Description"
+					   style="background-color: @(item.IsViewed ? "#f2f2f2" : "");"
+					   onclick="toggleItem(this)">
+						@item.Title
+					</a>
+				}
+			</div>
+		</div>
+
+		<!-- Prawa kolumna - miejsce na tekst -->
+		<div class="col-md-10">
+			<div id="itemDetail" class="card" style="display:none; background-color: #f2f2f2;">
+				<div class="card-body">
+					<h5 class="card-title" id="itemHead"></h5>
+					<p class="card-text" id="itemText"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Funkcja do zmiany widoczności elementu na szaro w prawej kolumnie
+	function toggleItem(element) {
+		setStyle();
+		element.style.backgroundColor = "#007bff";
+		element.style.color = "White";
+		element.setAttribute("data-status", "True");
+		var itemName = element.innerText;
+		var itemDescription = element.getAttribute("data-description");
+		var itemId = element.getAttribute("data-notification-id");
+		document.getElementById("itemHead").innerText = itemName;
+		document.getElementById("itemText").innerText = itemDescription;
+
+		// Wyświetla opis
+		document.getElementById("itemDetail").style.display = "block";
+		fetch("/Account/UserNotifications/" + itemId, {
+			method: "POST"
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error("Błąd sieci");
+				}
+			})
+			.catch(error => {
+				console.error("Błąd:", error);
+			});
+	}
+	function setStyle() 
+	{
+		var items = document.querySelectorAll(".list-group-item");
+		items.forEach(item => {
+			item.style.color = "Black";
+			if (item.getAttribute("data-status") === "True") {
+				item.style.backgroundColor = "#f2f2f2";
+			}
+			else {
+				item.style.backgroundColor = "";
+			}
+		});
+	}
+</script>
