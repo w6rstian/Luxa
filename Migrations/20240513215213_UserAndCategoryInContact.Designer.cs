@@ -4,6 +4,7 @@ using Luxa.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Luxa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240513215213_UserAndCategoryInContact")]
+    partial class UserAndCategoryInContact
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace Luxa.Migrations
                     b.Property<string>("CategoryAsString")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CategoryString");
+                        .HasColumnName("Category");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -56,7 +59,11 @@ namespace Luxa.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", t =>
+                        {
+                            t.Property("Category")
+                                .HasColumnName("Category1");
+                        });
                 });
 
             modelBuilder.Entity("Luxa.Models.NotificationModel", b =>

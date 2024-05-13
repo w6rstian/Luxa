@@ -36,10 +36,11 @@ namespace Luxa
 			});
 			builder.Services.AddScoped<NotificationService>();
 			builder.Services.AddScoped<ISettingsService,SettingsService>();
+			builder.Services.AddScoped<IContactService, ContactService>();
 			var app = builder.Build();
 
 			NotificationsDataInit.SeedNotifications(app);
-			IdentityDataInit.SeedUsersAndRolesAsync(app);
+			_ =IdentityDataInit.SeedUsersAndRolesAsync(app);
 
 
 
