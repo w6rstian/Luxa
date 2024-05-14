@@ -1,0 +1,114 @@
+﻿@{
+	ViewData["Title"] = "Panel do obsługi kontatków";
+}
+<h3>@ViewData["Title"]</h3>
+
+@model IEnumerable<ContactListVM>
+@inject Luxa.Interfaces.IContactService contactservice
+
+<div class="container">
+	<div class="row">
+		<h5 class="card-title" id="itemHead">Filtruj dane: </h5>
+		<div>
+			<label for="categoryFilter">Kategorie:</label>
+			@Html.DropDownList(
+				"categoryFilter",
+				ViewBag.CategorySelectItems as IEnumerable<SelectListItem>, 
+				new { @id = "categoryFilter", @onchange = "changeDetailedCategory(this.value)" });
+
+			<label for="detailedCategoryFilter">Szczegóły:</label>
+			@Html.DropDownList(
+				"detailedCategoryFilter",
+				ViewBag.DetailedCategorySelectItems as IEnumerable<SelectListItem>,
+				new { @id = "detailedCategoryFilter" });
+
+			<label for="stateFilter">Status:</label>
+			@Html.DropDownList(
+				"stateFilter",
+				ViewBag.StateSelectItems as IEnumerable<SelectListItem>,
+				new { @id = "stateFilter" });
+		</div>
+	</div>
+</div>
+
+<form>
+	<table class="table table-responsive table-hover">
+		<thead>
+			<tr class="table-active">
+				<th>Id</th>
+				<th>Nazwa użytkownika</th>
+				<th>Kategoria</th>
+				<th>Szczegóły</th>
+				<th>Treść zgłoszenia</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model != null && Model.Any())
+			{
+				@foreach (var contact in Model)
+				{
+					<tr>
+						<td>@contact.Id</td>
+						<td>@contact.UserName</td>
+						<td>@contact.Category</td>
+						<td>@contact.DetailedCategory</td>
+						<td>@contact.Description</td>
+
+
+						<td>
+							<div class="btn-group btn-group-sm">
+								@* 								<a asp-controller="Account" asp-action="Edit" asp-route-id="@user.User.Id" class="btn btn-primary">Edytuj</a>
+						<a asp-controller="Account" asp-action="Delete" asp-route-id="@user.User.Id" class="btn btn-danger">Usuń</a> *@
+							</div>
+						</td>
+					</tr>
+				}
+			}
+			else
+			{
+				<tr><td colspan="6">Brak dostępnych danych</td></tr>
+			}
+		</tbody>
+	</table>
+</form>
+
+<script>
+	function changeDetailedCategory(selectedValue) {
+		$.ajax({
+			url: '/Contact/GetDetailedCategory',
+			type: 'GET',
+			data: { selectedValue: selectedValue },
+			success: function (response) {
+				console.log(response);
+				var defaultText = "Wszystkie";
+				var defaultValue = "All";
+				var options = "<option value ="+defaultValue+">"+defaultText+"</option>";
+				var cos = "cos";
+				
+				for (var i = 0; i < response.value.length; i++) {
+					options += "<option value=" + response.value[i] + ">" + response.text[i] + "</option>";
+				}
+				$("#detailedCategoryFilter").html(options);
+			},
+			error: function () {
+				console.log("błąd funkcji js changeDetailedCategory");
+			}
+		});
+	}
+
+
+
+
+
+
+
+
+
+	function applyFilter() {
+		var selectedCategory = document.getElementById("categoryFilter").value;
+		var rows = document.querySelectorAll("tbody tr");
+		console.log(selectedCategory);
+		console.log(rows);
+	}
+</script>

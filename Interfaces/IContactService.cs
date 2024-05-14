@@ -1,5 +1,6 @@
 ﻿using Luxa.Data.Enums;
 using Luxa.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace Luxa.Interfaces
@@ -10,11 +11,10 @@ namespace Luxa.Interfaces
 		UserModel? GetCurrentLoggedInUser(ClaimsPrincipal user);
 		CategoryOfContact? GetEnumCategory(string category);
 		//string? GetDetailedCategoryName(string detailedCategory);
-
-
-
-
-
+		Task<IEnumerable<ContactModel>> GetAllContact();
+		List<SelectListItem> GetCategorySelectItems();
+		List<SelectListItem> GetDetailedCategorySelectItems();
+		List<SelectListItem> GetStateSelectItems();
 		bool Add(ContactModel contactModel);
 		//bool Update(ContactModel contactModel);
 		bool Delete(ContactModel contactModel);

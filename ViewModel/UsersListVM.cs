@@ -4,8 +4,8 @@ namespace Luxa.ViewModel
 {
 	public class UsersListVM
 	{
-		public IQueryable<NotificationVM> Notifications { get; set; }
-		public UserModel User { get; set; }
-		public IList<string> Roles { get; set; }
+		public IQueryable<NotificationVM> Notifications { get; set; } = default!;
+		public UserModel User { get; set; } = default!;
+		public IList<string> Roles { get; set; } = default!;
 	}
 }

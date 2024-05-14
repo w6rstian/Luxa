@@ -3,7 +3,9 @@ using Luxa.Data.Enums;
 using Luxa.Interfaces;
 using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Security.Claims;
 
@@ -65,6 +67,59 @@ namespace Luxa.Services
 				}
 			}
 			return null;
+		}
+
+		public async Task<IEnumerable<ContactModel>> GetAllContact()
+		{
+			return await _context.Contacts.ToListAsync();
+		}
+
+		public List<SelectListItem> GetCategorySelectItems()
+		{
+			List<SelectListItem> categoriesList = new()
+			{
+				new SelectListItem {Value = "All", Text="Wszystkie"}
+			};
+			foreach (CategoryOfContact item in Enum.GetValues(typeof(CategoryOfContact)))
+			{
+				categoriesList.Add(new SelectListItem { Value = item.ToString(), Text = item.ToString() });
+			}
+			return categoriesList;
+		}
+		public List<SelectListItem> GetDetailedCategorySelectItems()
+		{
+			List<string> textList = typeof(DatailedContactCategories)
+										   .GetFields(BindingFlags.Public | BindingFlags.Static)
+										   .Select(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item2)
+										   .ToList();
+			List<string> valueList = typeof(DatailedContactCategories)
+										   .GetFields(BindingFlags.Public | BindingFlags.Static)
+										   .Select(field => field.Name)
+										   .ToList();
+			var detailedCategoriesList = new List<SelectListItem>
+			{
+				new() { Value = "All", Text = "Wszystkie" }
+			};
+			for (int i = 0; i < textList.Count; i++)
+				detailedCategoriesList.Add(new SelectListItem { Value = valueList[i], Text = textList[i] });
+			return detailedCategoriesList;
+
+
+
+		}
+
+		public List<SelectListItem> GetStateSelectItems()
+		{
+
+			var stateList = new List<SelectListItem>
+			{
+				new() { Value = "All", Text = "Wszystkie" }
+			};
+			foreach (ContactState item in Enum.GetValues(typeof(ContactState)))
+			{
+				stateList.Add(new SelectListItem { Value = item.ToString(), Text = item.ToString() });
+			}
+			return stateList;
 		}
 
 		//public string? GetDetailedCategoryName(string detailedCategory)
