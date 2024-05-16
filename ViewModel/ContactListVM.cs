@@ -12,6 +12,8 @@ namespace Luxa.Models
 		public CategoryOfContact Category { get; set; } = default!;
 		public string DetailedCategory { get; set; } = default!;
 		public string Description { get; set; } = default!;
+		[EnumDataType(typeof(ContactState))]
+		public ContactState State { get; set; } = default!;
 
 	}
 }

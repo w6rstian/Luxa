@@ -19,6 +19,13 @@ namespace Luxa.Models
 		}
 		public string DetailedCategory { get; set; } = default!;
 		public string Description { get; set; } = default!;
+		public ContactState State { get; set; } = ContactState.Created;
+		[Column("StateString")]
+		public string StateAsString
+		{
+			get { return State.ToString(); }
+			private set { }
+		}
 
 	}
 }

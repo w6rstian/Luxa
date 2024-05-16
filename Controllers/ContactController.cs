@@ -90,6 +90,7 @@ namespace Luxa.Controllers
 					Category = contact.Category,
 					Description = contact.Description,
 					DetailedCategory = contact.DetailedCategory,
+					State = contact.State
 				};
 				contactsToDisplay.Add(contactListVM);
 			}

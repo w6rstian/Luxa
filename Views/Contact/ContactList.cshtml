@@ -4,31 +4,31 @@
 <h3>@ViewData["Title"]</h3>
 
 @model IEnumerable<ContactListVM>
-@inject Luxa.Interfaces.IContactService contactservice
 
 <div class="container">
 	<div class="row">
 		<h5 class="card-title" id="itemHead">Filtruj dane: </h5>
-		<div>
-			<label for="categoryFilter">Kategorie:</label>
-			@Html.DropDownList(
-				"categoryFilter",
-				ViewBag.CategorySelectItems as IEnumerable<SelectListItem>, 
-				new { @id = "categoryFilter", @onchange = "changeDetailedCategory(this.value)" });
+			<div>
+				<label for="categoryFilter">Kategorie:</label>
+				@Html.DropDownList(
+									"categoryFilter",
+									ViewBag.CategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "categoryFilter", @onchange = "changeDetailedCategory(this.value)" });
 
-			<label for="detailedCategoryFilter">Szczegóły:</label>
-			@Html.DropDownList(
-				"detailedCategoryFilter",
-				ViewBag.DetailedCategorySelectItems as IEnumerable<SelectListItem>,
-				new { @id = "detailedCategoryFilter" });
+				<label for="detailedCategoryFilter">Szczegóły:</label>
+				@Html.DropDownList(
+									"detailedCategoryFilter",
+									ViewBag.DetailedCategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "detailedCategoryFilter" });
 
-			<label for="stateFilter">Status:</label>
-			@Html.DropDownList(
-				"stateFilter",
-				ViewBag.StateSelectItems as IEnumerable<SelectListItem>,
-				new { @id = "stateFilter" });
-		</div>
+				<label for="stateFilter">Status:</label>
+				@Html.DropDownList(
+									"stateFilter",
+									ViewBag.StateSelectItems as IEnumerable<SelectListItem>,
+									new { @id = "stateFilter" });
+			<button onclick="applyFilter()">Filtruj</button>
 	</div>
+</div>
 </div>
 
 <form>
@@ -39,7 +39,8 @@
 				<th>Nazwa użytkownika</th>
 				<th>Kategoria</th>
 				<th>Szczegóły</th>
-				<th>Treść zgłoszenia</th>
+				<th>Treść</th>
+				<th>Stan</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -53,10 +54,11 @@
 						<td>@contact.UserName</td>
 						<td>@contact.Category</td>
 						<td>@contact.DetailedCategory</td>
-						<td>@contact.Description</td>
+						<td width="30">@contact.Description</td>
 
 
 						<td>
+							@contact.State
 							<div class="btn-group btn-group-sm">
 								@* 								<a asp-controller="Account" asp-action="Edit" asp-route-id="@user.User.Id" class="btn btn-primary">Edytuj</a>
 						<a asp-controller="Account" asp-action="Delete" asp-route-id="@user.User.Id" class="btn btn-danger">Usuń</a> *@
@@ -83,9 +85,7 @@
 				console.log(response);
 				var defaultText = "Wszystkie";
 				var defaultValue = "All";
-				var options = "<option value ="+defaultValue+">"+defaultText+"</option>";
-				var cos = "cos";
-				
+				var options = "<option value =" + defaultValue + ">" + defaultText + "</option>";
 				for (var i = 0; i < response.value.length; i++) {
 					options += "<option value=" + response.value[i] + ">" + response.text[i] + "</option>";
 				}
@@ -107,8 +107,56 @@
 
 	function applyFilter() {
 		var selectedCategory = document.getElementById("categoryFilter").value;
+		var selectedDetailedCategory = document.getElementById("detailedCategoryFilter").value;
+		var selectedState = document.getElementById("stateFilter").value;
+
 		var rows = document.querySelectorAll("tbody tr");
-		console.log(selectedCategory);
-		console.log(rows);
+
+		rows.forEach(function (row) {
+			var categoryCell = row.cells[2].textContent.trim();
+			var detailedCategoryCell = row.cells[3].textContent.trim();
+			var stateCell = row.cells[5].textContent.trim();
+			var isVisible = false;
+			var isSelectedCategory = (selectedCategory === "All" || categoryCell === selectedCategory);
+			var isSelectedDetailedCategory = (selectedDetailedCategory === "All" || detailedCategoryCell === selectedDetailedCategory);
+			var isSelectedState = (selectedState === "All" || stateCell === selectedState);
+			if (isSelectedCategory && isSelectedDetailedCategory && isSelectedState) {
+				row.style.display = ""; //Pokazuje wiersz
+			} else {
+				row.style.display = "none"; //Ukrywa wiersz
+			}
+
+
+
+
+
+
+			// if (selectedCategory === "All" || categoryCell === selectedCategory) {
+			// 	row.style.display = ""; //Pokazuje wiersz
+			// } else {
+			// 	row.style.display = "none"; //Ukrywa wiersz
+			// }
+		});
+	
+		//console.log("Uruchomiono filtr dla: "+selectedCategory+", "+selectedDetailedCategory+", "+selectedState);
+		//console.log(rows);
 	}
 </script>
+
+
+@* 						if (selectedCategory === "All" || categoryCell === selectedCategory)
+			{
+				if (detailedCategoryCell === "All" || categoryCell === selectedCategory)
+				{
+					row.style.display = ""; // Pokazuje wiersz, jeśli wybrana kategoria zgadza się lub wybrano opcję "Wszystkie"
+				}
+				else
+				{
+					row.style.display = "none"; // Ukrywa wiersz, jeśli kategoria nie zgadza się z wyborem
+				}
+			}
+			else
+			{
+				row.style.display = "none"; // Ukrywa wiersz, jeśli kategoria nie zgadza się z wyborem
+			}
+		}); *@
