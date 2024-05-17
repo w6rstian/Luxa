@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Data\Enums\" />
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\Image\" />
     <Folder Include="wwwroot\Photo\" />
   </ItemGroup>
 

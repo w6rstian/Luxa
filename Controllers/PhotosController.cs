@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Luxa.Data;
 using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Data;
 //using AspNetCore;
 
 namespace Luxa.Controllers
@@ -77,17 +78,27 @@ namespace Luxa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
         {
-            var user = await _userManager.GetUserAsync(User);
-            photo.UserId = user;
-           /*string wwwRootPath = _hostEnvironment.WebRootPath;
-            string fileName = Path.GetFileNameWithoutExtension(photo.ImageFile.FileName);
-            string extension = Path.GetExtension(photo.ImageFile.FileName);
-            string path = Path.Combine(wwwRootPath + "/Photo", fileName);
-            using (var fileStream = new FileStream)
-*/
-                _context.Add(photo);
+            
+                var user = await _userManager.GetUserAsync(User);
+                photo.UserId = user;
+
+                //save image into wwwroot
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(photo.ImageFile.FileName);
+                string extension = Path.GetExtension(photo.ImageFile.FileName);
+                photo.Name = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = Path.Combine(wwwRootPath + "/Image", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await photo.ImageFile.CopyToAsync(fileStream);  
+                }
+
+
+                    _context.Add(photo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+            
+            
             
             
             //return View(photo);
@@ -114,7 +125,7 @@ namespace Luxa.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Name,Description,AddTime")] Photo photo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
         {
             if (id != photo.Id)
             {
@@ -168,11 +179,15 @@ namespace Luxa.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var photo = await _context.Photo.FindAsync(id);
-            if (photo != null)
+            //delete image from wwwroot/image
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", photo.Name);
+            if (System.IO.File.Exists(imagePath))
             {
-                _context.Photo.Remove(photo);
+                System.IO.File.Delete(imagePath);
             }
-
+            
+            //delete record
+            _context.Photo.Remove(photo);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
