@@ -15,6 +15,7 @@ namespace Luxa.Controllers
 
         public IActionResult Index()
         {
+
             return View();
         }
 

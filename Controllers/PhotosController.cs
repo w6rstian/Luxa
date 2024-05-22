@@ -9,27 +9,29 @@ using Luxa.Data;
 using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
+using Luxa.Services;
+using Luxa.Interfaces;
+using System.Drawing;
 //using AspNetCore;
 
 namespace Luxa.Controllers
 {
     public class PhotosController : Controller
     {
+        private readonly IPhotoService _photoService;
+
         private readonly ApplicationDbContext _context; //wstrzykiwanie kontekstu
 
         private readonly UserManager<UserModel> _userManager;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        public PhotosController(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment)
+        public PhotosController(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
         {
             _context = context;
             _userManager = userManager;
             _hostEnvironment = hostEnvironment;
+            _photoService = photoService;
         }
-
-        
-
-
 
         // GET: Photos
         public async Task<IActionResult> Index()
@@ -48,7 +50,7 @@ namespace Luxa.Controllers
             var photo = await _context.Photo
                 .Include(m => m.UserId)
                 .FirstOrDefaultAsync(m => m.Id == id);
-                
+
             if (photo == null)
             {
                 return NotFound();
@@ -60,13 +62,12 @@ namespace Luxa.Controllers
         // GET: Photos/Create
         public IActionResult Create()
         {
-            
-            
-            if (_userManager.GetUserId(User)==null)
+
+            if (_userManager.GetUserId(User) == null)
             {
                 return View("Views/Home/Index.cshtml");
             }
-            
+
             return View();
             //filtr privacy
         }
@@ -78,31 +79,14 @@ namespace Luxa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
         {
-            
-                var user = await _userManager.GetUserAsync(User);
-                photo.UserId = user;
 
-                //save image into wwwroot
-                string wwwRootPath = _hostEnvironment.WebRootPath;
-                string fileName = Path.GetFileNameWithoutExtension(photo.ImageFile.FileName);
-                string extension = Path.GetExtension(photo.ImageFile.FileName);
-                photo.Name = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                string path = Path.Combine(wwwRootPath + "/Image", fileName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
-                {
-                    await photo.ImageFile.CopyToAsync(fileStream);  
-                }
+            var user = await _userManager.GetUserAsync(User);
+            _photoService.Create(photo, user);
 
-
-                    _context.Add(photo);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            
-            
-            
-            
+            return RedirectToAction(nameof(Index));
             //return View(photo);
         }
+
 
         // GET: Photos/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -185,7 +169,7 @@ namespace Luxa.Controllers
             {
                 System.IO.File.Delete(imagePath);
             }
-            
+
             //delete record
             _context.Photo.Remove(photo);
             await _context.SaveChangesAsync();
@@ -196,5 +180,31 @@ namespace Luxa.Controllers
         {
             return _context.Photo.Any(e => e.Id == id);
         }
+        /*
+        public IActionResult DownloadFile(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
+        {
+            *//*            var photo = _context.Photo.FindAsync(id).FirstOrDefaultAsync(m => m.Id == id);
+            *//*
+            //var filename = Path.Combine(_hostEnvironment.WebRootPath, "image", photo.Name);
+            var fileName = photo.ImageFile.FileName;
+            var memory = DownloadSingleFile(fileName, "wwwroot\\Image");
+            return File(memory.ToArray(), "image/png", photo.ImageFile.FileName);
+        }
+        private MemoryStream DownloadSingleFile(string filename, string uploadPath)
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), uploadPath, filename);
+            var memory = new MemoryStream();
+            if (System.IO.File.Exists(path))
+            {
+                var net = new System.Net.WebClient();
+                var data = net.DownloadData(path);
+                var content = new System.IO.MemoryStream(data);
+                memory = content;
+
+            }
+            memory.Position = 0;
+            return memory;
+        }*/
     }
+
 }
