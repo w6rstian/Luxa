@@ -5,9 +5,37 @@
 
 @model IEnumerable<ContactListVM>
 
-<div class="container">
-	<div class="row">
+<div class="card">
+	<div class="card-header">
 		<h5 class="card-title" id="itemHead">Filtruj dane: </h5>
+	</div>
+	<div class="card-body">
+		<blockquote class="blockquote mb-0">
+			<div>
+				<label for="categoryFilter">Kategorie:</label>
+				@Html.DropDownList(
+									"categoryFilter",
+									ViewBag.CategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "categoryFilter", @onchange = "changeDetailedCategory(this.value)" })
+
+				<label for="detailedCategoryFilter">Szczegóły:</label>
+				@Html.DropDownList(
+									"detailedCategoryFilter",
+									ViewBag.DetailedCategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "detailedCategoryFilter" })
+
+				<label for="stateFilter">Status:</label>
+				@Html.DropDownList(
+									"stateFilter",
+									ViewBag.StateSelectItems as IEnumerable<SelectListItem>,
+									new { @id = "stateFilter" })
+				<button class="btn btn-primary" onclick="applyFilter()">Filtruj</button>
+			</div>
+		</blockquote>
+	</div>
+</div>
+@* <div class="container">
+	<div class="row">
 			<div>
 				<label for="categoryFilter">Kategorie:</label>
 				@Html.DropDownList(
@@ -29,7 +57,7 @@
 			<button onclick="applyFilter()">Filtruj</button>
 	</div>
 </div>
-</div>
+</div>*@
 
 <form>
 	<table class="table table-responsive table-hover">
@@ -54,14 +82,18 @@
 						<td>@contact.UserName</td>
 						<td>@contact.Category</td>
 						<td>@contact.DetailedCategory</td>
-						<td width="30">@contact.Description</td>
-
+						<td width="50%">@contact.Description</td>
+						<td id="@contact.Id/state">@contact.State</td>
 
 						<td>
-							@contact.State
 							<div class="btn-group btn-group-sm">
-								@* 								<a asp-controller="Account" asp-action="Edit" asp-route-id="@user.User.Id" class="btn btn-primary">Edytuj</a>
-						<a asp-controller="Account" asp-action="Delete" asp-route-id="@user.User.Id" class="btn btn-danger">Usuń</a> *@
+								@Html.DropDownList(
+																	"stateChanger",
+																	ViewBag.StateSelectChangeItems as IEnumerable<SelectListItem>,
+																	new { @id = @contact.Id + ".stateChanger" })
+
+
+								<a onclick="addStateToTempData(@contact.Id)" class="btn btn-primary">Edytuj</a>
 							</div>
 						</td>
 					</tr>
@@ -69,13 +101,15 @@
 			}
 			else
 			{
-				<tr><td colspan="6">Brak dostępnych danych</td></tr>
+				<tr><td colspan="7">Brak dostępnych danych</td></tr>
 			}
 		</tbody>
 	</table>
 </form>
 
 <script>
+
+
 	function changeDetailedCategory(selectedValue) {
 		$.ajax({
 			url: '/Contact/GetDetailedCategory',
@@ -97,6 +131,42 @@
 		});
 	}
 
+	function getValueFromStateSelect(id) {
+		return document.getElementById(id + ".stateChanger").value;
+	}
+	function setNewValue(id, value) {
+		console.log(document.getElementById(id + "/state"))
+		var state = document.getElementById(id + "/state");
+		if (state) {
+			state.innerHTML = value;
+		}
+		else {
+			console.error("Nie można znaleźć elementu w tabeli");
+		}
+	}
+
+	function addStateToTempData(id) {
+		var value = getValueFromStateSelect(id);
+		console.log(value);
+		var data = id + "." + value
+		$.ajax({
+			url: '/Contact/EditState',
+			type: 'POST',
+			data: { data: data },
+			success: function (response) {
+				console.log(response);
+				if (true === response) {
+					console.log("Wchodzę");
+					setNewValue(id, value);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr);
+				console.log(status);
+				console.log('nie działa: ' + error);
+			}
+		});
+	}
 
 
 
@@ -109,14 +179,12 @@
 		var selectedCategory = document.getElementById("categoryFilter").value;
 		var selectedDetailedCategory = document.getElementById("detailedCategoryFilter").value;
 		var selectedState = document.getElementById("stateFilter").value;
-
 		var rows = document.querySelectorAll("tbody tr");
 
 		rows.forEach(function (row) {
 			var categoryCell = row.cells[2].textContent.trim();
 			var detailedCategoryCell = row.cells[3].textContent.trim();
 			var stateCell = row.cells[5].textContent.trim();
-			var isVisible = false;
 			var isSelectedCategory = (selectedCategory === "All" || categoryCell === selectedCategory);
 			var isSelectedDetailedCategory = (selectedDetailedCategory === "All" || detailedCategoryCell === selectedDetailedCategory);
 			var isSelectedState = (selectedState === "All" || stateCell === selectedState);
@@ -137,10 +205,13 @@
 			// 	row.style.display = "none"; //Ukrywa wiersz
 			// }
 		});
-	
+
 		//console.log("Uruchomiono filtr dla: "+selectedCategory+", "+selectedDetailedCategory+", "+selectedState);
 		//console.log(rows);
 	}
+
+
+
 </script>
 
 
@@ -160,3 +231,29 @@
 				row.style.display = "none"; // Ukrywa wiersz, jeśli kategoria nie zgadza się z wyborem
 			}
 		}); *@
+
+
+@* window.addEventListener('beforeunload', function (event) {
+		sendChanges();
+		event.returnValue = 'test';
+		});
+
+		function sendChanges()
+		{
+		$.ajax({
+		url: '/Contact/SendChanges',
+		type: 'POST',
+		async: true,
+		success: function ()
+		{
+		console.log('Changes sent successfully');
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+		console.error('Error sending changes');
+		console.error('Status:', textStatus);
+		console.error('Error:', errorThrown);
+		console.error('Response:', jqXHR.responseText);
+		console.error('Status Code:', jqXHR.status);
+		}
+		});
+		} *@

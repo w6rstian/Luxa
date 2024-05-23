@@ -2,8 +2,8 @@
 {
 	public enum ContactState
 	{
-		Created,
-		Implementation,
+		Added,
+		DuringImplementation,
 		Finished
 	}
 }

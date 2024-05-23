@@ -4,7 +4,6 @@ using Luxa.Interfaces;
 using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Security.Claims;
@@ -30,17 +29,16 @@ namespace Luxa.Services
 			_notificationService = notificationService;
 		}
 		public bool Save()
-		{ 
-			var saved = _context.SaveChanges();
-			return saved > 0;
-		}
-		public bool Add(ContactModel contactModel) 
+			=> _context.SaveChanges() > 0;
+
+
+		public bool Add(ContactModel contactModel)
 		{
 			//add nie dodaje zmian, save jest za to odpowiedzialny
 			_context.Add(contactModel);
 			return Save();
 		}
-		public bool Delete(ContactModel contactModel) 
+		public bool Delete(ContactModel contactModel)
 		{
 			_context.Remove(contactModel);
 			return Save();
@@ -108,19 +106,71 @@ namespace Luxa.Services
 
 		}
 
-		public List<SelectListItem> GetStateSelectItems()
+		public List<SelectListItem> GetStateSelectItems(bool isAllIncluded)
 		{
 
-			var stateList = new List<SelectListItem>
-			{
-				new() { Value = "All", Text = "Wszystkie" }
-			};
+			var stateList = new List<SelectListItem>();
+			if (isAllIncluded)
+				stateList.Add(new SelectListItem("Wszystkie", "All"));
+
+
 			foreach (ContactState item in Enum.GetValues(typeof(ContactState)))
 			{
-				stateList.Add(new SelectListItem { Value = item.ToString(), Text = item.ToString() });
+				var selectListItem = new SelectListItem();
+				selectListItem.Value = item.ToString();
+				selectListItem.Text = item.ToString();
+				stateList.Add(selectListItem);
 			}
 			return stateList;
 		}
+
+		public async Task<bool> UpdateState(List<KeyValuePair<int, string>> changedStateList)
+		{
+			foreach (var item in changedStateList)
+			{
+				var contactModel = await _context.Contacts.FindAsync(item.Key);
+				contactModel.State = (ContactState)Enum.Parse(typeof(ContactState), item.Value);
+			}
+			return Save();
+		}
+
+		public Tuple<int, string>? GetTupleFromData(string data)
+		{
+			var splited = data.Split(".");
+			if (int.TryParse(splited[0], out int id))
+				return Tuple.Create(id, splited[1]);
+			else
+				return null;
+		}
+
+		public void PrepareToUpdateState(string data)
+		{
+			var splitedData = GetTupleFromData(data);
+			if (splitedData == null)
+			{
+				return;
+			}
+
+			var contact = _context.Contacts.Find(splitedData.Item1);
+			if (contact == null)
+			{
+				return;
+			}
+			ContactState contactState = (ContactState)Enum.Parse(typeof(ContactState), splitedData.Item2);
+			if (contact.State != contactState)
+			{
+				contact.State = contactState;
+			}
+		}
+
+		public async Task<bool> SaveAsync()
+			=> await _context.SaveChangesAsync() > 0;
+
+
+
+
+
+
 
 		//public string? GetDetailedCategoryName(string detailedCategory)
 		//{

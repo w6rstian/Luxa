@@ -18,7 +18,7 @@
 															.Cast<Luxa.Data.Enums.CategoryOfContact>().Select(e=>
 															{
 																var displayAttribute = typeof(Luxa.Data.Enums.CategoryOfContact).GetField(e.ToString())
-																.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+																	?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
 																.SingleOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
 																var displayName = displayAttribute?.GetName() ?? e.ToString();
 																return new SelectListItem { Text = displayName, Value = e.ToString()};

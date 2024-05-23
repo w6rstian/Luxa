@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Luxa.Data;
+﻿using Luxa.Data;
 using Luxa.Data.Enums;
-using System.Reflection;
-using Luxa.ViewModel;
 using Luxa.Interfaces;
 using Luxa.Models;
-using Luxa.Services;
+using Luxa.ViewModel;
+using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace Luxa.Controllers
 {
@@ -97,31 +95,183 @@ namespace Luxa.Controllers
 			//return View(contactsToDisplay);
 			ViewBag.CategorySelectItems = _contactService.GetCategorySelectItems();
 			ViewBag.DetailedCategorySelectItems = _contactService.GetDetailedCategorySelectItems();
-			ViewBag.StateSelectItems = _contactService.GetStateSelectItems();
+			ViewBag.StateSelectItems = _contactService.GetStateSelectItems(true);
+			ViewBag.StateSelectChangeItems = _contactService.GetStateSelectItems(false);
 			return View(contactsToDisplay);
 		}
-		/*
-		 		public async Task<IActionResult> UsersList()
+		[HttpPost]
+		public bool EditState(string data)
 		{
-			var users = _context.Users.ToList();
-			var usersWithRoles = new List<UsersListVM>();
-			foreach (var user in users)
-			{
-				var roles = await _userManager.GetRolesAsync(user);
-				var notifications = _notificationService.GetNotificationsForUser(user.Id);
+			_contactService.PrepareToUpdateState(data);
+			return _contactService.Save();
 
-				var userListVM = new UsersListVM
+			//var deserializedData = JsonSerializer.Deserialize<>
+		}
+
+		/*[HttpPost]
+		public async Task<IActionResult> SendChanges()
+		{
+			try
+			{
+				Console.WriteLine(await _contactService.SaveAsync());
+
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				// Log the exception
+				// return a proper error response
+				return StatusCode(500, "Internal server error: " + ex.Message);
+			}
+		}*/
+
+		/*[HttpPost]
+		public IActionResult AddStateToTempData(string data)
+		{
+			try
+			{
+				List<KeyValuePair<int, string>> changedStateList;
+				if (TempData.ContainsKey("changedStateList") && null != TempData["changedStateList"])
 				{
-					User = user,
-					Roles = roles,
-					Notifications = notifications
-				};
-				usersWithRoles.Add(userListVM);
+					changedStateList = JsonSerializer.Deserialize<List<KeyValuePair<int, string>>>(TempData["changedStateList"].ToString());
+				}
+				else
+				{
+					changedStateList = new List<KeyValuePair<int, string>>();
+				}
+				var keyValuePair = _contactService.GetTupleFromData(data);
+				if (keyValuePair != null)
+				{
+					changedStateList.Add((KeyValuePair<int, string>)keyValuePair);
+				}
+
+
+				TempData["changedStateList"] = JsonSerializer.Serialize(changedStateList);
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, "Internal server error: " + ex.Message);
+			}
+		}
+
+		public void SendTempDataToDatabase()
+		{
+			List<KeyValuePair<int, string>> changedStateList;
+
+			// Odczytywanie listy z TempData
+			if (!TempData.ContainsKey("changedStateList"))
+			{
+				ViewData["Message"] = "Zmiana stanu nie nastąpiła, nie ma czego zmienić";
+				return;
+			}
+			changedStateList = TempData["changedStateList"] as List<KeyValuePair<int, string>>;
+			if (!_contactService.UpdateState(changedStateList).Result)
+			{
+				ViewData["Message"] = "Zmiana stanu nie powiodło się";
+				return;
+			}
+			ViewData["Message"] = "Zmiana powiodła się";
+
+
+		}*/
+
+
+
+
+		/*
+		public void AddCookieToList(string idChangedState, string stateName)
+		{
+			List<HttpCookie> cookieList;
+			if (Request.Cookies["CookieList"] != null)
+			{
+				string json = Request.Cookies["CookieList"].Value;
+				cookieList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<HttpCookie>>(json);
+			}
+			else
+			{
+				cookieList = new List<HttpCookie>();
 			}
 
-			return View(usersWithRoles);
+			HttpCookie newCookie = new HttpCookie(idChangedState)
+			{
+				Value = stateName,
+				Expires = DateTime.Now.AddDays(1)
+			};
+			cookieList.Add(newCookie);
+
+			string updatedJson = Newtonsoft.Json.JsonConvert.SerializeObject(cookieList);
+			HttpCookie listCookie = new HttpCookie("CookieList", updatedJson)
+			{
+				Expires = DateTime.Now.AddDays(1)
+			};
+			Response.Cookies.Add(listCookie);
 		}
-		 */
+
+
+		public ActionResult GetCookiesFromList()
+		{
+			List<HttpCookie> cookieList;
+			if (Request.Cookies["CookieList"] != null)
+			{
+				string json = Request.Cookies["CookieList"].Value;
+				cookieList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<HttpCookie>>(json);
+			}
+			else
+			{
+				cookieList = new List<HttpCookie>();
+			}
+
+			ViewBag.CookieList = cookieList;
+			return View();
+		}
+		*/
+
+
+
+
+		//[HttpPost]
+		//public IActionResult SubmitChanges([FromBody] Dictionary<string, string> changes)
+		//{
+		//	foreach (var change in changes)
+		//	{
+		//		var recordId = change.Key;
+		//		var newValue = change.Value;
+
+		//		// Twoja logika do aktualizacji rekordu w bazie danych
+		//		UpdateRecord(recordId, newValue);
+		//	}
+
+		//	return Json(new { success = true });
+		//}
+
+		//private void UpdateRecord(string recordId, string newValue)
+		//{
+		//	// Implementacja aktualizacji rekordu w bazie danych
+		//}
+
+		/*
+						public async Task<IActionResult> UsersList()
+				{
+					var users = _context.Users.ToList();
+					var usersWithRoles = new List<UsersListVM>();
+					foreach (var user in users)
+					{
+						var roles = await _userManager.GetRolesAsync(user);
+						var notifications = _notificationService.GetNotificationsForUser(user.Id);
+
+						var userListVM = new UsersListVM
+						{
+							User = user,
+							Roles = roles,
+							Notifications = notifications
+						};
+						usersWithRoles.Add(userListVM);
+					}
+
+					return View(usersWithRoles);
+				}
+				 */
 
 
 
