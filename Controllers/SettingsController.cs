@@ -51,15 +51,15 @@ namespace Luxa.Controllers
 		[HttpPost]
 		public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM) 
 		{
-			if (ModelState.IsValid)
+			var user = _settingsService.GetCurrentLoggedInUser(User);
+			if (ModelState.IsValid && user != null)
 			{
-				var user = _settingsService.GetCurrentLoggedInUser(User);
 				string emailNotification;
 				user.FirstName=dataChangeVM.FirstName;
 				user.LastName=dataChangeVM.LastName;
 				user.Country=dataChangeVM.Country;
 				user.PhoneNumber=dataChangeVM.PhoneNumber;
-				if (user.Email!= dataChangeVM.Email.ToLower() & await _settingsService.ChangeEmail(user, dataChangeVM.Email))
+				if (!user.Email.Equals(dataChangeVM.Email, StringComparison.CurrentCultureIgnoreCase) && await _settingsService.ChangeEmail(user, dataChangeVM.Email))
 					emailNotification = "Zmieniono adres E-mail\n";
 				else
 					emailNotification = "";

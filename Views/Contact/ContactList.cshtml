@@ -1,0 +1,259 @@
+﻿@{
+	ViewData["Title"] = "Panel do obsługi kontatków";
+}
+<h3>@ViewData["Title"]</h3>
+
+@model IEnumerable<ContactListVM>
+
+<div class="card">
+	<div class="card-header">
+		<h5 class="card-title" id="itemHead">Filtruj dane: </h5>
+	</div>
+	<div class="card-body">
+		<blockquote class="blockquote mb-0">
+			<div>
+				<label for="categoryFilter">Kategorie:</label>
+				@Html.DropDownList(
+									"categoryFilter",
+									ViewBag.CategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "categoryFilter", @onchange = "changeDetailedCategory(this.value)" })
+
+				<label for="detailedCategoryFilter">Szczegóły:</label>
+				@Html.DropDownList(
+									"detailedCategoryFilter",
+									ViewBag.DetailedCategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "detailedCategoryFilter" })
+
+				<label for="stateFilter">Status:</label>
+				@Html.DropDownList(
+									"stateFilter",
+									ViewBag.StateSelectItems as IEnumerable<SelectListItem>,
+									new { @id = "stateFilter" })
+				<button class="btn btn-primary" onclick="applyFilter()">Filtruj</button>
+			</div>
+		</blockquote>
+	</div>
+</div>
+@* <div class="container">
+	<div class="row">
+			<div>
+				<label for="categoryFilter">Kategorie:</label>
+				@Html.DropDownList(
+									"categoryFilter",
+									ViewBag.CategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "categoryFilter", @onchange = "changeDetailedCategory(this.value)" });
+
+				<label for="detailedCategoryFilter">Szczegóły:</label>
+				@Html.DropDownList(
+									"detailedCategoryFilter",
+									ViewBag.DetailedCategorySelectItems as IEnumerable<SelectListItem>,
+									new { @id = "detailedCategoryFilter" });
+
+				<label for="stateFilter">Status:</label>
+				@Html.DropDownList(
+									"stateFilter",
+									ViewBag.StateSelectItems as IEnumerable<SelectListItem>,
+									new { @id = "stateFilter" });
+			<button onclick="applyFilter()">Filtruj</button>
+	</div>
+</div>
+</div>*@
+
+<form>
+	<table class="table table-responsive table-hover">
+		<thead>
+			<tr class="table-active">
+				<th>Id</th>
+				<th>Nazwa użytkownika</th>
+				<th>Kategoria</th>
+				<th>Szczegóły</th>
+				<th>Treść</th>
+				<th>Stan</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model != null && Model.Any())
+			{
+				@foreach (var contact in Model)
+				{
+					<tr>
+						<td>@contact.Id</td>
+						<td>@contact.UserName</td>
+						<td>@contact.Category</td>
+						<td>@contact.DetailedCategory</td>
+						<td width="50%">@contact.Description</td>
+						<td id="@contact.Id/state">@contact.State</td>
+
+						<td>
+							<div class="btn-group btn-group-sm">
+								@Html.DropDownList(
+																	"stateChanger",
+																	ViewBag.StateSelectChangeItems as IEnumerable<SelectListItem>,
+																	new { @id = @contact.Id + ".stateChanger" })
+
+
+								<a onclick="addStateToTempData(@contact.Id)" class="btn btn-primary">Edytuj</a>
+							</div>
+						</td>
+					</tr>
+				}
+			}
+			else
+			{
+				<tr><td colspan="7">Brak dostępnych danych</td></tr>
+			}
+		</tbody>
+	</table>
+</form>
+
+<script>
+
+
+	function changeDetailedCategory(selectedValue) {
+		$.ajax({
+			url: '/Contact/GetDetailedCategory',
+			type: 'GET',
+			data: { selectedValue: selectedValue },
+			success: function (response) {
+				console.log(response);
+				var defaultText = "Wszystkie";
+				var defaultValue = "All";
+				var options = "<option value =" + defaultValue + ">" + defaultText + "</option>";
+				for (var i = 0; i < response.value.length; i++) {
+					options += "<option value=" + response.value[i] + ">" + response.text[i] + "</option>";
+				}
+				$("#detailedCategoryFilter").html(options);
+			},
+			error: function () {
+				console.log("błąd funkcji js changeDetailedCategory");
+			}
+		});
+	}
+
+	function getValueFromStateSelect(id) {
+		return document.getElementById(id + ".stateChanger").value;
+	}
+	function setNewValue(id, value) {
+		console.log(document.getElementById(id + "/state"))
+		var state = document.getElementById(id + "/state");
+		if (state) {
+			state.innerHTML = value;
+		}
+		else {
+			console.error("Nie można znaleźć elementu w tabeli");
+		}
+	}
+
+	function addStateToTempData(id) {
+		var value = getValueFromStateSelect(id);
+		console.log(value);
+		var data = id + "." + value
+		$.ajax({
+			url: '/Contact/EditState',
+			type: 'POST',
+			data: { data: data },
+			success: function (response) {
+				console.log(response);
+				if (true === response) {
+					console.log("Wchodzę");
+					setNewValue(id, value);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr);
+				console.log(status);
+				console.log('nie działa: ' + error);
+			}
+		});
+	}
+
+
+
+
+
+
+
+
+	function applyFilter() {
+		var selectedCategory = document.getElementById("categoryFilter").value;
+		var selectedDetailedCategory = document.getElementById("detailedCategoryFilter").value;
+		var selectedState = document.getElementById("stateFilter").value;
+		var rows = document.querySelectorAll("tbody tr");
+
+		rows.forEach(function (row) {
+			var categoryCell = row.cells[2].textContent.trim();
+			var detailedCategoryCell = row.cells[3].textContent.trim();
+			var stateCell = row.cells[5].textContent.trim();
+			var isSelectedCategory = (selectedCategory === "All" || categoryCell === selectedCategory);
+			var isSelectedDetailedCategory = (selectedDetailedCategory === "All" || detailedCategoryCell === selectedDetailedCategory);
+			var isSelectedState = (selectedState === "All" || stateCell === selectedState);
+			if (isSelectedCategory && isSelectedDetailedCategory && isSelectedState) {
+				row.style.display = ""; //Pokazuje wiersz
+			} else {
+				row.style.display = "none"; //Ukrywa wiersz
+			}
+
+
+
+
+
+
+			// if (selectedCategory === "All" || categoryCell === selectedCategory) {
+			// 	row.style.display = ""; //Pokazuje wiersz
+			// } else {
+			// 	row.style.display = "none"; //Ukrywa wiersz
+			// }
+		});
+
+		//console.log("Uruchomiono filtr dla: "+selectedCategory+", "+selectedDetailedCategory+", "+selectedState);
+		//console.log(rows);
+	}
+
+
+
+</script>
+
+
+@* 						if (selectedCategory === "All" || categoryCell === selectedCategory)
+			{
+				if (detailedCategoryCell === "All" || categoryCell === selectedCategory)
+				{
+					row.style.display = ""; // Pokazuje wiersz, jeśli wybrana kategoria zgadza się lub wybrano opcję "Wszystkie"
+				}
+				else
+				{
+					row.style.display = "none"; // Ukrywa wiersz, jeśli kategoria nie zgadza się z wyborem
+				}
+			}
+			else
+			{
+				row.style.display = "none"; // Ukrywa wiersz, jeśli kategoria nie zgadza się z wyborem
+			}
+		}); *@
+
+
+@* window.addEventListener('beforeunload', function (event) {
+		sendChanges();
+		event.returnValue = 'test';
+		});
+
+		function sendChanges()
+		{
+		$.ajax({
+		url: '/Contact/SendChanges',
+		type: 'POST',
+		async: true,
+		success: function ()
+		{
+		console.log('Changes sent successfully');
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+		console.error('Error sending changes');
+		console.error('Status:', textStatus);
+		console.error('Error:', errorThrown);
+		console.error('Response:', jqXHR.responseText);
+		console.error('Status Code:', jqXHR.status);
+		}
+		});
+		} *@

@@ -1,5 +1,103 @@
 ﻿@{
 	ViewData["Title"] = "Kontakt";
 }
+@model Luxa.ViewModel.ContactVM
+@inject Luxa.Interfaces.IContactService icontactservice
+<div class="container">
+	<div class="row">
+		<div class="col-md-9">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title" id="itemHead"> Kontakt </h5>
+					<form method="post" asp-controller="Contact" asp-action="UserContact">
+						<label class="form-label" asp-for="Category"></label>
 
-<h2>Tu ma być formularz</h2>
+
+						@Html.DropDownListFor(model => model.Category,
+															Enum.GetValues(typeof(Luxa.Data.Enums.CategoryOfContact))
+															.Cast<Luxa.Data.Enums.CategoryOfContact>().Select(e=>
+															{
+																var displayAttribute = typeof(Luxa.Data.Enums.CategoryOfContact).GetField(e.ToString())
+																	?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+																.SingleOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+																var displayName = displayAttribute?.GetName() ?? e.ToString();
+																return new SelectListItem { Text = displayName, Value = e.ToString()};
+															}), new { @class = "form-select form-select-lg mb-3", @onchange = "changeDetailedCategory(this.value)", @id = "category"})
+						<label class="form-label" asp-for="DetailedCategory"></label>
+
+@* 						@Html.DropDownListFor(model => model.DetailedCategory,
+															typeof(Luxa.Data.DatailedContactCategories).GetFields()
+															.Where(f => ((ValueTuple<Luxa.Data.Enums.CategoryOfContact, string>)f.GetValue(null)).Item1 == Luxa.Data.Enums.CategoryOfContact.Error)
+															.Select(f => new SelectListItem
+						{
+							Text = ((ValueTuple<Luxa.Data.Enums.CategoryOfContact, string>)f.GetValue(null)).Item2,
+							Value = f.Name
+						}), new { @class = "form-select form-select-lg mb-3" }) *@
+
+
+						@Html.DropDownListFor(model => model.DetailedCategory, Enumerable.Empty<SelectListItem>(), new { @class = "form-select form-select-lg mb-3", @onload = "changeDetailedCategory(Error)" })
+
+
+
+
+						<div class="mb-1">
+							<label asp-for="Description" class="form-label"></label>
+							<textarea rows=15 asp-for="Description" id="textareaDescription" class="form-control"></textarea><br />
+							<span asp-validation-for="Description" class="text-danger"></span>
+						</div>
+						@* <select id="DetailedCategory1" class="form-select form-select-lg mb-3"></select> *@
+						<input type="button" value="Wyczyść wiadomość" onclick="clearTextarea()" class="btn btn-danger">
+						<input type="submit" value="Wyślij wiadomość" class="btn btn-primary float-end" />
+					</form>
+					@ViewData["Message"]
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+	// window.onload = function () {
+	// 	// Pobranie wartości początkowej z pierwszego pola
+	// 	var selectedCategory = document.getElementById("Category").value;
+	// 	changeDetailedCategory(selectedCategory);
+	// };
+	window.addEventListener("load", function () {
+		var result = document.getElementById("category").value;
+		console.log(result);
+		changeDetailedCategory(result);
+	});
+	
+	function changeDetailedCategory(selectedValue) {
+		$.ajax({
+			url: '/Contact/GetDetailedCategory',
+			type: 'GET',
+			data: { selectedValue: selectedValue },
+			success: function (response) {
+				console.log(response);
+				var options = "";
+				for (var i = 0; i < response.value.length; i++) {
+					options += "<option value=" + response.value[i] + ">" + response.text[i] + "</option>";
+				}
+				//  var lista = document.getElementById("detailedCategoryDropdown"); 
+				// lista = options;
+				$("#DetailedCategory").html(options);
+				//$("#DetailedCategory").html(options);
+				console.log("sukces changeDetailedCategory");
+			},
+			error: function () {
+				console.log("błąd funkcji js changeDetailedCategory");
+			}
+		});
+	}
+	function clearTextarea() {
+		console.log("wykonuje sie czyszczenie ekranu");
+		document.getElementById("textareaDescription").value = '';
+	}
+	function getCategory() {
+		console.log("Wykonuje sie zmiana zmiennej");
+		return document.getElementById("category").value;
+	}
+</script>

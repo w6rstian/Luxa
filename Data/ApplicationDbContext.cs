@@ -37,10 +37,10 @@ namespace Luxa.Data
 
 		}
 
-		public DbSet<UserModel> Users { get; set; }
 		public DbSet<UserNotificationModel> UserNotifications { get; set; }
 		public DbSet<NotificationModel> Notifications { get; set; }
-	    public DbSet<Luxa.Models.Photo> Photo { get; set; } = default!;
+	    public DbSet<Photo> Photo { get; set; } = default!;
+		public DbSet<ContactModel> Contacts { get; set; }
 
 		
 	}
