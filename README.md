@@ -1,9 +1,10 @@
 Luxa
+
 Do poprawy:
-	-Wywalenie znajdowanie użytkownika do serwisu (jednego) 
- 	-Autoryzacja każdej funkcji w kontrolerze wymagającej zalogowania
-  	-Ogarnięcie strony z błędami z odnośnikiem do kontaktu
-   	-Normalny podział na repozytoria(operacje na bazie danych) i serwisy(logika) 
+- Wywalenie znajdowanie użytkownika do serwisu (jednego)
+- Autoryzacja każdej funkcji w kontrolerze wymagającej zalogowania
+- Ogarnięcie strony z błędami z odnośnikiem do kontaktu
+- Normalny podział na repozytoria(operacje na bazie danych) i serwisy(logika) 
 
 Do zrobienia:
 
