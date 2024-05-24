@@ -1,4 +1,11 @@
 Luxa
+Do poprawy:
+	-Wywalenie znajdowanie użytkownika do serwisu (jednego) 
+ 	-Autoryzacja każdej funkcji w kontrolerze wymagającej zalogowania
+  	-Ogarnięcie strony z błędami z odnośnikiem do kontaktu
+   	-Normalny podział na repozytoria(operacje na bazie danych) i serwisy(logika) 
+
+Do zrobienia:
 
 Instrukcja:
 1. Połączenie kodu z bazą danych (Podejście code first)
