@@ -179,7 +179,7 @@ namespace Luxa.Controllers
 
 			return View();
 		}
-
+		[Authorize]
 		public async Task<IActionResult> UserNotifications()
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

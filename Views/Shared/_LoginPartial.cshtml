@@ -43,11 +43,14 @@
 				</li>
 				@{
 					var userModel = await signInManager.UserManager.GetUserAsync(User);
-					var isInRoleAdmin = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Admin);
-					var isInRoleModerator = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Moderator);
-					if (isInRoleAdmin || isInRoleModerator)
+					if (userModel != null)
 					{
-						<partial name="_AdminLoginPartial.cshtml" />
+						var isInRoleAdmin = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Admin);
+						var isInRoleModerator = await signInManager.UserManager.IsInRoleAsync(userModel, Luxa.Data.UserRoles.Moderator);
+						if (isInRoleAdmin || isInRoleModerator)
+						{
+							<partial name="_AdminLoginPartial.cshtml" />
+						}
 					}
 				}
 			</ul>

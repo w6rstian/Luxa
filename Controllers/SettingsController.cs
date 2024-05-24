@@ -38,31 +38,35 @@ namespace Luxa.Controllers
 		public IActionResult ChangeData()
 		{
 			var user = _settingsService.GetCurrentLoggedInUser(User);
-			var dataChangeVM = new DataChangeVM
+			if (user != null)
 			{
-				FirstName = user.FirstName,
-				LastName = user.LastName,
-				Country = user.Country,
-				Email = user.Email,
-				PhoneNumber = user.PhoneNumber,
-			};
-			return View(dataChangeVM);
+				var dataChangeVM = new DataChangeVM
+				{
+					FirstName = user.FirstName,
+					LastName = user.LastName,
+					Country = user.Country,
+					Email = user.Email,
+					PhoneNumber = user.PhoneNumber,
+				};
+				return View(dataChangeVM);
+			}
+			return RedirectToAction("Error","Home");
+
 		}
 		[HttpPost]
 		public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM) 
 		{
 			var user = _settingsService.GetCurrentLoggedInUser(User);
-			if (ModelState.IsValid && user != null)
+			if (ModelState.IsValid && user != null && dataChangeVM.Email != null)
 			{
 				string emailNotification;
 				user.FirstName=dataChangeVM.FirstName;
 				user.LastName=dataChangeVM.LastName;
 				user.Country=dataChangeVM.Country;
 				user.PhoneNumber=dataChangeVM.PhoneNumber;
-				if (!user.Email.Equals(dataChangeVM.Email, StringComparison.CurrentCultureIgnoreCase) && await _settingsService.ChangeEmail(user, dataChangeVM.Email))
-					emailNotification = "Zmieniono adres E-mail\n";
-				else
-					emailNotification = "";
+				emailNotification = user.Email!=null && !user.Email.Equals(dataChangeVM.Email, StringComparison.OrdinalIgnoreCase) && await _settingsService.ChangeEmail(user, dataChangeVM.Email)
+					? "Zmieniono adres E-mail\n"
+					: "";
 
 
 				if (await _settingsService.SaveUser(user))

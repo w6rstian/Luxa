@@ -4,9 +4,7 @@ namespace Luxa.Components
 {
 	public class SettingsMenuViewComponent : ViewComponent
 	{
-		public IViewComponentResult InvokeAsync()
-		{
-			return View();
-		}
+		public async Task<IViewComponentResult> InvokeAsync() => View();
+		
 	}
 }
