@@ -1,24 +1,194 @@
 ﻿@model IEnumerable<Luxa.Models.Photo>
 @{
-    ViewData["Title"] = "Strona główna(niezalogowany)";
+	ViewData["Title"] = "Strona główna(niezalogowany)";
 }
+<style>
+	.target {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background-color: rgba(242, 242, 242, 0.5); /* Przezroczyste tło */
+		color: black;
+		text-align: center; /* Biały tekst na tle */
+		padding: 10px;
+		box-sizing: border-box;
+		opacity: 0; /* Początkowa przezroczystość */
+		transition: opacity 0.7s ease;
+	}
+	.trigger
+	{
+	
+	}
 
-<div class="text-center">
-    <h1 class="display-4">Witaj w Luxa</h1>
-    <p>Tutaj powinny być najnowsze albo przykładowe zdjęcia.</p>
+	.newBox {
+		max-width: 1224px;
+		width: 90%;
+		margin: auto;
+		padding: 40px 0;
+	}
+
+	.photo {
+		position: relative;
+	}
+
+	.photo-galery {
+		display: flex;
+		gap: 10px;
+	}
+
+	.column {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.photo img {
+		width: 100%;
+		height: 100%;
+		border-radius: 5px;
+		object-fit: cover;
+	}
+
+	/* 	.target:hover
+						{
+							opacity: 1;
+						} */
+	.wrapper {
+		display: flex;
+		flex-wrap: wrap;
+		/* Odstęp między kontenerami */
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 10px; /* Odstęp między elementami */
+		grid-auto-flow: dense;
+	}
+
+	.grid-item {
+		position: relative;
+		width: 100%;
+		padding: 10px;
+		box-sizing: border-box;
+	}
+
+</style>
+
+
+@* <div class="grid-container">
+	<div class="newBox col-12 col-md-6 col-lg-4 grid-item">
+		<div class="card trigger trigger">
+			<a type="button">
+				<img class="card-img" src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
+				<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+			</a>
+		</div>
+	</div>
+ *@
+
+<div class="newBox">
+	<div class="photo-galery">
+		<div class="column">
+			<div class="photo trigger">
+				<a type="button">
+				<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+				<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+		</div>
+		<div class="column">
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+		</div>
+		<div class="column">
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+			<div class="photo trigger">
+				<a type="button">
+					<img src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
+		</div>
+	</div>
 </div>
 
-<h2>User Photos</h2>
 
-@* <div>
-    @foreach (var photo in Model)
-    {
-        <div>
-            
-            <img src="@("~/image/"+photo.Name)" asp-append-version="true" width="250px" heigh="250px" />
-            <p>@photo.Description</p>
-            <p>@photo.AddTime.ToString("dd MMM yyyy")</p>
-        </div>
-    }
-</div> *@
+<script>
+	// document.addEventListener('DOMContentLoaded', function () {
+	// 	const containers = document.querySelectorAll('.photo-galery');
+	// 	console.log(containers);
 
+	// 	containers.forEach(container => {
+	// 		console.log(container);
+	// 		const trigger = container.querySelector('.trigger');
+	// 		const target = container.querySelector('.target');
+	// 		console.log(trigger);
+	// 		console.log(target);
+	// 		trigger.addEventListener('mouseenter', function () {
+	// 			target.style.opacity = '1';
+	// 		});
+
+	// 		trigger.addEventListener('mouseleave', function () {
+	// 			target.style.opacity = '0';
+	// 		});
+	// 	});
+	// });
+
+
+	document.addEventListener('DOMContentLoaded', function () {
+		const triggers = document.querySelectorAll('.photo.trigger');
+
+		triggers.forEach(trigger => {
+			const target = trigger.querySelector('.target');
+
+			trigger.addEventListener('mouseenter', function () {
+				target.style.opacity = '1';
+			});
+
+			trigger.addEventListener('mouseleave', function () {
+				target.style.opacity = '0';
+			});
+		});
+	});
+</script>
