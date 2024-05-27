@@ -1,7 +1,9 @@
 ﻿using Luxa.Interfaces;
+using Luxa.Models;
 using Luxa.Services;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace Luxa.Controllers
 {
@@ -26,63 +28,23 @@ namespace Luxa.Controllers
 		public async Task<IActionResult> ChangePassword(PasswordChangeVM passwordChange)
 		{
 			var user = _userService.GetCurrentLoggedInUser(User);
-			if (user != null)
-			{
-				if (await _settingsService.SetNewPassword(user, passwordChange.OldPassword, passwordChange.NewPassword))
-				{
-					ViewData["Message"] = "Hasło zostało pomyślnie zmienione";
-					return View();
-				}
-			}
-			ViewData["Message"] = "Nie można zmienić hasła. Sprawdź poprawność wprowadzonych danych";
+			ViewData["Message"] = await _settingsService.ChangePassword(user, passwordChange.OldPassword, passwordChange.NewPassword);
 			return View();
 		}
 		[HttpGet]
 		public IActionResult ChangeData()
 		{
 			var user = _userService.GetCurrentLoggedInUser(User);
-			if (user != null)
-			{
-				var dataChangeVM = new DataChangeVM
-				{
-					FirstName = user.FirstName,
-					LastName = user.LastName,
-					Country = user.Country,
-					Email = user.Email,
-					PhoneNumber = user.PhoneNumber,
-				};
-				return View(dataChangeVM);
-			}
-			return RedirectToAction("Error","Home");
-
+			var result = _settingsService.GetDataChangeVMFromUser(user);
+			return result != null ? View(result) : RedirectToAction("Error", "Home");
 		}
 		[HttpPost]
 		public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM) 
 		{
 			var user = _userService.GetCurrentLoggedInUser(User);
-			if (ModelState.IsValid && user != null && dataChangeVM.Email != null)
-			{
-				string emailNotification;
-				user.FirstName=dataChangeVM.FirstName;
-				user.LastName=dataChangeVM.LastName;
-				user.Country=dataChangeVM.Country;
-				user.PhoneNumber=dataChangeVM.PhoneNumber;
-				emailNotification = user.Email!=null && !user.Email.Equals(dataChangeVM.Email, StringComparison.OrdinalIgnoreCase) && await _settingsService.ChangeEmail(user, dataChangeVM.Email)
-					? "Zmieniono adres E-mail\n"
-					: "";
-
-
-				if (await _userService.SaveUser(user))
-				{
-					ViewData["Message"] = "Zmiana danych powiodła się"+ emailNotification;
-				}
-			}
-			else 
-			{
-				ViewData["Message"] = "Coś poszło nie tak";
-			}
-
+			ViewData["Message"] = await _settingsService.ChangeData(user,ModelState.IsValid,dataChangeVM);
 			return View(dataChangeVM);
 		}
+		
 	}
 }
