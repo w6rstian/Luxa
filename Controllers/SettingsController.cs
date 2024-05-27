@@ -1,4 +1,5 @@
 ﻿using Luxa.Interfaces;
+using Luxa.Services;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +8,11 @@ namespace Luxa.Controllers
 	public class SettingsController : Controller
 	{
 		private readonly ISettingsService _settingsService;
-		public SettingsController(ISettingsService settingsService)
+		private readonly IUserService _userService;
+		public SettingsController(ISettingsService settingsService, IUserService userService)
 		{
 			_settingsService = settingsService;
+			_userService = userService;
 		}
 		public IActionResult Options()
 		{
@@ -22,7 +25,7 @@ namespace Luxa.Controllers
 		[HttpPost]
 		public async Task<IActionResult> ChangePassword(PasswordChangeVM passwordChange)
 		{
-			var user = _settingsService.GetCurrentLoggedInUser(User);
+			var user = _userService.GetCurrentLoggedInUser(User);
 			if (user != null)
 			{
 				if (await _settingsService.SetNewPassword(user, passwordChange.OldPassword, passwordChange.NewPassword))
@@ -37,7 +40,7 @@ namespace Luxa.Controllers
 		[HttpGet]
 		public IActionResult ChangeData()
 		{
-			var user = _settingsService.GetCurrentLoggedInUser(User);
+			var user = _userService.GetCurrentLoggedInUser(User);
 			if (user != null)
 			{
 				var dataChangeVM = new DataChangeVM
@@ -56,7 +59,7 @@ namespace Luxa.Controllers
 		[HttpPost]
 		public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM) 
 		{
-			var user = _settingsService.GetCurrentLoggedInUser(User);
+			var user = _userService.GetCurrentLoggedInUser(User);
 			if (ModelState.IsValid && user != null && dataChangeVM.Email != null)
 			{
 				string emailNotification;
@@ -69,7 +72,7 @@ namespace Luxa.Controllers
 					: "";
 
 
-				if (await _settingsService.SaveUser(user))
+				if (await _userService.SaveUser(user))
 				{
 					ViewData["Message"] = "Zmiana danych powiodła się"+ emailNotification;
 				}

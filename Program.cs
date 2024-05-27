@@ -1,6 +1,7 @@
 using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Repository;
 using Luxa.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -34,10 +35,16 @@ namespace Luxa
 			{
 				options.LoginPath = "/SignIn";						 
 			});
+			//Repositories
+			builder.Services.AddScoped<IContactRepository, ContactRepository>();
+
+			//Services
 			builder.Services.AddScoped<NotificationService>();
 			builder.Services.AddScoped<ISettingsService,SettingsService>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
 			builder.Services.AddScoped<IContactService, ContactService>();
+			builder.Services.AddScoped<IUserService, UserService>();
+
 
 			var app = builder.Build();
 

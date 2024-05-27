@@ -2,6 +2,7 @@
 using Luxa.Data.Enums;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,49 +13,18 @@ namespace Luxa.Services
 {
 	public class ContactService : IContactService
 	{
-
-
-
-		private readonly SignInManager<UserModel> _signInManager;
-		private readonly UserManager<UserModel> _userManager;
 		private readonly ApplicationDbContext _context;
 		private readonly NotificationService _notificationService;
+		private readonly IContactRepository _contactRepository;
 
 		public ContactService(ApplicationDbContext context, SignInManager<UserModel> signInManager,
-			UserManager<UserModel> userManager, NotificationService notificationService)
+			UserManager<UserModel> userManager, NotificationService notificationService, IContactRepository contactRepository)
 		{
 			_context = context;
-			_signInManager = signInManager;
-			_userManager = userManager;
 			_notificationService = notificationService;
+			_contactRepository = contactRepository;
 		}
-		public bool Save()
-			=> _context.SaveChanges() > 0;
-
-
-		public bool Add(ContactModel contactModel)
-		{
-			//add nie dodaje zmian, save jest za to odpowiedzialny
-			_context.Add(contactModel);
-			return Save();
-		}
-		public bool Delete(ContactModel contactModel)
-		{
-			_context.Remove(contactModel);
-			return Save();
-		}
-		public UserModel? GetCurrentLoggedInUser(ClaimsPrincipal user)
-		{
-			var currentUserTask = _userManager.GetUserAsync(user);
-			currentUserTask.Wait();
-			return currentUserTask.Result;
-		}
-		public async Task<bool> SaveUser(UserModel userModel)
-		{
-			var result = await _userManager.UpdateAsync(userModel);
-			return result.Succeeded;
-		}
-
+		//sprawdzona
 		public CategoryOfContact? GetEnumCategory(string category)
 		{
 			foreach (CategoryOfContact item in Enum.GetValues(typeof(CategoryOfContact)))
@@ -66,12 +36,7 @@ namespace Luxa.Services
 			}
 			return null;
 		}
-
-		public async Task<IEnumerable<ContactModel>> GetAllContact()
-		{
-			return await _context.Contacts.ToListAsync();
-		}
-
+		//sprawdzona
 		public List<SelectListItem> GetCategorySelectItems()
 		{
 			List<SelectListItem> categoriesList = new()
@@ -84,6 +49,7 @@ namespace Luxa.Services
 			}
 			return categoriesList;
 		}
+		//sprawdzona
 		public List<SelectListItem> GetDetailedCategorySelectItems()
 		{
 			List<string> textList = typeof(DatailedContactCategories)
@@ -101,14 +67,10 @@ namespace Luxa.Services
 			for (int i = 0; i < textList.Count; i++)
 				detailedCategoriesList.Add(new SelectListItem { Value = valueList[i], Text = textList[i] });
 			return detailedCategoriesList;
-
-
-
 		}
-
+		//sprawdzona
 		public List<SelectListItem> GetStateSelectItems(bool isAllIncluded)
 		{
-
 			var stateList = new List<SelectListItem>();
 			if (isAllIncluded)
 				stateList.Add(new SelectListItem("Wszystkie", "All"));
@@ -128,12 +90,13 @@ namespace Luxa.Services
 		{
 			foreach (var item in changedStateList)
 			{
-				var contactModel = await _context.Contacts.FindAsync(item.Key);
+				var contactModel = await _contactRepository.GetContactById(item.Key);
 				contactModel.State = (ContactState)Enum.Parse(typeof(ContactState), item.Value);
 			}
-			return Save();
+			return _contactRepository.Save();
 		}
 
+		//sprawdzona
 		public Tuple<int, string>? GetTupleFromData(string data)
 		{
 			var splited = data.Split(".");
@@ -143,29 +106,94 @@ namespace Luxa.Services
 				return null;
 		}
 
-		public void PrepareToUpdateState(string data)
+		public async Task<bool> PrepareToUpdateState(string data)
 		{
 			var splitedData = GetTupleFromData(data);
 			if (splitedData == null)
 			{
-				return;
+				return false;
 			}
 
-			var contact = _context.Contacts.Find(splitedData.Item1);
+			var contact = await _contactRepository.GetContactById(splitedData.Item1);
 			if (contact == null)
 			{
-				return;
+				return false;
 			}
 			ContactState contactState = (ContactState)Enum.Parse(typeof(ContactState), splitedData.Item2);
 			if (contact.State != contactState)
 			{
 				contact.State = contactState;
 			}
+			return _contactRepository.Save();
 		}
+		public void CreateContact(bool isValid, UserModel? user, CategoryOfContact? category, string Description, string DetailedCategory)
+		{
+			if (isValid && user != null && category != null)
+			{
 
-		public async Task<bool> SaveAsync()
-			=> await _context.SaveChangesAsync() > 0;
+				var contactModel = new ContactModel
+				{
+					Sender = user,
+					UserName = user.UserName,
+					Category = (CategoryOfContact)category,
+					DetailedCategory = DetailedCategory,
+					Description = Description
+				};
+				_contactRepository.Add(contactModel);
 
+			}
+		}
+		public async Task<List<ContactListVM>> ShowContacts() 
+		{
+			var contacts = await _contactRepository.GetAllContact();
+			var contactsToDisplay = new List<ContactListVM>();
+			foreach (var contact in contacts)
+			{
+				var contactListVM = new ContactListVM
+				{
+					Id = contact.Id,
+					UserName = contact.UserName,
+					Category = contact.Category,
+					Description = contact.Description,
+					DetailedCategory = contact.DetailedCategory,
+					State = contact.State
+				};
+				contactsToDisplay.Add(contactListVM);
+			}
+			return contactsToDisplay;
+		}
+		public Tuple<List<string>, List<string>> GetTextAndValueToSelect(string selectedValue) 
+		{
+			List<string> filteredText = new();
+			List<string> filteredValue = new();
+			if (selectedValue == "All")
+			{
+				filteredText = typeof(DatailedContactCategories)
+											   .GetFields(BindingFlags.Public | BindingFlags.Static)
+											   .Select(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item2)
+											   .ToList();
+				filteredValue = typeof(DatailedContactCategories)
+											   .GetFields(BindingFlags.Public | BindingFlags.Static)
+											   .Select(field => field.Name)
+											   .ToList();
+			}
+			else
+			{
+				CategoryOfContact category = (CategoryOfContact)Enum.Parse(typeof(CategoryOfContact), selectedValue);
+				filteredText = typeof(DatailedContactCategories)
+											   .GetFields(BindingFlags.Public | BindingFlags.Static)
+											   .Where(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item1 == category)
+											   .Select(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item2)
+											   .ToList();
+				filteredValue = typeof(DatailedContactCategories)
+											   .GetFields(BindingFlags.Public | BindingFlags.Static)
+											   .Where(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item1 == category)
+											   .Select(field => field.Name)
+											   .ToList();
+			}
+			return new Tuple<List<string>, List<string>>(filteredText,filteredValue); 
+		}
+	
 
 
 
@@ -184,5 +212,6 @@ namespace Luxa.Services
 		//	}
 		//	return null;
 		//}
+
 	}
 }
