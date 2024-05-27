@@ -37,6 +37,7 @@ namespace Luxa
 			});
 			//Repositories
 			builder.Services.AddScoped<IContactRepository, ContactRepository>();
+			builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
 
 			//Services
 			builder.Services.AddScoped<NotificationService>();

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Luxa.Services;
+using Luxa.Interfaces;
 
 
 namespace Luxa.Controllers
@@ -16,14 +17,16 @@ namespace Luxa.Controllers
 		private readonly UserManager<UserModel> _userManager;
 		private readonly ApplicationDbContext _context;
 		private readonly NotificationService _notificationService;
+		private readonly IUserService _userService;
 
 		public AccountController(ApplicationDbContext context, SignInManager<UserModel> signInManager,
-			UserManager<UserModel> userManager, NotificationService notificationService)
+			UserManager<UserModel> userManager, NotificationService notificationService, IUserService userService)
 		{
 			_context = context;
 			_signInManager = signInManager;
 			_userManager = userManager;
 			_notificationService = notificationService;
+			_userService = userService;
 		}
 
 		//Atrybut do routingu (reszta kodu w program.cs)
@@ -35,22 +38,22 @@ namespace Luxa.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> SignIn(SignInVM model)
+		public async Task<IActionResult> SignIn(SignInVM signInVM)
 		{
 			if (ModelState.IsValid)
 			{
 				var result =
-					await _signInManager.PasswordSignInAsync(model.UserName!, model.Password!, model.RememberMe, false);
+					await _signInManager.PasswordSignInAsync(signInVM.UserName!, signInVM.Password!, signInVM.RememberMe, false);
 				if (result.Succeeded)
 				{
 					return RedirectToAction("Index", "Home");
 				}
 
 				ModelState.AddModelError("", "Niepoprawna próba logowania");
-				return View(model);
+				return View(signInVM);
 			}
 
-			return View(model);
+			return View(signInVM);
 		}
 
 		[HttpGet]
@@ -61,17 +64,17 @@ namespace Luxa.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> SignUp(SignUpVM model)
+		public async Task<IActionResult> SignUp(SignUpVM signUpVM)
 		{
 			if (ModelState.IsValid)
 			{
 				UserModel user = new()
 				{
-					UserName = model.UserName,
-					Email = model.Email,
+					UserName = signUpVM.UserName,
+					Email = signUpVM.Email,
 				};
 
-				var resultAddUser = await _userManager.CreateAsync(user, model.Password!);
+				var resultAddUser = await _userManager.CreateAsync(user, signUpVM.Password!);
 				var resultAddRole = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
 				if (resultAddUser.Succeeded && resultAddRole.Succeeded)
 				{
@@ -95,10 +98,10 @@ namespace Luxa.Controllers
 					ModelState.AddModelError("", error.Description);
 				}
 
-				return View(model);
+				return View(signUpVM);
 			}
 
-			return View(model);
+			return View(signUpVM);
 		}
 
 		public async Task<IActionResult> Logout()
@@ -138,21 +141,21 @@ namespace Luxa.Controllers
 		//W fazie rozwoju
 
 		[HttpPost]
-		public async Task<IActionResult> CreateUser(CreateUserVM userData)
+		public async Task<IActionResult> CreateUser(CreateUserVM createUserVM)
 		{
 			if (ModelState.IsValid)
 			{
 				var user = new UserModel()
 				{
-					FirstName = userData.FirstName,
-					LastName = userData.LastName,
-					UserName = userData.Username,
-					Email = userData.Email,
-					Country = userData.Country,
-					PhoneNumber = userData.PhoneNumber,
+					FirstName = createUserVM.FirstName,
+					LastName = createUserVM.LastName,
+					UserName = createUserVM.Username,
+					Email = createUserVM.Email,
+					Country = createUserVM.Country,
+					PhoneNumber = createUserVM.PhoneNumber,
 				};
-				var resultAddUser = await _userManager.CreateAsync(user, userData.Password!);
-				var resultAddRole = await _userManager.AddToRoleAsync(user, userData.Role);
+				var resultAddUser = await _userManager.CreateAsync(user, createUserVM.Password!);
+				var resultAddRole = await _userManager.AddToRoleAsync(user, createUserVM.Role);
 				if (resultAddUser.Succeeded && resultAddRole.Succeeded)
 				{
 					TempData["successMessage"] = "Utworzono użytkownika";
@@ -179,16 +182,45 @@ namespace Luxa.Controllers
 
 			return View();
 		}
-		[Authorize]
-		public async Task<IActionResult> UserNotifications()
+		[Authorize(Roles = "admin,moderator")]
+		public IActionResult DeleteUser(string Id)
 		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if(userId==null)
-				return RedirectToAction("SignIn");
-			var user = await _userManager.FindByIdAsync(userId);
+			return View();
+		}
+		[Authorize(Roles = "admin,moderator")]
+		public async Task<IActionResult> EditUser(string Id) 
+		{
+			var user = await _userManager.FindByIdAsync(Id);
+			if (user == null)
+				return RedirectToAction("Error","Home");
+			EditUserVM editUserVM = new EditUserVM()
+			{
+				UserName = user.UserName,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				Email = user.Email,
+				Country = user.Country,
+				PhoneNumber = user.PhoneNumber,
+				Roles = await _userManager.GetRolesAsync(user)
+			};
+			
+			return View(editUserVM);
+		}
+		[HttpPost]
+		public IActionResult EditUser(EditUserVM editUserVM) 
+		{
+			return View();
+		}
+		[Authorize]
+		public IActionResult UserNotifications()
+		{
+			//var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			//if(userId==null)
+			//	return RedirectToAction("SignIn");
+			var user = _userService.GetCurrentLoggedInUser(User);
 			if (user == null)
 				return RedirectToAction("SignIn");
-			var notifications = _notificationService.GetNotificationsForUser(userId);
+			var notifications = _notificationService.GetNotificationsForUser(user.Id);
 			var userNotificationsVM = new UserNotificationsVM
 			{
 				User = user,
@@ -196,16 +228,15 @@ namespace Luxa.Controllers
 			};
 			return View(userNotificationsVM);
 		}
+		[Authorize]
 		[HttpPost]
 		[Route("Account/UserNotifications/{notificationId}")]
 		public IActionResult UserNotifications(int notificationId)
 		{
-			// Znajdź powiadomienie w bazie danych
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			var notification = _context.UserNotifications.FirstOrDefault(un => un.UserId == userId && un.NotificationId == notificationId);
 			if (notification != null)
 			{
-				// Zaktualizuj stan odczytania
 				notification.IsViewed = true;
 				_context.SaveChanges();
 				return Ok();
@@ -213,11 +244,13 @@ namespace Luxa.Controllers
 			return NotFound();
 		}
 
+
 		//Do tworzenia powiadomień ale jeszcze nic z tym nie robiłem
 		public IActionResult AdminNotifications()
 		{
 			return View();
 		}
+
 	}
 
 }

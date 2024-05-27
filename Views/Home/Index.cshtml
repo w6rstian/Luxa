@@ -130,6 +130,7 @@
 	const maxQuantityOfColumns = 6;
 	//Przy 1920px to 6 kolumn
 	const pixelsPerColumn = 300;
+	let isLoadingPhotos = false;
 
 	// document.addEventListener('DOMContentLoaded', function () {
 	// 	const containers = document.querySelectorAll('.photo-galery');
@@ -202,8 +203,10 @@
 		if (photos.length > 0) {
 			addPhotosToColumns(photos);
 			pageNumber++;
+			return true;
 		}
 		else {
+			return false;
 			//Tu trzeba będzie jakiś komunikat wyświetlić że brak zdjęć albo coś
 		}
 	}
@@ -248,17 +251,38 @@
 						`;
 			column.appendChild(photoDiv);
 		});
+		addTrigger();
 	}
 
-	// window.addEventListener('scroll', () => {
-	// 	if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-	// 		loadPhotos();
-	// 	}
+	window.addEventListener('scroll', () => {
+		
+		if (!isLoadingPhotos && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+			console.log("Scroll zadziałał");
+			isLoadingPhotos = true;
+			loadPhotos().then(() => {
+				isLoadingPhotos = false;
+			});
+		}
+		
+	});
+	window.addEventListener('DOMContentLoaded', function () { 
+		generateColumns(getWindowWidth())
+		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
+			isLoadingPhotos = true;
+			loadPhotos().then(() => {
+				isLoadingPhotos = false;
+			});
+
+		}
+	});
+	// window.addEventListener('load', function ()
+	// {
+	// 	addTrigger();
 	// });
-	generateColumns(getWindowWidth())
+	window.addEventListener()
 	// Load initial photos
-	loadPhotos();
-	window.addEventListener('load', function () {
+	
+	function addTrigger() {
 		const triggers = document.querySelectorAll('.photo.trigger');
 		console.log("test");
 		triggers.forEach(trigger => {
@@ -274,6 +298,6 @@
 				console.log("zmiana na 0");
 			});
 		});
-	});
+	};
 
 </script>
