@@ -24,13 +24,15 @@ namespace Luxa.Controllers
 
         private readonly UserManager<UserModel> _userManager;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IUserService _userService;
 
-        public PhotosController(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
+        public PhotosController(IUserService userService,ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
         {
             _context = context;
             _userManager = userManager;
             _hostEnvironment = hostEnvironment;
             _photoService = photoService;
+            _userService = userService;
         }
 
         // GET: Photos
@@ -80,9 +82,8 @@ namespace Luxa.Controllers
         public async Task<IActionResult> Create([Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
         {
 
-            var user = await _userManager.GetUserAsync(User);
-            _photoService.Create(photo, user);
-
+            var user = _userService.GetCurrentLoggedInUser(User);
+            await _photoService.Create(photo, user);
             return RedirectToAction(nameof(Index));
             //return View(photo);
         }
@@ -180,7 +181,16 @@ namespace Luxa.Controllers
         {
             return _context.Photo.Any(e => e.Id == id);
         }
-        /*
+
+		[HttpGet]
+		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
+		{
+			var photos = await _photoService.GetPhotosAsync(pageNumber, pageSize);
+			return Json(photos);
+		}
+
+
+		/*
         public IActionResult DownloadFile(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
         {
             *//*            var photo = _context.Photo.FindAsync(id).FirstOrDefaultAsync(m => m.Id == id);
@@ -205,6 +215,6 @@ namespace Luxa.Controllers
             memory.Position = 0;
             return memory;
         }*/
-    }
+	}
 
 }

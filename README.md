@@ -1,5 +1,7 @@
 Luxa
 
+Do naprawy:
+	- Podczas wczytywanie strony głównej nie zawsze działa wybór kolumny dla zdjęcia (podczas zmiany kontrolera albo odpalania serwera)
 Instrukcja:
 1. Połączenie kodu z bazą danych (Podejście code first)
 	- Utwórz nową bazę danych o np. nazwie LuxaDb 

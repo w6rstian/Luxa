@@ -1,10 +1,12 @@
 ﻿using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.Drawing;
 
 
 namespace Luxa.Services
@@ -26,7 +28,6 @@ namespace Luxa.Services
 
          public async Task<bool> Create(UserModel user)
         {
-
             return true;
         }
 
@@ -41,15 +42,15 @@ namespace Luxa.Services
             string path = Path.Combine(wwwRootPath + "/Image", fileName);
             using (var fileStream = new FileStream(path, FileMode.Create))
             {
-                photo.ImageFile.CopyToAsync(fileStream);
+                await photo.ImageFile.CopyToAsync(fileStream);
             }
 
             _context.Add(photo);
-            var result = await _context.SaveChangesAsync();
-            return true;
+
+            return await _context.SaveChangesAsync() >0 ? true : false;
 
 
-        }
+		}
 
        
         public Task<bool> Delete()
@@ -83,5 +84,70 @@ namespace Luxa.Services
         {
             throw new NotImplementedException();
         }
-    }
+
+  //      public List<Photo>[] Prototyp(List<Photo> photos,int columnHeight)
+  //      { 
+		//	photos.OrderBy(photo => photo.Height);
+		//	List<Photo>[] arrayOfLists = new List<Photo>[3];
+  //          int totalHeight = 0;
+  //          foreach (var item in arrayOfLists)
+  //          {
+  //              foreach (Photo photo in photos)
+  //              {
+  //                  if (totalHeight + photo.Height <= columnHeight)
+  //                  {
+  //                      item.Add(photo);
+  //                      photos.Remove(photo);
+  //                      totalHeight += photo.Height;
+  //                  }
+  //              }
+  //          }
+  //          return arrayOfLists;
+		//}
+
+		//public LimitedHeightPhotosVM GetAmountOfPhotos(int quantity, int height)
+		//{
+  //          List<Photo> myPhotos = _context.Photo
+		//	.Where(photo => photo.Height < height)
+		//	.OrderByDescending(photo => photo.AddTime)
+		//	.Take(quantity)
+		//	.ToList();
+
+  //          if (myPhotos.Count < quantity) 
+  //          {
+
+                
+  //          }
+		//	return new LimitedHeightPhotosVM
+		//	{
+		//		photos = myPhotos,
+		//		isFoundedRightQuantity = null
+		//	};
+
+		//}
+
+		public async Task<List<Photo>> GetPhotosAsync(int pageNumber, int pageSize)
+			=> await _context.Photo
+				.OrderByDescending(photo => photo.AddTime)
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+		
+
+
+	}
 }
+/*int totalHeight = 0;
+
+        // Sortowanie zdjęć według wysokości malejąco
+        var sortedPhotos = photos.OrderByDescending(p => p.Height).ToList();
+
+        foreach (var photo in sortedPhotos)
+        {
+            if (totalHeight + photo.Height <= columnHeight)
+            {
+                selectedPhotos.Add(photo);
+                totalHeight += photo.Height;
+            }
+        }
+*/

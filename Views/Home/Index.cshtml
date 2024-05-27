@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Luxa.Models.Photo>
 @{
-	ViewData["Title"] = "Strona główna(niezalogowany)";
+	ViewData["Title"] = "Strona główna";
 }
 <style>
 	.target {
@@ -8,28 +8,30 @@
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		background-color: rgba(242, 242, 242, 0.5); /* Przezroczyste tło */
+		background-color: rgba(242, 242, 242, 0.5); 
 		color: black;
-		text-align: center; /* Biały tekst na tle */
+		text-align: center; 
 		padding: 10px;
 		box-sizing: border-box;
-		opacity: 0; /* Początkowa przezroczystość */
+		opacity: 0; 
 		transition: opacity 0.7s ease;
+		height: 50px;
 	}
-	.trigger
-	{
-	
+
+	.trigger {
 	}
 
 	.newBox {
-		max-width: 1224px;
-		width: 90%;
+/* 		max-width: 1500px;
+		width: 90%; */
 		margin: auto;
 		padding: 40px 0;
 	}
 
 	.photo {
 		position: relative;
+
+
 	}
 
 	.photo-galery {
@@ -38,6 +40,10 @@
 	}
 
 	.column {
+		flex:1;
+	}
+	.columnHeight
+	{
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
@@ -46,14 +52,14 @@
 	.photo img {
 		width: 100%;
 		height: 100%;
-		border-radius: 5px;
+		border-radius: 15px;
 		object-fit: cover;
 	}
 
 	/* 	.target:hover
-						{
-							opacity: 1;
-						} */
+							{
+								opacity: 1;
+							} */
 	.wrapper {
 		display: flex;
 		flex-wrap: wrap;
@@ -73,7 +79,18 @@
 		padding: 10px;
 		box-sizing: border-box;
 	}
-
+	.user{
+		position: absolute;
+		right:0;
+		margin-right: 15px;
+	}
+	.like{
+		position: absolute;
+		margin-left:15px;
+		left:0;
+		width: 25px;
+		height: 25px;
+	}
 </style>
 
 
@@ -86,75 +103,34 @@
 			</a>
 		</div>
 	</div>
+
+
+
+	<div class="photo trigger">
+				<a type="button">
+					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
+					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
+				</a>
+			</div>
  *@
 
 <div class="newBox">
 	<div class="photo-galery">
-		<div class="column">
-			<div class="photo trigger">
-				<a type="button">
-				<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
-				<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-		</div>
-		<div class="column">
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-		</div>
-		<div class="column">
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://motobanda.pl/uploads/motors/381/cbr1000rr04e.jpg" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-			<div class="photo trigger">
-				<a type="button">
-					<img src="https://www.honda.pl/content/dam/central/motorcycles/supersports/cbr600rr-2024/overview/hero-tile/honda-cbr600rr-hero-tile-01-972x1728-mobile.jpg/_jcr_content/renditions/m_w.webp" alt="Card image cap">
-					<div class="target" id="textOverlay">Tekst pobrany z modelu</div>
-				</a>
-			</div>
-		</div>
+
+
 	</div>
 </div>
 
 
+
 <script>
+
+	let pageNumber = 1;
+	const pageSize = 30;
+	const maxQuantityOfColumns = 6;
+	//Przy 1920px to 6 kolumn
+	const pixelsPerColumn = 300;
+
 	// document.addEventListener('DOMContentLoaded', function () {
 	// 	const containers = document.querySelectorAll('.photo-galery');
 	// 	console.log(containers);
@@ -176,19 +152,128 @@
 	// });
 
 
-	document.addEventListener('DOMContentLoaded', function () {
-		const triggers = document.querySelectorAll('.photo.trigger');
+	
 
+
+	function getWindowWidth() 
+	{
+		var windowWidth = document.documentElement.clientWidth;
+		console.log('Szerokość okna:', windowWidth);
+		return windowWidth;
+	}
+	function generateColumns(windowWidth) 
+	{
+		const galery = document.querySelector('.photo-galery');
+		var quantity = Math.floor(windowWidth / 300);
+		if (quantity === 0)
+			quantity = 1;
+		if (quantity > maxQuantityOfColumns)
+			quantity = maxQuantityOfColumns;
+		for (let i = 0; i < quantity; i++) 
+		{
+			const columnDiv = document.createElement('div');
+			columnDiv.classList.add('column');
+			columnDiv.innerHTML = '<div class=columnHeight></div>';
+			galery.appendChild(columnDiv)
+		}
+		
+
+			
+	}
+	// function getMainHeight() {
+	// 	var headerHeight = document.querySelector('header').offsetHeight;
+	// 	var footerHeight = document.querySelector('footer').offsetHeight;
+	// 	var windowHeight = window.innerHeight;
+	// 	return mainHeight = windowHeight - headerHeight - footerHeight;
+	// }
+
+	// window.addEventListener("load", function () {
+	// 	console.log(getMainHeight());
+
+	// });
+
+
+
+
+
+	async function loadPhotos() {
+		const response = await fetch(`/Photos/LoadPhotos?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+		const photos = await response.json();
+		if (photos.length > 0) {
+			addPhotosToColumns(photos);
+			pageNumber++;
+		}
+		else {
+			//Tu trzeba będzie jakiś komunikat wyświetlić że brak zdjęć albo coś
+		}
+	}
+
+	function getShortestColumn(columns) {
+		let shortestColumn = columns[0];
+		for (let i = 1; i < columns.length; i++) {
+			const currentColumnHeight = columns[i].clientHeight;
+			const shortestColumnHeight = shortestColumn.clientHeight;
+			if (currentColumnHeight < shortestColumnHeight) {
+				shortestColumn = columns[i];
+			}
+		}
+		return shortestColumn;
+	}
+
+	function addPhotosToColumns(photos) {
+		const columns = document.querySelectorAll('.columnHeight');
+		photos.forEach((photo, index) => {
+			console.log(photo);
+			console.log("len:"+columns.length);
+			console.log(index % columns.length);
+			console.log("~/Image/"+photo.name);
+			const column = getShortestColumn(columns);
+			const photoDiv = document.createElement('div');
+			photoDiv.classList.add('photo', 'trigger');
+			photoDiv.innerHTML = `
+							<a type="button">
+										<img src="Image/${photo.name}" alt="Photo">
+								</a>
+										<div class="target">
+											<div class="like">
+														<a href="#" type="button">
+														<img src="Image/likeButton.png">
+													</a>
+											</div>
+											<div class="user">
+												${photo.username}
+											</div>
+										</div>
+							
+						`;
+			column.appendChild(photoDiv);
+		});
+	}
+
+	// window.addEventListener('scroll', () => {
+	// 	if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+	// 		loadPhotos();
+	// 	}
+	// });
+	generateColumns(getWindowWidth())
+	// Load initial photos
+	loadPhotos();
+	window.addEventListener('load', function () {
+		const triggers = document.querySelectorAll('.photo.trigger');
+		console.log("test");
 		triggers.forEach(trigger => {
 			const target = trigger.querySelector('.target');
 
 			trigger.addEventListener('mouseenter', function () {
 				target.style.opacity = '1';
+				console.log("zmiana na 1");
 			});
 
 			trigger.addEventListener('mouseleave', function () {
 				target.style.opacity = '0';
+				console.log("zmiana na 0");
 			});
 		});
 	});
+
 </script>
