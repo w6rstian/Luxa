@@ -33,7 +33,7 @@ namespace Luxa.Services
 
         public async Task<bool> Create(Photo photo, UserModel user)
         {
-            photo.UserId = user;
+            photo.Owner = user;
             //save image into wwwroot
             string wwwRootPath = _hostEnvironment.WebRootPath;
             string fileName = Path.GetFileNameWithoutExtension(photo.ImageFile.FileName);

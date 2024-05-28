@@ -50,7 +50,7 @@ namespace Luxa.Controllers
             }
 
             var photo = await _context.Photo
-                .Include(m => m.UserId)
+                .Include(m => m.Owner)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (photo == null)
@@ -79,7 +79,7 @@ namespace Luxa.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
+        public async Task<IActionResult> Create([Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
         {
 
             var user = _userService.GetCurrentLoggedInUser(User);
@@ -110,7 +110,7 @@ namespace Luxa.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
         {
             if (id != photo.Id)
             {
@@ -191,7 +191,7 @@ namespace Luxa.Controllers
 
 
 		/*
-        public IActionResult DownloadFile(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
+        public IActionResult DownloadFile(int id, [Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
         {
             *//*            var photo = _context.Photo.FindAsync(id).FirstOrDefaultAsync(m => m.Id == id);
             *//*

@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Luxa.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Luxa.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Identity.Client;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Luxa.Data
 {
@@ -28,6 +26,20 @@ namespace Luxa.Data
 			modelBuilder.Entity<UserNotificationModel>()
 				.HasKey(un => new { un.UserId, un.NotificationId });
 
+
+			modelBuilder.Entity<UserPhotoModel>()
+				.HasOne(e => e.User)
+				.WithMany(e => e.UserLikedPhotos)
+				.HasForeignKey(e => e.UserId);
+			modelBuilder.Entity<UserPhotoModel>()
+				.HasOne(e => e.Photo)
+				.WithMany(e => e.UserLikedPhotos)
+				.HasForeignKey(e => e.PhotoId);
+			modelBuilder.Entity<UserPhotoModel>()
+				.HasKey(un => new { un.UserId, un.PhotoId });
+
+
+
 			modelBuilder.Entity<IdentityUserLogin<string>>()
 		.HasKey(l => new { l.LoginProvider, l.ProviderKey });
 			modelBuilder.Entity<IdentityUserRole<string>>()
@@ -38,10 +50,11 @@ namespace Luxa.Data
 		}
 
 		public DbSet<UserNotificationModel> UserNotifications { get; set; }
+		public DbSet<UserPhotoModel> UserLikedPhotos { get; set; }
 		public DbSet<NotificationModel> Notifications { get; set; }
-	    public DbSet<Photo> Photo { get; set; } = default!;
+		public DbSet<Photo> Photo { get; set; } = default!;
 		public DbSet<ContactModel> Contacts { get; set; }
 
-		
+
 	}
 }
