@@ -14,19 +14,19 @@ namespace Luxa.Services
     public class PhotoService : IPhotoService
     {
         private readonly ApplicationDbContext _context; //wstrzykiwanie kontekstu
-
+        private readonly IPhotoRepository _photoRepository;
         private readonly UserManager<UserModel> _userManager;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        public PhotoService(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment)
-        {
-            _context = context;
-            _userManager = userManager;
-            _hostEnvironment = hostEnvironment;
+        public PhotoService(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoRepository photoRepository)
+		{
+			_context = context;
+			_userManager = userManager;
+			_hostEnvironment = hostEnvironment;
+			_photoRepository = photoRepository;
+		}
 
-        }
-
-         public async Task<bool> Create(UserModel user)
+		public async Task<bool> Create(UserModel user)
         {
             return true;
         }
@@ -44,10 +44,7 @@ namespace Luxa.Services
             {
                 await photo.ImageFile.CopyToAsync(fileStream);
             }
-
-            _context.Add(photo);
-
-            return await _context.SaveChangesAsync() >0 ? true : false;
+            return _photoRepository.Add(photo);
 
 
 		}
@@ -84,6 +81,7 @@ namespace Luxa.Services
         {
             throw new NotImplementedException();
         }
+
 
 		//      public List<Photo>[] Prototyp(List<Photo> photos,int columnHeight)
 		//      { 
@@ -128,21 +126,9 @@ namespace Luxa.Services
 		public bool IsPhotoLiked(int idPhoto,List<Photo> photos)
 		    => photos.Select(e => e.Id).Contains(idPhoto);
 
-		public async Task<List<Photo>> GetPhotosAsync(int pageNumber, int pageSize)
-			=> await _context.Photo
-				.OrderByDescending(photo => photo.AddTime)
-				.Skip((pageNumber - 1) * pageSize)
-				.Take(pageSize)
-				.ToListAsync();
-        public async Task<List<Photo>> GetLikedPhotos(UserModel user) 
-            => await _context.Users
-                .Where(u => u.Id == user.Id)
-                .SelectMany(u => u.UserLikedPhotos)
-                .Select(u => u.Photo)
-				.ToListAsync();
 		public bool LikePhoto(int idPhoto, UserModel user)
 		{
-            var photo = GetPhotoById(idPhoto);
+            var photo = _photoRepository.GetPhotoById(idPhoto);
 			var userPhoto = new UserPhotoModel
             {
                 PhotoId = idPhoto,
@@ -150,33 +136,31 @@ namespace Luxa.Services
                 User = user,
                 UserId = user.Id
             };
-            return AddLikePhoto(userPhoto);
+            return _photoRepository.AddLikeFromPhoto(userPhoto);
 		}
-        public Photo GetPhotoById(int idPhoto) 
-            => _context.Photo
-            .Where(e => e.Id==idPhoto)
-            .First();
-
-        public UserPhotoModel? GetUserPhotoModelByPhoto(int idPhoto, UserModel user) 
-            => _context.UserLikedPhotos.FirstOrDefault(e => e.PhotoId == idPhoto && e.UserId == user.Id);
-
 		public bool UnlikePhoto(int idPhoto,UserModel user)
 		{
-            var userPhoto = GetUserPhotoModelByPhoto(idPhoto, user);
-            return (userPhoto !=null) ? RemoveLikePhoto(userPhoto) : false;
+            var userPhoto = _photoRepository.GetUserPhotoModelByPhoto(idPhoto, user);
+            return (userPhoto !=null) ? _photoRepository.RemoveLikeFromPhoto(userPhoto) : false;
 		}
-        public bool RemoveLikePhoto(UserPhotoModel userPhoto) 
-        {
-			_context.UserLikedPhotos.Remove(userPhoto);
-			return _context.SaveChanges() > 0;
-		}
-        public bool AddLikePhoto(UserPhotoModel userPhoto) 
-        {
-            _context.UserLikedPhotos.Add(userPhoto);
-            return _context.SaveChanges() > 0;
+
+        public async Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedAsync(int pageNumber, int pageSize, UserModel user)
+        { 
+		    var allPhotos = await _photoRepository.GetPhotosAsync(pageNumber, pageSize).ToListAsync();
+            var likedPhotos = await GetLikedPhotos(user);
+			var likedPhotoIds = new HashSet<int>(likedPhotos.Select(p => p.Id));
+			var photosWithIsLiked = allPhotos.Select(photo => new PhotoWithIsLikedVM
+			{
+                Photo = photo,
+				IsLiked = likedPhotoIds.Contains(photo.Id) // Sprawdź, czy zdjęcie jest w zbiorze polubionych
+			}).ToList();
+			return photosWithIsLiked;
+
 
 		}
 
+		public async Task<List<Photo>> GetLikedPhotos(UserModel user)
+		    => await _photoRepository.GetLikedPhotos(user).ToListAsync();
 	}
 }
 /*int totalHeight = 0;

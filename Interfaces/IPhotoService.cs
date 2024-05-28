@@ -11,9 +11,9 @@ namespace Luxa.Interfaces
         Task<bool> Edit(int id, Photo photo, UserModel user);//post
         Task<bool> Delete();//get
         Task<bool> Delete(int id, Photo photo, UserModel user);//post
-        //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
-		///LimitedHeightPhotosVM GetAmountOfPhotos(int quantity,int height);
-        Task<List<Photo>> GetPhotosAsync(int pageNumber, int pageSize);
+                                                               //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
+        ///LimitedHeightPhotosVM GetAmountOfPhotos(int quantity,int height);
+        Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedAsync(int pageNumber, int pageSize, UserModel user);
         Task<List<Photo>> GetLikedPhotos(UserModel user);
         bool IsPhotoLiked(int idPhoto, List<Photo> photos);
 		bool LikePhoto(int idPhoto, UserModel user);

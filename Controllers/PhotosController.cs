@@ -13,6 +13,7 @@ using Luxa.Services;
 using Luxa.Interfaces;
 using System.Drawing;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Authorization;
 //using AspNetCore;
 
 namespace Luxa.Controllers
@@ -38,9 +39,10 @@ namespace Luxa.Controllers
 
         // GET: Photos
         public async Task<IActionResult> Index()
-        {
-            return View(await _context.Photo.ToListAsync());
-        }
+            //Nie powinno się z tego co wiem przekazywać UserModela do widoku ale inaczej bez tworzenia ViewModelu
+            //Bez Include się nie wyświetla ale trzeba to przerobić albo na vm albo pobawić się ViewBagami
+            => View(await _context.Photo.Include(m => m.Owner).ToListAsync());
+        
 
         // GET: Photos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -49,7 +51,7 @@ namespace Luxa.Controllers
             {
                 return NotFound();
             }
-
+            //Tutaj ta sama historia
             var photo = await _context.Photo
                 .Include(m => m.Owner)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -182,11 +184,15 @@ namespace Luxa.Controllers
         {
             return _context.Photo.Any(e => e.Id == id);
         }
-
+        [Authorize]
 		[HttpGet]
 		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
 		{
-			var photos = await _photoService.GetPhotosAsync(pageNumber, pageSize);
+            var user = _userService.GetCurrentLoggedInUser(User);
+            if (user == null)
+                //tutaj chyba wywala się na krzywy pyszczek
+				return RedirectToAction("SignIn");
+			var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize,user);
 			return Json(photos);
 		}
         [HttpPost]
