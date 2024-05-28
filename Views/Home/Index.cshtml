@@ -131,7 +131,10 @@
 	//Przy 1920px to 6 kolumn
 	const pixelsPerColumn = 300;
 	let isLoadingPhotos = false;
-
+	const path = 'assets/';
+	const likePath = path + 'likeButton.png';
+	const unlikePath = path + 'unlikeButton.png';
+	
 	// document.addEventListener('DOMContentLoaded', function () {
 	// 	const containers = document.querySelectorAll('.photo-galery');
 	// 	console.log(containers);
@@ -211,6 +214,27 @@
 		}
 	}
 
+
+	function likeOrUnlikePhoto(id) {
+		$.ajax({
+			url: '/Photos/LikeOrUnlikePhoto/',
+			type: 'POST',
+			data: { idPhoto: id },
+			success: function (response) {
+				changeLikeButton(id);
+				console.log(response);
+				if (true === response) {
+					
+				}
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr);
+				console.log(status);
+				console.log('nie działa: ' + error);
+			}
+		});
+	}
+
 	function getShortestColumn(columns) {
 		let shortestColumn = columns[0];
 		for (let i = 1; i < columns.length; i++) {
@@ -222,16 +246,44 @@
 		}
 		return shortestColumn;
 	}
-
+	function changeLikeButton(id) 
+	{
+		const url = window.location.origin + '/';
+		console.log(url);
+		var img = document.getElementById('photo.'+id);
+		console.log(img);
+		var src = img.src;
+		console.log('img.src: '+img.src+' likePath: '+likePath)
+		if (img.src === url+unlikePath) 
+		{
+			img.src = url+likePath;
+			console.log('niby prawda że unlike jest');
+		}
+		else
+		{
+			img.src = url+unlikePath;
+			console.log('niby prawda że like jest');
+		}		
+	}
 	function addPhotosToColumns(photos) {
 		const columns = document.querySelectorAll('.columnHeight');
 		photos.forEach((photo, index) => {
 			console.log(photo);
 			console.log("len:"+columns.length);
-			console.log(index % columns.length);
 			console.log("~/Image/"+photo.name);
 			const column = getShortestColumn(columns);
 			const photoDiv = document.createElement('div');
+			//trzeba pobrać wartość z modelu
+			const isLiked = false;
+			if (isLiked) 
+			{
+				var likeString = likePath;
+			}
+			else 
+			{
+				var likeString = unlikePath;
+			}
+
 			photoDiv.classList.add('photo', 'trigger');
 			photoDiv.innerHTML = `
 							<a type="button">
@@ -239,8 +291,8 @@
 								</a>
 										<div class="target">
 											<div class="like">
-														<a href="#" type="button">
-														<img src="Image/likeButton.png">
+																<a onclick="likeOrUnlikePhoto(${photo.id})" type="button">
+																<img id="photo.${photo.id}" src="${likeString}">
 													</a>
 											</div>
 											<div class="user">
@@ -279,7 +331,6 @@
 	// {
 	// 	addTrigger();
 	// });
-	window.addEventListener()
 	// Load initial photos
 	
 	function addTrigger() {

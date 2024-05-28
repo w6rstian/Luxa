@@ -85,39 +85,39 @@ namespace Luxa.Services
             throw new NotImplementedException();
         }
 
-  //      public List<Photo>[] Prototyp(List<Photo> photos,int columnHeight)
-  //      { 
+		//      public List<Photo>[] Prototyp(List<Photo> photos,int columnHeight)
+		//      { 
 		//	photos.OrderBy(photo => photo.Height);
 		//	List<Photo>[] arrayOfLists = new List<Photo>[3];
-  //          int totalHeight = 0;
-  //          foreach (var item in arrayOfLists)
-  //          {
-  //              foreach (Photo photo in photos)
-  //              {
-  //                  if (totalHeight + photo.Height <= columnHeight)
-  //                  {
-  //                      item.Add(photo);
-  //                      photos.Remove(photo);
-  //                      totalHeight += photo.Height;
-  //                  }
-  //              }
-  //          }
-  //          return arrayOfLists;
+		//          int totalHeight = 0;
+		//          foreach (var item in arrayOfLists)
+		//          {
+		//              foreach (Photo photo in photos)
+		//              {
+		//                  if (totalHeight + photo.Height <= columnHeight)
+		//                  {
+		//                      item.Add(photo);
+		//                      photos.Remove(photo);
+		//                      totalHeight += photo.Height;
+		//                  }
+		//              }
+		//          }
+		//          return arrayOfLists;
 		//}
 
 		//public LimitedHeightPhotosVM GetAmountOfPhotos(int quantity, int height)
 		//{
-  //          List<Photo> myPhotos = _context.Photo
+		//          List<Photo> myPhotos = _context.Photo
 		//	.Where(photo => photo.Height < height)
 		//	.OrderByDescending(photo => photo.AddTime)
 		//	.Take(quantity)
 		//	.ToList();
 
-  //          if (myPhotos.Count < quantity) 
-  //          {
+		//          if (myPhotos.Count < quantity) 
+		//          {
 
-                
-  //          }
+
+		//          }
 		//	return new LimitedHeightPhotosVM
 		//	{
 		//		photos = myPhotos,
@@ -125,6 +125,8 @@ namespace Luxa.Services
 		//	};
 
 		//}
+		public bool IsPhotoLiked(int idPhoto,List<Photo> photos)
+		    => photos.Select(e => e.Id).Contains(idPhoto);
 
 		public async Task<List<Photo>> GetPhotosAsync(int pageNumber, int pageSize)
 			=> await _context.Photo
@@ -132,8 +134,48 @@ namespace Luxa.Services
 				.Skip((pageNumber - 1) * pageSize)
 				.Take(pageSize)
 				.ToListAsync();
-		
+        public async Task<List<Photo>> GetLikedPhotos(UserModel user) 
+            => await _context.Users
+                .Where(u => u.Id == user.Id)
+                .SelectMany(u => u.UserLikedPhotos)
+                .Select(u => u.Photo)
+				.ToListAsync();
+		public bool LikePhoto(int idPhoto, UserModel user)
+		{
+            var photo = GetPhotoById(idPhoto);
+			var userPhoto = new UserPhotoModel
+            {
+                PhotoId = idPhoto,
+                Photo = photo,
+                User = user,
+                UserId = user.Id
+            };
+            return AddLikePhoto(userPhoto);
+		}
+        public Photo GetPhotoById(int idPhoto) 
+            => _context.Photo
+            .Where(e => e.Id==idPhoto)
+            .First();
 
+        public UserPhotoModel? GetUserPhotoModelByPhoto(int idPhoto, UserModel user) 
+            => _context.UserLikedPhotos.FirstOrDefault(e => e.PhotoId == idPhoto && e.UserId == user.Id);
+
+		public bool UnlikePhoto(int idPhoto,UserModel user)
+		{
+            var userPhoto = GetUserPhotoModelByPhoto(idPhoto, user);
+            return (userPhoto !=null) ? RemoveLikePhoto(userPhoto) : false;
+		}
+        public bool RemoveLikePhoto(UserPhotoModel userPhoto) 
+        {
+			_context.UserLikedPhotos.Remove(userPhoto);
+			return _context.SaveChanges() > 0;
+		}
+        public bool AddLikePhoto(UserPhotoModel userPhoto) 
+        {
+            _context.UserLikedPhotos.Add(userPhoto);
+            return _context.SaveChanges() > 0;
+
+		}
 
 	}
 }

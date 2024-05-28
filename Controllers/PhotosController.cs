@@ -12,6 +12,7 @@ using System.Data;
 using Luxa.Services;
 using Luxa.Interfaces;
 using System.Drawing;
+using System.Reflection.Metadata.Ecma335;
 //using AspNetCore;
 
 namespace Luxa.Controllers
@@ -188,6 +189,19 @@ namespace Luxa.Controllers
 			var photos = await _photoService.GetPhotosAsync(pageNumber, pageSize);
 			return Json(photos);
 		}
+        [HttpPost]
+        public async Task<bool> LikeOrUnlikePhoto(int idPhoto) 
+        {
+            //var idPhoto = int.Parse(idPhotoString);            
+            var user = _userService.GetCurrentLoggedInUser(User);
+            if (user == null) 
+                throw new NotImplementedException();
+            var likedPhotos= await _photoService.GetLikedPhotos(user);
+            return (!_photoService.IsPhotoLiked(idPhoto, likedPhotos)) 
+                ? _photoService.LikePhoto(idPhoto, user) 
+                : _photoService.UnlikePhoto(idPhoto, user);
+        }
+        
 
 
 		/*
