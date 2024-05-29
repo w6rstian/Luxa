@@ -30,34 +30,34 @@ namespace Luxa.Data
 			modelBuilder.Entity<UserPhotoModel>()
 				.HasOne(e => e.User)
 				.WithMany(e => e.UserLikedPhotos)
-				.HasForeignKey(e => e.UserId);
-                //.OnDelete(DeleteBehavior.NoAction);
+				.HasForeignKey(e => e.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
 			modelBuilder.Entity<UserPhotoModel>()
 				.HasOne(e => e.Photo)
 				.WithMany(e => e.UserLikedPhotos)
-				.HasForeignKey(e => e.PhotoId);
-				//.OnDelete(DeleteBehavior.NoAction);
+				.HasForeignKey(e => e.PhotoId)
+				.OnDelete(DeleteBehavior.Restrict);
 			modelBuilder.Entity<UserPhotoModel>()
 				.HasKey(un => new { un.UserId, un.PhotoId });
 			//wiele do wielu - zdjęcia/tagi
-			//modelBuilder.Entity<PhotoTagModel>()
-			//	.HasOne(e => e.Tag)
-			//	.WithMany(e => e.PhotoTags)
-			//	.HasForeignKey(e => e.TagId);
-			//modelBuilder.Entity<PhotoTagModel>()
-			//	.HasOne(e => e.Photo)
-			//	.WithMany(e => e.PhotoTags)
-			//	.HasForeignKey(e => e.PhotoId);
-			//modelBuilder.Entity<PhotoTagModel>()
-			//	.HasKey(un => new { un.TagId, un.PhotoId });
+			modelBuilder.Entity<PhotoTagModel>()
+				.HasOne(e => e.Tag)
+				.WithMany(e => e.PhotoTags)
+				.HasForeignKey(e => e.TagId);
+			modelBuilder.Entity<PhotoTagModel>()
+				.HasOne(e => e.Photo)
+				.WithMany(e => e.PhotoTags)
+				.HasForeignKey(e => e.PhotoId);
+			modelBuilder.Entity<PhotoTagModel>()
+				.HasKey(un => new { un.TagId, un.PhotoId });
 
 			//jeden do wielu - użytkownik/zdjęcia
 
-			//modelBuilder.Entity<Photo>()
-			//	.HasOne(p => p.Owner)
-			//	.WithMany(u => u.Photos)
-			//	.HasForeignKey(p => p.OwnerId);
-			//.OnDelete(DeleteBehavior.NoAction);
+			modelBuilder.Entity<Photo>()
+				.HasOne(p => p.Owner)
+				.WithMany(u => u.Photos)
+				.HasForeignKey(p => p.OwnerId)
+				.OnDelete(DeleteBehavior.Cascade);
 
 
 			modelBuilder.Entity<IdentityUserLogin<string>>()
@@ -74,8 +74,8 @@ namespace Luxa.Data
 		public DbSet<NotificationModel> Notifications { get; set; }
 		public DbSet<Photo> Photo { get; set; }
 		public DbSet<ContactModel> Contacts { get; set; }
-        //public DbSet<PhotoTagModel> PhotoTags { get; set; }
+		public DbSet<PhotoTagModel> PhotoTags { get; set; }
 
 
-    }
+	}
 }
