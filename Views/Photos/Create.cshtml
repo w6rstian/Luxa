@@ -1,7 +1,7 @@
 ﻿@model Luxa.Models.Photo
 
 @{
-	ViewData["Title"] = "Create";
+	ViewData["Title"] = "Dodaj zdjęcie";
 }
 <style>
 
@@ -35,7 +35,7 @@
 		align-items: center;
 	}
 
-	.input-block span {
+		.input-block span {
 			margin-right: 10px;
 		}
 
@@ -47,9 +47,7 @@
 			line-height: 1;
 		}
 </style>
-<h1>Create</h1>
-
-<h4>Photo</h4>
+<h1>Dodaj zdjęcie</h1>
 <hr />
 <div class="row">
 	<div class="col-md-4">
@@ -67,15 +65,32 @@
 				<span asp-validation-for="Description" class="text-danger"></span>
 			</div>
 			<div class="form-group">
+				<label asp-for="Category" class="control-label"></label>
+				@Html.DropDownListFor(model => model.Category,
+									Enum.GetValues(typeof(Luxa.Data.Enums.CategoryOfPhotos))
+									.Cast<Luxa.Data.Enums.CategoryOfPhotos>().Select(e =>
+									{
+										var displayAttribute = typeof(Luxa.Data.Enums.CategoryOfPhotos).GetField(e.ToString())
+										?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+										.SingleOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+										var displayName = displayAttribute?.GetName() ?? e.ToString();
+										return new SelectListItem { Text = displayName, Value = e.ToString() };
+									}), new { @class = "form-select form-select-lg mb-3", @id = "category" })
+			</div>
+			<div class="form-group">
+				<div class="input-container">
+					<div id="input-blocks" class="input-blocks"></div>
+					<input id="input-field" type="text" class="input-field" placeholder="Wpisz tag: " />
+				</div>
+			</div>
+			<input type="hidden" id="tags" name="Tags" />
+
+			<div class="form-group">
 				<label asp-for="ImageFile" class="control-label"></label>
 				<input asp-for="ImageFile" accept="image/*" />
 				<span asp-validation-for="ImageFile" class="text-danger"></span>
 			</div>
 
-			<div class="input-container">
-				<div id="input-blocks" class="input-blocks"></div>
-				<input id="input-field" type="text" class="input-field" placeholder="Type and press space" />
-			</div>
 
 
 
@@ -97,24 +112,29 @@
 }
 
 <script>
-
 	document.addEventListener('DOMContentLoaded', function () {
 		const inputField = document.getElementById('input-field');
 		const inputBlocks = document.getElementById('input-blocks');
+		const tagsInput = document.getElementById('tags');
 
 		inputField.addEventListener('keydown', function (event) {
 			if (event.key === ' ') {
 				event.preventDefault();
 				createBlock(inputField.value.trim());
 				inputField.value = '';
+				updateTagsInput();
 			} else if (event.key === 'Backspace' && inputField.value === '') {
 				removeLastBlock();
+				updateTagsInput();
 			}
 		});
+		function isTagPresent(tag) {
+			const currentTags = tagsInput.value.split(',').map(t => t.trim());
+			return currentTags.includes(tag);
+		}
 
 		function createBlock(text) {
-			if (text === '') return;
-
+			if (text === '' || isTagPresent(text)) return;
 			const block = document.createElement('div');
 			block.className = 'input-block';
 
@@ -127,10 +147,11 @@
 			removeButton.textContent = '×';
 			removeButton.addEventListener('click', function () {
 				inputBlocks.removeChild(block);
+				updateTagsInput();
 			});
 			block.appendChild(removeButton);
 
-			inputBlocks.appendChild(block); 
+			inputBlocks.appendChild(block);
 		}
 
 		function removeLastBlock() {
@@ -139,8 +160,15 @@
 				inputBlocks.removeChild(lastBlock);
 			}
 		}
-	});
 
+		function updateTagsInput() {
+			const tags = [];
+			inputBlocks.querySelectorAll('.input-block span').forEach(span => {
+				tags.push(span.textContent);
+			});
+			tagsInput.value = tags.join(',');
+		}
+	});
 
 
 </script>

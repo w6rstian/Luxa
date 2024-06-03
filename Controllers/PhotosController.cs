@@ -14,6 +14,7 @@ using Luxa.Interfaces;
 using System.Drawing;
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Authorization;
+using Luxa.Data.Enums;
 //using AspNetCore;
 
 namespace Luxa.Controllers
@@ -64,8 +65,8 @@ namespace Luxa.Controllers
             return View(photo);
         }
 
-        // GET: Photos/Create
-        public IActionResult Create()
+		// GET: Photos/Create
+		public IActionResult Create()
         {
 
             if (_userManager.GetUserId(User) == null)
@@ -73,7 +74,7 @@ namespace Luxa.Controllers
                 return View("Views/Home/Index.cshtml");
             }
 
-            return View();
+			return View();
             //filtr privacy
         }
 
@@ -82,11 +83,11 @@ namespace Luxa.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
+        public async Task<IActionResult> Create([Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo, string Tags)
         {
-
+            //await Console.Out.WriteLineAsync("\n\n\n"+Tags);
             var user = _userService.GetCurrentLoggedInUser(User);
-            await _photoService.Create(photo, user);
+            await _photoService.Create(photo, user, Tags);
             return RedirectToAction(nameof(Index));
             //return View(photo);
         }

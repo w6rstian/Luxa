@@ -14,22 +14,28 @@ namespace Luxa.Services
 		private readonly IPhotoRepository _photoRepository;
 		private readonly UserManager<UserModel> _userManager;
 		private readonly IWebHostEnvironment _hostEnvironment;
+		//private readonly ITagsService _tagsService;
 
-		public PhotoService(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoRepository photoRepository)
+		public PhotoService(ApplicationDbContext context,
+							UserManager<UserModel> userManager,
+							IWebHostEnvironment hostEnvironment,
+							IPhotoRepository photoRepository/*, ITagsService tagsService*/)
 		{
 			_context = context;
 			_userManager = userManager;
 			_hostEnvironment = hostEnvironment;
 			_photoRepository = photoRepository;
+			//_tagsService = tagsService;
 		}
 
 		public async Task<bool> Create(UserModel user)
 		{
 			return true;
 		}
-
-		public async Task<bool> Create(Photo photo, UserModel user)
+		public async Task<bool> Create(Photo photo, UserModel user,string tags)
 		{
+			//List<TagModel> tagsToPhoto = _tagService.Add(tags);
+			
 			photo.Owner = user;
 			//save image into wwwroot
 			string wwwRootPath = _hostEnvironment.WebRootPath;
