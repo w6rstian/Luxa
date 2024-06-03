@@ -28,7 +28,7 @@ namespace Luxa.Controllers
 			_userService = userService;
 		}
 
-		// GET: Photos
+		[Authorize(Roles = "admin,moderator")]
 		public async Task<IActionResult> Index()
 			//Nie powinno się z tego co wiem przekazywać UserModela do widoku ale inaczej bez tworzenia ViewModelu
 			//Bez Include się nie wyświetla ale trzeba to przerobić albo na vm albo pobawić się ViewBagami

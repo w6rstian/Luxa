@@ -35,9 +35,9 @@ namespace Luxa.Services
 
 		public async Task<bool> Create(Photo photo, UserModel user, string tags)
 		{
-			_ = _tagService.Add(tags);
+			if(!_tagService.Add(tags))
+				return false;
 			List<TagModel> tagsToPhoto = _tagService.GetTagsFromString(tags);
-			//photo.PhotoTags.AddRange(tagsToPhoto);
 			photo.Owner = user;
 			//save image into wwwroot
 			string wwwRootPath = _hostEnvironment.WebRootPath;
@@ -49,10 +49,10 @@ namespace Luxa.Services
 			{
 				await photo.ImageFile.CopyToAsync(fileStream);
 			}
-
-			//user.Photos.Add(photo);
-			_photoRepository.Add(photo);
-			AddTagsToPhoto(photo, tagsToPhoto);
+			if (!_photoRepository.Add(photo)) 
+				return false;
+			if (!AddTagsToPhoto(photo, tagsToPhoto))
+				return false;
 			return true;
 		}
 
