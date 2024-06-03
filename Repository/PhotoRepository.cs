@@ -38,11 +38,11 @@ namespace Luxa.Repository
 
 		public bool Save()
 			=> _context.SaveChanges() > 0;
-		
+
 		public async Task<bool> SaveAsync()
 			=> await _context.SaveChangesAsync() > 0;
-		
-		public bool Add(Photo photo) 
+
+		public bool Add(Photo photo)
 		{
 			_context.Add(photo);
 			return Save();
@@ -61,6 +61,12 @@ namespace Luxa.Repository
 
 		public UserPhotoModel? GetUserPhotoModelByPhoto(int idPhoto, UserModel user)
 			=> _context.UserLikedPhotos.FirstOrDefault(e => e.PhotoId == idPhoto && e.UserId == user.Id);
+
+		public async Task<Photo?> GetPhotoIncludedPhotoTags(int photoId)
+			=> await _context.Photo
+				.Include(p => p.PhotoTags)
+				.FirstOrDefaultAsync(p => p.Id == photoId);
+
 
 	}
 }

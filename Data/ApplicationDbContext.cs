@@ -75,6 +75,7 @@ namespace Luxa.Data
 		public DbSet<Photo> Photo { get; set; }
 		public DbSet<ContactModel> Contacts { get; set; }
 		public DbSet<PhotoTagModel> PhotoTags { get; set; }
+		public DbSet<TagModel> Tags { get; set; }
 
 
 	}

@@ -7,16 +7,18 @@ namespace Luxa.ViewModel
 		[Display(Name = "Stare hasło")]
 		[Required(ErrorMessage = "Wpisz stare hasło")]
 		[DataType(DataType.Password)]
-		public string OldPassword { get; set; }
+		public string OldPassword { get; set; } = default!;
+
 		[Display(Name = "Nowe hasło")]
 		[Required(ErrorMessage = "Wpisz nowe hasło")]
 		[DataType(DataType.Password)]
-		public string NewPassword { get; set; }
+		public string NewPassword { get; set; } = default!;
+
 		[Display(Name = "Potwierdź nowe hasło")]
 		[Required(ErrorMessage = "Wpisz ponownie nowe hasło")]
 		[DataType(DataType.Password)]
 		[Compare("NewPassword", ErrorMessage = "Hasła nie są zgodne")]
-		public string ConfirmNewPassword { get; set; }
+		public string ConfirmNewPassword { get; set; } = default!;
 
 	}
 }

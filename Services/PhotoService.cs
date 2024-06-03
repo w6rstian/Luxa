@@ -14,28 +14,30 @@ namespace Luxa.Services
 		private readonly IPhotoRepository _photoRepository;
 		private readonly UserManager<UserModel> _userManager;
 		private readonly IWebHostEnvironment _hostEnvironment;
-		//private readonly ITagsService _tagsService;
+		private readonly ITagService _tagService;
 
 		public PhotoService(ApplicationDbContext context,
-							UserManager<UserModel> userManager,
-							IWebHostEnvironment hostEnvironment,
-							IPhotoRepository photoRepository/*, ITagsService tagsService*/)
+			UserManager<UserModel> userManager,
+			IWebHostEnvironment hostEnvironment,
+			IPhotoRepository photoRepository, ITagService tagService)
 		{
 			_context = context;
 			_userManager = userManager;
 			_hostEnvironment = hostEnvironment;
 			_photoRepository = photoRepository;
-			//_tagsService = tagsService;
+			_tagService = tagService;
 		}
 
 		public async Task<bool> Create(UserModel user)
 		{
 			return true;
 		}
-		public async Task<bool> Create(Photo photo, UserModel user,string tags)
+
+		public async Task<bool> Create(Photo photo, UserModel user, string tags)
 		{
-			//List<TagModel> tagsToPhoto = _tagService.Add(tags);
-			
+			_ = _tagService.Add(tags);
+			List<TagModel> tagsToPhoto = _tagService.GetTagsFromString(tags);
+			//photo.PhotoTags.AddRange(tagsToPhoto);
 			photo.Owner = user;
 			//save image into wwwroot
 			string wwwRootPath = _hostEnvironment.WebRootPath;
@@ -49,9 +51,9 @@ namespace Luxa.Services
 			}
 
 			//user.Photos.Add(photo);
-			return _photoRepository.Add(photo);
-
-
+			_photoRepository.Add(photo);
+			AddTagsToPhoto(photo, tagsToPhoto);
+			return true;
 		}
 
 
@@ -143,13 +145,15 @@ namespace Luxa.Services
 			};
 			return _photoRepository.AddLikeFromPhoto(userPhoto);
 		}
+
 		public bool UnlikePhoto(int idPhoto, UserModel user)
 		{
 			var userPhoto = _photoRepository.GetUserPhotoModelByPhoto(idPhoto, user);
 			return (userPhoto != null) && _photoRepository.RemoveLikeFromPhoto(userPhoto);
 		}
 
-		public async Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedAsync(int pageNumber, int pageSize, UserModel user)
+		public async Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedAsync(int pageNumber, int pageSize,
+			UserModel user)
 		{
 			var allPhotos = await _photoRepository.GetPhotosAsync(pageNumber, pageSize)
 				.Include(photo => photo.Owner)
@@ -169,19 +173,40 @@ namespace Luxa.Services
 
 		public async Task<List<Photo>> GetLikedPhotos(UserModel user)
 			=> await _photoRepository.GetLikedPhotos(user).ToListAsync();
+
+
+		/*int totalHeight = 0;
+
+				// Sortowanie zdjęć według wysokości malejąco
+				var sortedPhotos = photos.OrderByDescending(p => p.Height).ToList();
+
+				foreach (var photo in sortedPhotos)
+				{
+					if (totalHeight + photo.Height <= columnHeight)
+					{
+						selectedPhotos.Add(photo);
+						totalHeight += photo.Height;
+					}
+				}
+		*/
+
+
+		public bool AddTagsToPhoto(Photo photo, List<TagModel> tagNames)
+		{
+			//var photo = await _photoRepository.GetPhotoIncludedPhotoTags(idPhoto);
+			//if (photo == null)
+			//{
+			//	throw new Exception("Nie znaleziono zdjęcia");
+			//}
+			foreach (var tag in tagNames)
+			{
+				if (photo.PhotoTags.All(pt => pt.TagId != tag.Id))
+				{
+					photo.PhotoTags.Add(new PhotoTagModel { PhotoId = photo.Id, TagId = tag.Id });
+				}
+			}
+
+			return _photoRepository.Save();
+		}
 	}
 }
-/*int totalHeight = 0;
-
-        // Sortowanie zdjęć według wysokości malejąco
-        var sortedPhotos = photos.OrderByDescending(p => p.Height).ToList();
-
-        foreach (var photo in sortedPhotos)
-        {
-            if (totalHeight + photo.Height <= columnHeight)
-            {
-                selectedPhotos.Add(photo);
-                totalHeight += photo.Height;
-            }
-        }
-*/

@@ -2,10 +2,10 @@
 {
 	public class UserPhotoModel
 	{
-		public string UserId { get; set; }
-		public UserModel User { get; set; }
+		public string UserId { get; set; } = default!;
+		public UserModel User { get; set; } = default!;
 
-		public int PhotoId { get; set; }
-		public Photo Photo { get; set; }
+		public int PhotoId { get; set; } = default!;
+		public Photo Photo { get; set; } = default!;
 	}
 }
