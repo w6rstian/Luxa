@@ -1,8 +1,8 @@
 using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Repository;
 using Luxa.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +22,7 @@ namespace Luxa
 				//appsettings.json zawiera w sobie connection string skopiowany z w�a�ciwo�ci z baz danych a "LuxaDb" to odwo�anie do appsettings.json
 				options.UseSqlServer(builder.Configuration.GetConnectionString("LuxaDb"));
 			});
-			builder.Services.AddIdentity<UserModel,IdentityRole>(options => 
+			builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 			{
 				options.Password.RequiredUniqueChars = 0;
 				options.Password.RequireUppercase = false;
@@ -32,17 +32,26 @@ namespace Luxa
 			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 			builder.Services.ConfigureApplicationCookie(options =>
 			{
-				options.LoginPath = "/SignIn";						 
+				options.LoginPath = "/SignIn";
 			});
+			//Repositories
+			builder.Services.AddScoped<IContactRepository, ContactRepository>();
+			builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
+			builder.Services.AddScoped<ITagRepository, TagRepository>();
+
+			//Services
 			builder.Services.AddScoped<NotificationService>();
-			builder.Services.AddScoped<ISettingsService,SettingsService>();
-            builder.Services.AddScoped<IPhotoService, PhotoService>();
+			builder.Services.AddScoped<ISettingsService, SettingsService>();
+			builder.Services.AddScoped<IPhotoService, PhotoService>();
+			builder.Services.AddScoped<ITagService, TagService>();
 			builder.Services.AddScoped<IContactService, ContactService>();
+			builder.Services.AddScoped<IUserService, UserService>();
+
 
 			var app = builder.Build();
 
 			NotificationsDataInit.SeedNotifications(app);
-			_ =IdentityDataInit.SeedUsersAndRolesAsync(app);
+			_ = IdentityDataInit.SeedUsersAndRolesAsync(app);
 
 
 

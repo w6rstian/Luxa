@@ -1,44 +1,174 @@
 ﻿@model Luxa.Models.Photo
 
 @{
-    ViewData["Title"] = "Create";
+	ViewData["Title"] = "Dodaj zdjęcie";
 }
+<style>
 
-<h1>Create</h1>
+	.input-container {
+		display: flex;
+		flex-wrap: wrap;
+		border: 1px solid #ccc;
+		padding: 5px;
+		width: 300px;
+	}
 
-<h4>Photo</h4>
+	.input-blocks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+
+	.input-field {
+		border: none;
+		outline: none;
+		flex: 1;
+		min-width: 100px;
+		margin: 5px 0;
+	}
+
+	.input-block {
+		background-color: #e0e0e0;
+		border-radius: 5px;
+		padding: 5px 10px;
+		display: flex;
+		align-items: center;
+	}
+
+		.input-block span {
+			margin-right: 10px;
+		}
+
+		.input-block .remove-block {
+			cursor: pointer;
+			background: none;
+			border: none;
+			font-size: 16px;
+			line-height: 1;
+		}
+</style>
+<h1>Dodaj zdjęcie</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" accept="image/*" />
-                <span asp-validation-for="ImageFile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+	<div class="col-md-4">
+		<form asp-action="Create" enctype="multipart/form-data">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+			<div class="form-group">
+				<label asp-for="Name" class="control-label"></label>
+				<input asp-for="Name" class="form-control" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Description" class="control-label"></label>
+				<input asp-for="Description" class="form-control" />
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Category" class="control-label"></label>
+				@Html.DropDownListFor(model => model.Category,
+									Enum.GetValues(typeof(Luxa.Data.Enums.CategoryOfPhotos))
+									.Cast<Luxa.Data.Enums.CategoryOfPhotos>().Select(e =>
+									{
+										var displayAttribute = typeof(Luxa.Data.Enums.CategoryOfPhotos).GetField(e.ToString())
+										?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+										.SingleOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+										var displayName = displayAttribute?.GetName() ?? e.ToString();
+										return new SelectListItem { Text = displayName, Value = e.ToString() };
+									}), new { @class = "form-select form-select-lg mb-3", @id = "category" })
+			</div>
+			<div class="form-group">
+				<div class="input-container">
+					<div id="input-blocks" class="input-blocks"></div>
+					<input id="input-field" type="text" class="input-field" placeholder="Wpisz tag: " />
+				</div>
+			</div>
+			<input type="hidden" id="tags" name="Tags" />
+
+			<div class="form-group">
+				<label asp-for="ImageFile" class="control-label"></label>
+				<input asp-for="ImageFile" accept="image/*" />
+				<span asp-validation-for="ImageFile" class="text-danger"></span>
+			</div>
+
+
+
+
+			<div class="form-group">
+				<input type="submit" value="Create" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+	<a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const inputField = document.getElementById('input-field');
+		const inputBlocks = document.getElementById('input-blocks');
+		const tagsInput = document.getElementById('tags');
+
+		inputField.addEventListener('keydown', function (event) {
+			if (event.key === ' ') {
+				event.preventDefault();
+				createBlock(inputField.value.trim());
+				inputField.value = '';
+				updateTagsInput();
+			} else if (event.key === 'Backspace' && inputField.value === '') {
+				removeLastBlock();
+				updateTagsInput();
+			}
+		});
+		function isTagPresent(tag) {
+			const currentTags = tagsInput.value.split(',').map(t => t.trim());
+			return currentTags.includes(tag);
+		}
+
+		function createBlock(text) {
+			if (text === '' || isTagPresent(text)) return;
+			const block = document.createElement('div');
+			block.className = 'input-block';
+
+			const span = document.createElement('span');
+			span.textContent = text;
+			block.appendChild(span);
+
+			const removeButton = document.createElement('button');
+			removeButton.className = 'remove-block';
+			removeButton.textContent = '×';
+			removeButton.addEventListener('click', function () {
+				inputBlocks.removeChild(block);
+				updateTagsInput();
+			});
+			block.appendChild(removeButton);
+
+			inputBlocks.appendChild(block);
+		}
+
+		function removeLastBlock() {
+			const lastBlock = inputBlocks.querySelector('.input-block:last-child');
+			if (lastBlock) {
+				inputBlocks.removeChild(lastBlock);
+			}
+		}
+
+		function updateTagsInput() {
+			const tags = [];
+			inputBlocks.querySelectorAll('.input-block span').forEach(span => {
+				tags.push(span.textContent);
+			});
+			tagsInput.value = tags.join(',');
+		}
+	});
+
+
+</script>

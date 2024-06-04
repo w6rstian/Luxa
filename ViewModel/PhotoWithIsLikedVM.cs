@@ -1,0 +1,11 @@
+﻿using Luxa.Models;
+
+namespace Luxa.ViewModel
+{
+	public class PhotoWithIsLikedVM
+	{
+		public Photo Photo { get; set; } = default!;
+		public bool IsLiked { get; set; } = false;
+		public string? OwnerName { get; set; } = default!;
+	}
+}

@@ -40,8 +40,8 @@
 
 						<td>
 							<div class="btn-group btn-group-sm">
-								<a asp-controller="Account" asp-action="Edit" asp-route-id="@user.User.Id" class="btn btn-primary">Edytuj</a>
-								<a asp-controller="Account" asp-action="Delete" asp-route-id="@user.User.Id" class="btn btn-danger">Usuń</a>
+								<a asp-controller="Account" asp-action="EditUser" asp-route-id="@user.User.Id" class="btn btn-primary">Edytuj</a>
+								<a onclick="deleteUser('@user.User.Id')" class="btn btn-danger">Usuń</a>
 							</div>
 						</td>
 					</tr>
@@ -54,3 +54,38 @@
 		</tbody>
 	</table>
 </form>
+
+
+
+<script>
+	function deleteUser(id) {
+		console.log("test");
+		
+		// $.ajax({
+		// 	url: '/Contact/EditState',
+		// 	type: 'POST',
+		// 	data: { id: id },
+		// 	success: function (response) {
+		// 		console.log(response);
+
+		// 	},
+		// 	error: function (xhr, status, error) {
+		// 		console.log(xhr);
+		// 		console.log(status);
+		// 		console.log('nie działa: ' + error);
+		// 	}
+		// });
+	}
+	function test() 
+	{
+		if (confirm("Czy na pewno chcesz usunąć tego użytkownika?")) {
+			alert("Użytkownik zostaje usunięty.");
+		} else {
+			alert("Usunięcie elementu zostało anulowane.");
+		}
+	}
+
+
+</script>
+
+@*asp-controller="Account" asp-action="DeleteUser" asp-route-id="@user.User.Id"*@

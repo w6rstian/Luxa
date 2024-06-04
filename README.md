@@ -1,5 +1,8 @@
 Luxa
 
+
+Do naprawy:
+
 Do poprawy:
 - Wywalenie znajdowanie użytkownika do serwisu (jednego)
 - Autoryzacja każdej funkcji w kontrolerze wymagającej zalogowania
@@ -7,6 +10,7 @@ Do poprawy:
 - Normalny podział na repozytoria(operacje na bazie danych) i serwisy(logika) 
 
 Do zrobienia:
+
 
 Instrukcja:
 1. Połączenie kodu z bazą danych (Podejście code first)
@@ -18,6 +22,7 @@ Instrukcja:
 	- Smacznego
 2. Ścieżki do łączenia się do stron
 	- SignUp: ~/Account/SignUp lub ~/SignUp
+	- 
 	- SignIn: ~/Account/SignIn lub ~/SignIn
 	- CreateUser: ~/Account/CreateUser
 	- UsersList: ~/Account/UsersList

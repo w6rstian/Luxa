@@ -2,6 +2,7 @@
 using Luxa.Data.Enums;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Services;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
@@ -11,102 +12,50 @@ namespace Luxa.Controllers
 	public class ContactController : Controller
 	{
 		private readonly IContactService _contactService;
-		public ContactController(IContactService contactService)
+		private readonly IUserService _userService;
+		
+		public ContactController(IContactService contactService,IUserService userService)
 		{
 			_contactService = contactService;
+			_userService = userService;
 		}
 		public IActionResult UserContact()
 		{
 			return View();
 		}
-
 		[HttpPost]
 		public IActionResult UserContact(ContactVM contactVM)
 		{
-			var user = _contactService.GetCurrentLoggedInUser(User);
+			var user = _userService.GetCurrentLoggedInUser(User);
 			var category = _contactService.GetEnumCategory(contactVM.Category);
-
-			if (ModelState.IsValid && user != null && category != null)
-			{
-
-				var contactModel = new ContactModel
-				{
-					Sender = user,
-					UserName = user.UserName,
-					Category = (CategoryOfContact)category,
-					DetailedCategory = contactVM.DetailedCategory,
-					Description = contactVM.Description
-				};
-				_contactService.Add(contactModel);
-			}
+			_contactService.CreateContact(ModelState.IsValid, user, category, contactVM.Description, contactVM.DetailedCategory);
 			return View();
 		}
 		[HttpGet]
 		public IActionResult GetDetailedCategory(string selectedValue)
 		{
-			List<string> filteredText = new();
-			List<string> filteredValue = new();
-			if (selectedValue == "All")
-			{
-				filteredText = typeof(DatailedContactCategories)
-											   .GetFields(BindingFlags.Public | BindingFlags.Static)
-											   .Select(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item2)
-											   .ToList();
-				filteredValue = typeof(DatailedContactCategories)
-											   .GetFields(BindingFlags.Public | BindingFlags.Static)
-											   .Select(field => field.Name)
-											   .ToList();
-			}
-			else
-			{
-				CategoryOfContact category = (CategoryOfContact)Enum.Parse(typeof(CategoryOfContact), selectedValue);
-				filteredText = typeof(DatailedContactCategories)
-											   .GetFields(BindingFlags.Public | BindingFlags.Static)
-											   .Where(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item1 == category)
-											   .Select(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item2)
-											   .ToList();
-				filteredValue = typeof(DatailedContactCategories)
-											   .GetFields(BindingFlags.Public | BindingFlags.Static)
-											   .Where(field => ((ValueTuple<CategoryOfContact, string>)field.GetValue(null)).Item1 == category)
-											   .Select(field => field.Name)
-											   .ToList();
-			}
+			var select = _contactService.GetTextAndValueToSelect(selectedValue);
 			//var detailedCategories = new List<SelectListItem>();
 			//detailedCategories.AddRange(filteredList.Select(p => new SelectListItem { Text = p.Item2, Value = p.Item1 }));
-			return Json(new { text = filteredText, value = filteredValue });
+			return Json(new { text = select.Item1, value = select.Item2 });
 		}
 		public async Task<IActionResult> ContactList()
 		{
-			var contacts = await _contactService.GetAllContact();
-			var contactsToDisplay = new List<ContactListVM>();
-			foreach (var contact in contacts)
-			{
-				var contactListVM = new ContactListVM
-				{
-					Id = contact.Id,
-					UserName = contact.UserName,
-					Category = contact.Category,
-					Description = contact.Description,
-					DetailedCategory = contact.DetailedCategory,
-					State = contact.State
-				};
-				contactsToDisplay.Add(contactListVM);
-			}
+			
 			//return View(contactsToDisplay);
 			ViewBag.CategorySelectItems = _contactService.GetCategorySelectItems();
 			ViewBag.DetailedCategorySelectItems = _contactService.GetDetailedCategorySelectItems();
 			ViewBag.StateSelectItems = _contactService.GetStateSelectItems(true);
 			ViewBag.StateSelectChangeItems = _contactService.GetStateSelectItems(false);
-			return View(contactsToDisplay);
+			//List <ContactListVM> lista = await _contactService.chuj2();
+			return View(await _contactService.ShowContacts());
 		}
 		[HttpPost]
-		public bool EditState(string data)
-		{
-			_contactService.PrepareToUpdateState(data);
-			return _contactService.Save();
+		public bool EditState(string data) =>		
+			_contactService.PrepareToUpdateState(data).Result;
 
 			//var deserializedData = JsonSerializer.Deserialize<>
-		}
+		
 
 		/*[HttpPost]
 		public async Task<IActionResult> SendChanges()

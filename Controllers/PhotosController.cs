@@ -1,187 +1,208 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Luxa.Data;
-using Luxa.Models;
-using Microsoft.AspNetCore.Identity;
-using System.Data;
-using Luxa.Services;
+﻿using Luxa.Data;
 using Luxa.Interfaces;
-using System.Drawing;
+using Luxa.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 //using AspNetCore;
 
 namespace Luxa.Controllers
 {
-    public class PhotosController : Controller
-    {
-        private readonly IPhotoService _photoService;
+	public class PhotosController : Controller
+	{
+		private readonly IPhotoService _photoService;
 
-        private readonly ApplicationDbContext _context; //wstrzykiwanie kontekstu
+		private readonly ApplicationDbContext _context; //wstrzykiwanie kontekstu
 
-        private readonly UserManager<UserModel> _userManager;
-        private readonly IWebHostEnvironment _hostEnvironment;
+		private readonly UserManager<UserModel> _userManager;
+		private readonly IWebHostEnvironment _hostEnvironment;
+		private readonly IUserService _userService;
 
-        public PhotosController(ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
-        {
-            _context = context;
-            _userManager = userManager;
-            _hostEnvironment = hostEnvironment;
-            _photoService = photoService;
-        }
+		public PhotosController(IUserService userService, ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
+		{
+			_context = context;
+			_userManager = userManager;
+			_hostEnvironment = hostEnvironment;
+			_photoService = photoService;
+			_userService = userService;
+		}
 
-        // GET: Photos
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Photo.ToListAsync());
-        }
-
-        // GET: Photos/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var photo = await _context.Photo
-                .Include(m => m.UserId)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (photo == null)
-            {
-                return NotFound();
-            }
-
-            return View(photo);
-        }
-
-        // GET: Photos/Create
-        public IActionResult Create()
-        {
-
-            if (_userManager.GetUserId(User) == null)
-            {
-                return View("Views/Home/Index.cshtml");
-            }
-
-            return View();
-            //filtr privacy
-        }
-
-        // POST: Photos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
-        {
-
-            var user = await _userManager.GetUserAsync(User);
-            _photoService.Create(photo, user);
-
-            return RedirectToAction(nameof(Index));
-            //return View(photo);
-        }
+		[Authorize(Roles = "admin,moderator")]
+		public async Task<IActionResult> Index()
+			//Nie powinno się z tego co wiem przekazywać UserModela do widoku ale inaczej bez tworzenia ViewModelu
+			//Bez Include się nie wyświetla ale trzeba to przerobić albo na vm albo pobawić się ViewBagami
+			=> View(await _context.Photo.Include(m => m.Owner).ToListAsync());
 
 
-        // GET: Photos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: Photos/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+			//Tutaj ta sama historia
+			var photo = await _context.Photo
+				.Include(m => m.Owner)
+				.FirstOrDefaultAsync(m => m.Id == id);
 
-            var photo = await _context.Photo.FindAsync(id);
-            if (photo == null)
-            {
-                return NotFound();
-            }
-            return View(photo);
-        }
+			if (photo == null)
+			{
+				return NotFound();
+			}
 
-        // POST: Photos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
-        {
-            if (id != photo.Id)
-            {
-                return NotFound();
-            }
+			return View(photo);
+		}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(photo);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PhotoExists(photo.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(photo);
-        }
+		// GET: Photos/Create
+		public IActionResult Create()
+		{
 
-        // GET: Photos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			if (_userManager.GetUserId(User) == null)
+			{
+				return View("Views/Home/Index.cshtml");
+			}
 
-            var photo = await _context.Photo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (photo == null)
-            {
-                return NotFound();
-            }
+			return View();
+			//filtr privacy
+		}
 
-            return View(photo);
-        }
+		// POST: Photos/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Name,Description,Category,AddTime,ImageFile")] Photo photo, string Tags)
+		{
+			//await Console.Out.WriteLineAsync("\n\n\n"+Tags);
+			var user = _userService.GetCurrentLoggedInUser(User);
+			await _photoService.Create(photo, user, Tags);
+			return RedirectToAction(nameof(Index));
+			//return View(photo);
+		}
 
-        // POST: Photos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var photo = await _context.Photo.FindAsync(id);
-            //delete image from wwwroot/image
-            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", photo.Name);
-            if (System.IO.File.Exists(imagePath))
-            {
-                System.IO.File.Delete(imagePath);
-            }
 
-            //delete record
-            _context.Photo.Remove(photo);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+		// GET: Photos/Edit/5
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        private bool PhotoExists(int id)
-        {
-            return _context.Photo.Any(e => e.Id == id);
-        }
-        /*
-        public IActionResult DownloadFile(int id, [Bind("Id,UserId,Name,Description,AddTime,ImageFile")] Photo photo)
+			var photo = await _context.Photo.FindAsync(id);
+			if (photo == null)
+			{
+				return NotFound();
+			}
+			return View(photo);
+		}
+
+		// POST: Photos/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
+		{
+			if (id != photo.Id)
+			{
+				return NotFound();
+			}
+
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					_context.Update(photo);
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!PhotoExists(photo.Id))
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			return View(photo);
+		}
+
+		// GET: Photos/Delete/5
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var photo = await _context.Photo
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (photo == null)
+			{
+				return NotFound();
+			}
+
+			return View(photo);
+		}
+
+		// POST: Photos/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var photo = await _context.Photo.FindAsync(id);
+			//delete image from wwwroot/image
+			var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", photo.Name);
+			if (System.IO.File.Exists(imagePath))
+			{
+				System.IO.File.Delete(imagePath);
+			}
+
+			//delete record
+			_context.Photo.Remove(photo);
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
+
+		private bool PhotoExists(int id)
+		{
+			return _context.Photo.Any(e => e.Id == id);
+		}
+		[Authorize]
+		[HttpGet]
+		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
+		{
+			var user = _userService.GetCurrentLoggedInUser(User);
+			if (user == null)
+				//tutaj chyba wywala się na krzywy pyszczek
+				return RedirectToAction("SignIn");
+			var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize, user);
+			return Json(photos);
+		}
+		[HttpPost]
+		public async Task<bool> LikeOrUnlikePhoto(int idPhoto)
+		{
+			//var idPhoto = int.Parse(idPhotoString);            
+			var user = _userService.GetCurrentLoggedInUser(User);
+			if (user == null)
+				throw new NotImplementedException();
+			var likedPhotos = await _photoService.GetLikedPhotos(user);
+			return (!_photoService.IsPhotoLiked(idPhoto, likedPhotos))
+				? _photoService.LikePhoto(idPhoto, user)
+				: _photoService.UnlikePhoto(idPhoto, user);
+		}
+
+
+
+		/*
+        public IActionResult DownloadFile(int id, [Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
         {
             *//*            var photo = _context.Photo.FindAsync(id).FirstOrDefaultAsync(m => m.Id == id);
             *//*
@@ -205,6 +226,6 @@ namespace Luxa.Controllers
             memory.Position = 0;
             return memory;
         }*/
-    }
+	}
 
 }
