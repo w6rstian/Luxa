@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Luxa.Models
 {
@@ -10,6 +11,24 @@ namespace Luxa.Models
 		public string? LastName { get; set; } = default!;
 
 		public int Reputation { get; set; } = 0;
+
+		[NotMapped]
+		public string Level
+		{
+			get
+			{
+				int[] thresholds = { 20, 50, 100, 200, 500, 1000, 5000 };
+				for (int i = 1; i <= thresholds.Length; i++)
+				{
+					if (Reputation < thresholds[i])
+					{
+						return "Lv " + i;
+					}
+				}
+
+				return "Lv " + thresholds.Length + 1;
+			}
+		}
 
 		//{
 		//	get

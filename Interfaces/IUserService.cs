@@ -7,5 +7,9 @@ namespace Luxa.Interfaces
 	{
 		UserModel? GetCurrentLoggedInUser(ClaimsPrincipal user);
 		Task<bool> SaveUser(UserModel userModel);
+		Task<bool> UpdateReputation(UserModel userModel);
+		UserModel? GetCurrentLoggedInUserWithPhotos(ClaimsPrincipal user);
+
+
 	}
 }

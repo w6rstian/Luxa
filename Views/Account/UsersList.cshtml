@@ -18,12 +18,12 @@
 				<th>Kraj</th>
 				<th>Numer telefonu</th>
 				<th>E-mail</th>
-				<th>Powiadomienia</th>
+				<th>Poziom</th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
-			@if (Model != null && Model.Any())
+			@if (Model.Any())
 			{
 				@foreach (var user in Model)
 				{
@@ -35,7 +35,7 @@
 						<td>@user.User.Country</td>
 						<td>@user.User.PhoneNumber</td>
 						<td>@user.User.Email</td>
-						<td>@user.Notifications.Count()</td>
+						<td>@user.User.Level</td>
 
 
 						<td>
