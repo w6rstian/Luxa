@@ -1,7 +1,17 @@
 Luxa
 
+
 Do naprawy:
-	- Podczas wczytywanie strony głównej nie zawsze działa wybór kolumny dla zdjęcia (podczas zmiany kontrolera albo odpalania serwera)
+
+Do poprawy:
+- Wywalenie znajdowanie użytkownika do serwisu (jednego)
+- Autoryzacja każdej funkcji w kontrolerze wymagającej zalogowania
+- Ogarnięcie strony z błędami z odnośnikiem do kontaktu
+- Normalny podział na repozytoria(operacje na bazie danych) i serwisy(logika) 
+
+Do zrobienia:
+
+
 Instrukcja:
 1. Połączenie kodu z bazą danych (Podejście code first)
 	- Utwórz nową bazę danych o np. nazwie LuxaDb 
@@ -12,6 +22,7 @@ Instrukcja:
 	- Smacznego
 2. Ścieżki do łączenia się do stron
 	- SignUp: ~/Account/SignUp lub ~/SignUp
+	- 
 	- SignIn: ~/Account/SignIn lub ~/SignIn
 	- CreateUser: ~/Account/CreateUser
 	- UsersList: ~/Account/UsersList
