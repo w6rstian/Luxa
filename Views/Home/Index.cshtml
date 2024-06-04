@@ -16,6 +16,9 @@
 		opacity: 0;
 		transition: opacity 0.7s ease;
 		height: 50px;
+		display: flex;
+		gap: 10px;
+		flex-direction: row;
 	}
 
 	.trigger {
@@ -85,11 +88,15 @@
 	}
 
 	.like {
-		position: absolute;
-		margin-left: 15px;
+		position: relative;
+		/*margin-left: 15px;*/
 		left: 0;
 		width: 25px;
 		height: 25px;
+	}
+	.like-text{
+		position: relative;
+		left: 0;
 	}
 </style>
 
@@ -245,17 +252,23 @@
 		const url = window.location.origin + '/';
 		console.log(url);
 		var img = document.getElementById('photo.' + id);
-		console.log(img);
+		var like = document.getElementById('likes.' + id);
+		let currentValue = parseInt(like.textContent);
+		console.log(like);
 		var src = img.src;
 		console.log('img.src: ' + img.src + ' likePath: ' + likePath)
 		if (img.src === url + unlikePath) {
 			img.src = url + likePath;
 			console.log('niby prawda że unlike jest');
+			currentValue++;
 		}
 		else {
 			img.src = url + unlikePath;
 			console.log('niby prawda że like jest');
+			currentValue--;
 		}
+		like.textContent = currentValue;
+
 	}
 	function addPhotosToColumns(photos) {
 		const columns = document.querySelectorAll('.columnHeight');
@@ -285,8 +298,9 @@
 													<img id="photo.${photo.photo.id}" src="${likeString}">
 												</a>
 											</div>
+												<div class="like-text" id="likes.${photo.photo.id}">${photo.photo.likeCount}</div>
 											<div class="user">
-												${photo.photo.likeCount} ${photo.ownerName}
+												 ${photo.ownerName}
 											</div>
 										</div>
 

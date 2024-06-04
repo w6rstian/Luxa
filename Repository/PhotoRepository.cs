@@ -42,6 +42,7 @@ namespace Luxa.Repository
 		public async Task<bool> SaveAsync()
 			=> await _context.SaveChangesAsync() > 0;
 
+
 		public bool Add(Photo photo)
 		{
 			_context.Add(photo);
@@ -67,6 +68,11 @@ namespace Luxa.Repository
 				.Include(p => p.PhotoTags)
 				.FirstOrDefaultAsync(p => p.Id == photoId);
 
+		public bool LikeCount(Photo photo)
+		{
+			photo.LikeCount = _context.UserLikedPhotos.Count(ul => ul.PhotoId == photo.Id);
+			return Save();
 
+		}
 	}
 }

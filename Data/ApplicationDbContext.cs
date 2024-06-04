@@ -58,6 +58,10 @@ namespace Luxa.Data
 				.WithMany(u => u.Photos)
 				.HasForeignKey(p => p.OwnerId)
 				.OnDelete(DeleteBehavior.Cascade);
+			//modelBuilder.Entity<UserModel>()
+			//	.HasOne(p => p.ProfilePhoto)
+			//	.WithOne(p => p.Owner)
+			//	.OnDelete(DeleteBehavior.Cascade);
 
 
 			modelBuilder.Entity<IdentityUserLogin<string>>()

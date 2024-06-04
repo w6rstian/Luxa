@@ -21,7 +21,10 @@ namespace Luxa.Models
 		[EnumDataType(typeof(CategoryOfPhotos))]
 		public CategoryOfPhotos Category { get; set; } = CategoryOfPhotos.None;
 		public DateTime AddTime { get; set; } = DateTime.Now;
-		//public int LikeCount
+
+		public int Views { get; set; } = 0;
+
+		public int LikeCount { get; set; } = 0;
 		//{
 		//	get
 		//	{
