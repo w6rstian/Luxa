@@ -183,8 +183,13 @@ namespace Luxa.Controllers
 			if (user == null)
 				//tutaj chyba wywala się na krzywy pyszczek
 				return RedirectToAction("SignIn");
-
 			var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize, user);
+			foreach (var photo in photos)
+			{
+				var sessionKey = $"viewed_photo_{photo.Photo.Id}";
+				if (HttpContext.Session.GetString(sessionKey) == null)
+					HttpContext.Session.SetString(sessionKey, "viewed");
+			}
 
 			return Json(photos);
 		}

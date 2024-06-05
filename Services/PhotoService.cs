@@ -212,5 +212,11 @@ namespace Luxa.Services
 
 			return _photoRepository.Save();
 		}
+
+		public bool IncrementViewCountAsync(Photo photo)
+		{
+			photo.Views++;
+			return _photoRepository.Save();
+		}
 	}
 }
