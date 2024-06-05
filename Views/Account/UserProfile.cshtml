@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Profil użytkownika";
+}
+<h2>@ViewData["Title"] @ViewBag.UserName</h2>
+
+jakaś nazwa użytkownika, dane a potem
+
+<div id="photo-gallery">
+    @await Component.InvokeAsync("ProfilePhoto", new { pageNumber = 1, pageSize = 10, userName = ViewBag.UserName })
+</div>
+
+@* <button id="load-more" onclick="loadMorePhotos()">Załaduj więcej</button> *@
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let pageNumber = 2;
+            const pageSize = 10;
+            const gallery = document.getElementById('photo-gallery');
+            const loadMoreButton = document.getElementById('load-more');
+            const userName = '@ViewBag.UserName';
+            function loadMorePhotos() {
+                fetch(`/Photo/LoadMorePhotos?pageNumber=${pageNumber}&pageSize=${pageSize}&userName=${userName}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        gallery.insertAdjacentHTML('beforeend', html);
+                        pageNumber++;
+                    });
+            }
+        });
+    </script>
+}
+
+

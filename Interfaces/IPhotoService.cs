@@ -14,6 +14,7 @@ namespace Luxa.Interfaces
                                                                //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
         ///LimitedHeightPhotosVM GetAmountOfPhotos(int quantity,int height);
         Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedAsync(int pageNumber, int pageSize, UserModel user);
+        Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedForProfileAsync(int pageNumber, int pageSize, UserModel user);
         Task<List<Photo>> GetLikedPhotos(UserModel user);
         bool IsPhotoLiked(int idPhoto, List<Photo> photos);
 		bool LikePhoto(int idPhoto, UserModel user);

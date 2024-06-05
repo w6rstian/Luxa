@@ -175,7 +175,28 @@ namespace Luxa.Services
 
 		}
 
-		public async Task<List<Photo>> GetLikedPhotos(UserModel user)
+        public async Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedForProfileAsync(int pageNumber, int pageSize,
+            UserModel user)
+        {
+            var allPhotos = await _photoRepository.GetPhotosOwnByUserAsync(pageNumber, pageSize,user)
+                .Include(photo => photo.Owner)
+                .ToListAsync();
+            foreach (var photo in allPhotos)
+            {
+                _photoRepository.LikeCount(photo);
+            }
+            var likedPhotos = await GetLikedPhotos(user);
+            var likedPhotoIds = new HashSet<int>(likedPhotos.Select(p => p.Id));
+            var photosWithIsLiked = allPhotos.Select(photo => new PhotoWithIsLikedVM
+            {
+                Photo = photo,
+                IsLiked = likedPhotoIds.Contains(photo.Id),
+                OwnerName = photo.Owner.UserName
+            }).ToList();
+            return photosWithIsLiked;
+        }
+
+        public async Task<List<Photo>> GetLikedPhotos(UserModel user)
 			=> await _photoRepository.GetLikedPhotos(user).ToListAsync();
 
 

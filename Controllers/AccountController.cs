@@ -249,12 +249,27 @@ namespace Luxa.Controllers
 			}
 			return NotFound();
 		}
-
-
 		//Do tworzenia powiadomień ale jeszcze nic z tym nie robiłem
 		public IActionResult AdminNotifications()
 		{
 			return View();
+		}
+		[Authorize]
+		public async Task<IActionResult> UserProfile(string userName)
+		{
+			//zalogowany
+            var user = _userService.GetCurrentLoggedInUser(User);
+			//jeśli nazwa w adresie jest w bazie użytkowników to przechodzimy dalej 
+            if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
+			{
+                ViewBag.UserName = userName;
+				return View();
+			}
+			return NotFound();
+		}
+		public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
+		{
+			return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName=userName });
 		}
 
 	}

@@ -40,7 +40,15 @@ namespace Luxa.Services
 			return currentUser;
 		}
 
-		public async Task<bool> SaveUser(UserModel userModel)
+        public async Task<UserModel> GetUserByUserName(string userName)
+            =>await _context.Users.SingleAsync(u => u.UserName == userName);
+        
+
+        public async Task<bool> IsUserWithUserNameExist(string userName)
+			=>await _context.Users.AnyAsync(u=>u.UserName==userName);
+        
+
+        public async Task<bool> SaveUser(UserModel userModel)
 		{
 			var result = await _userManager.UpdateAsync(userModel);
 			return result.Succeeded;

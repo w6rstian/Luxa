@@ -37,7 +37,7 @@ namespace Luxa.Models
 		//	}
 		//	private set { }
 		//}
-		public bool isPrivate { get; private set; } = false;
+		public bool IsPrivate { get; private set; } = false;
 		//public Photo ProfilePhoto { get; set; }
 		public ICollection<UserNotificationModel> UserNotifiacations { get; set; } = [];
 		public ICollection<UserPhotoModel> UserLikedPhotos { get; set; } = [];

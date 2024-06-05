@@ -24,7 +24,14 @@ namespace Luxa.Repository
 				.Skip((pageNumber - 1) * pageSize)
 				.Take(pageSize);
 
-		public IQueryable<Photo> GetLikedPhotos(UserModel user)
+        public IQueryable<Photo> GetPhotosOwnByUserAsync(int pageNumber, int pageSize,UserModel user)
+            => _context.Photo
+				.Where(p=>p.OwnerId==user.Id)
+                .OrderByDescending(photo => photo.AddTime)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+        public IQueryable<Photo> GetLikedPhotos(UserModel user)
 			=> _context.Users
 				.Where(u => u.Id == user.Id)
 				.SelectMany(u => u.UserLikedPhotos)
