@@ -183,7 +183,9 @@ namespace Luxa.Controllers
 			if (user == null)
 				//tutaj chyba wywala się na krzywy pyszczek
 				return RedirectToAction("SignIn");
+
 			var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize, user);
+
 			return Json(photos);
 		}
 		[HttpPost]
