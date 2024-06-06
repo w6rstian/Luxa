@@ -366,3 +366,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /wwwroot/Image
 /Migrations/ApplicationDbContextModelSnapshot.cs
+/appsettings.json
