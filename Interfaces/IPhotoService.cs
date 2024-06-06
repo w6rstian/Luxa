@@ -1,5 +1,6 @@
 ﻿using Luxa.Models;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Luxa.Interfaces
 {
@@ -11,7 +12,11 @@ namespace Luxa.Interfaces
         Task<bool> Edit(int id, Photo photo, UserModel user);//post
         Task<bool> Delete();//get
         Task<bool> Delete(int id, Photo photo, UserModel user);//post
-                                                               //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
+
+        Task<Photo> GetImageByIdAsync(int id);
+        Task<IEnumerable<Photo>> GetAllImagesAsync();
+
+        //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
         ///LimitedHeightPhotosVM GetAmountOfPhotos(int quantity,int height);
         Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedAsync(int pageNumber, int pageSize, UserModel user);
         Task<List<Photo>> GetLikedPhotos(UserModel user);

@@ -36,7 +36,12 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
+           
         </form>
+        <a asp-controller="Photos" asp-action="DownloadImage" asp-route-id="@Model.Id">
+            <button>Download</button>
+        </a>
+        
     </div>
 </div>
 

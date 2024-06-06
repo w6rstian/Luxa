@@ -5,7 +5,9 @@ namespace Luxa.Interfaces
 	public interface IPhotoRepository
 	{
 		Photo GetPhotoById(int idPhoto);
-		bool Save();
+		Task<Photo> GetPhotoByIdAsync(int idPhoto);
+
+        bool Save();
 		bool Add(Photo photo);
 		Task<IEnumerable<Photo>> GetAllPhotos();
 		UserPhotoModel? GetUserPhotoModelByPhoto(int idPhoto, UserModel user);
