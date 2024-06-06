@@ -19,10 +19,15 @@ namespace Luxa.Controllers
             _photoService = photoService;
             _homeService = homeService;
         }
-		[Authorize]
-		public IActionResult Index()
+        [Authorize]
+        public IActionResult Index()
         {
 
+            return View();
+        }
+
+        public IActionResult Landing()
+        {
             return View();
         }
 
