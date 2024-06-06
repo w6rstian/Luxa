@@ -13,6 +13,8 @@ namespace Luxa.Interfaces
 		bool RemoveLikeFromPhoto(UserPhotoModel userPhoto);
 		IQueryable<Photo> GetLikedPhotos(UserModel user);
 		IQueryable<Photo> GetPhotosAsync(int pageNumber, int pageSize);
-		Task<Photo?> GetPhotoIncludedPhotoTags(int idPhoto);
+		IQueryable<Photo> GetPhotosOwnByUserAsync(int pageNumber, int pageSize, UserModel user);
+        Task<Photo?> GetPhotoIncludedPhotoTags(int idPhoto);
+		bool LikeCount(Photo photo);
 	}
 }

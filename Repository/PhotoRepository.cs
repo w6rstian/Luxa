@@ -24,7 +24,14 @@ namespace Luxa.Repository
 				.Skip((pageNumber - 1) * pageSize)
 				.Take(pageSize);
 
-		public IQueryable<Photo> GetLikedPhotos(UserModel user)
+        public IQueryable<Photo> GetPhotosOwnByUserAsync(int pageNumber, int pageSize,UserModel user)
+            => _context.Photo
+				.Where(p=>p.OwnerId==user.Id)
+                .OrderByDescending(photo => photo.AddTime)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+        public IQueryable<Photo> GetLikedPhotos(UserModel user)
 			=> _context.Users
 				.Where(u => u.Id == user.Id)
 				.SelectMany(u => u.UserLikedPhotos)
@@ -41,6 +48,7 @@ namespace Luxa.Repository
 
 		public async Task<bool> SaveAsync()
 			=> await _context.SaveChangesAsync() > 0;
+
 
 		public bool Add(Photo photo)
 		{
@@ -67,6 +75,11 @@ namespace Luxa.Repository
 				.Include(p => p.PhotoTags)
 				.FirstOrDefaultAsync(p => p.Id == photoId);
 
+		public bool LikeCount(Photo photo)
+		{
+			photo.LikeCount = _context.UserLikedPhotos.Count(ul => ul.PhotoId == photo.Id);
+			return Save();
 
+		}
 	}
 }

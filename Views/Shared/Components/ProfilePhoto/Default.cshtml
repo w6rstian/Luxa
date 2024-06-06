@@ -1,0 +1,14 @@
+﻿@model List<Luxa.ViewModel.PhotoWithIsLikedVM>
+Tytuł zdjęcia
+Jakiś komentarz
+
+@if(Model.Any())
+{
+    foreach (var photo in Model)
+    {
+        <div class="photo-item">
+            <img src="/Image/@photo.Photo.Name"/>
+            <p>@photo.Photo.Name</p>
+        </div>
+    }
+}

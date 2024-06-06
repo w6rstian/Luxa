@@ -1,12 +1,12 @@
 ﻿using Luxa.Data;
+using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Services;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Luxa.Services;
-using Luxa.Interfaces;
 
 
 namespace Luxa.Controllers
@@ -46,7 +46,12 @@ namespace Luxa.Controllers
 					await _signInManager.PasswordSignInAsync(signInVM.UserName!, signInVM.Password!, signInVM.RememberMe, false);
 				if (result.Succeeded)
 				{
-					return RedirectToAction("Index", "Home");
+					var user = _userService.GetCurrentLoggedInUserWithPhotos(User);
+					if (user != null)
+					{
+						await _userService.UpdateReputation(user);
+						return RedirectToAction("Index", "Home");
+					}
 				}
 
 				ModelState.AddModelError("", "Niepoprawna próba logowania");
@@ -107,6 +112,7 @@ namespace Luxa.Controllers
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
+			HttpContext.Session.Clear();
 			return RedirectToAction("Index", "Home");
 		}
 
@@ -188,11 +194,11 @@ namespace Luxa.Controllers
 			return View();
 		}
 		[Authorize(Roles = "admin,moderator")]
-		public async Task<IActionResult> EditUser(string Id) 
+		public async Task<IActionResult> EditUser(string Id)
 		{
 			var user = await _userManager.FindByIdAsync(Id);
 			if (user == null)
-				return RedirectToAction("Error","Home");
+				return RedirectToAction("Error", "Home");
 			EditUserVM editUserVM = new EditUserVM()
 			{
 				UserName = user.UserName,
@@ -203,11 +209,11 @@ namespace Luxa.Controllers
 				PhoneNumber = user.PhoneNumber,
 				Roles = await _userManager.GetRolesAsync(user)
 			};
-			
+
 			return View(editUserVM);
 		}
 		[HttpPost]
-		public IActionResult EditUser(EditUserVM editUserVM) 
+		public IActionResult EditUser(EditUserVM editUserVM)
 		{
 			return View();
 		}
@@ -243,12 +249,27 @@ namespace Luxa.Controllers
 			}
 			return NotFound();
 		}
-
-
 		//Do tworzenia powiadomień ale jeszcze nic z tym nie robiłem
 		public IActionResult AdminNotifications()
 		{
 			return View();
+		}
+		[Authorize]
+		public async Task<IActionResult> UserProfile(string userName)
+		{
+			//zalogowany
+            var user = _userService.GetCurrentLoggedInUser(User);
+			//jeśli nazwa w adresie jest w bazie użytkowników to przechodzimy dalej 
+            if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
+			{
+                ViewBag.UserName = userName;
+				return View();
+			}
+			return NotFound();
+		}
+		public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
+		{
+			return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName=userName });
 		}
 
 	}

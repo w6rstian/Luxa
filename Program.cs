@@ -34,6 +34,14 @@ namespace Luxa
 			{
 				options.LoginPath = "/SignIn";
 			});
+			builder.Services.AddDistributedMemoryCache();
+			builder.Services.AddSession(options =>
+			{
+				options.IdleTimeout = TimeSpan.FromMinutes(30);
+				options.Cookie.HttpOnly = true;
+				options.Cookie.IsEssential = true;
+			});
+
 			//Repositories
 			builder.Services.AddScoped<IContactRepository, ContactRepository>();
 			builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
@@ -42,6 +50,7 @@ namespace Luxa
 			//Services
 			builder.Services.AddScoped<NotificationService>();
 			builder.Services.AddScoped<ISettingsService, SettingsService>();
+			builder.Services.AddScoped<IHomeService, HomeService>();
 			builder.Services.AddScoped<IPhotoService, PhotoService>();
 			builder.Services.AddScoped<ITagService, TagService>();
 			builder.Services.AddScoped<IContactService, ContactService>();
@@ -67,7 +76,6 @@ namespace Luxa
 			if (!app.Environment.IsDevelopment())
 			{
 				app.UseExceptionHandler("/Home/Error");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
 
@@ -77,6 +85,7 @@ namespace Luxa
 			app.UseRouting();
 
 			app.UseAuthorization();
+			app.UseSession();
 
 			app.MapControllerRoute(
 				name: "default",

@@ -1,0 +1,40 @@
+﻿<div>
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-title" id="itemHead">Wyszukaj: </h5>
+		</div>
+		<div class="card-body">
+			<blockquote class="blockquote mb-0">
+				<div>
+					<label for="categoryFilter">Tag:</label>
+					<input class="form-control me-2" type="search" placeholder="Wyszukaj tag" aria-label="Search">
+
+
+					<label for="category">Kategoria:</label>
+					@Html.DropDownList("category",
+											Enum.GetValues(typeof(Luxa.Data.Enums.CategoryOfPhotos))
+											.Cast<Luxa.Data.Enums.CategoryOfPhotos>().Select(e =>
+											{
+												var displayAttribute = typeof(Luxa.Data.Enums.CategoryOfPhotos).GetField(e.ToString())
+												?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+												.SingleOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+												var displayName = displayAttribute?.GetName() ?? e.ToString();
+												return new SelectListItem { Text = displayName, Value = e.ToString() };
+											}), new { @class = "form-select form-select-lg mb-3", @id = "category" })
+
+					<label for="orderBy">Sortuj według:</label>
+					@Html.DropDownList("orderBy", (IEnumerable<SelectListItem>)ViewBag.SelectItemListOrderBy, new { @class = "form-select form-select-lg mb-3" })
+					<label for="stateFilter">Kierunek sortowania: </label>
+					<select>
+						<option>Malejąco</option>
+						<option>Rosnąco</option>
+					</select>
+					<button class="btn btn-primary" onclick="applyFilter()">Filtruj</button>
+				</div>
+			</blockquote>
+		</div>
+	</div>
+	<div>
+	</div>
+
+</div>
