@@ -26,3 +26,5 @@ Instrukcja:
 	- SignIn: ~/Account/SignIn lub ~/SignIn
 	- CreateUser: ~/Account/CreateUser
 	- UsersList: ~/Account/UsersList
+
+3. Żeby logowanie Google działało należy pobrać pakiet "Microsoft.AspNetCore.Authentication.Google"

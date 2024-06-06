@@ -3,6 +3,7 @@ using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.Services;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,8 @@ namespace Luxa.Controllers
 		[HttpGet]
 		public IActionResult SignIn()
 		{
-			return View();
+			var model = new SignInVM();
+			return View(model);
 		}
 
 		[HttpPost]
@@ -42,8 +44,7 @@ namespace Luxa.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var result =
-					await _signInManager.PasswordSignInAsync(signInVM.UserName!, signInVM.Password!, signInVM.RememberMe, false);
+				var result = await _signInManager.PasswordSignInAsync(signInVM.UserName!, signInVM.Password!, signInVM.RememberMe, false);
 				if (result.Succeeded)
 				{
 					var user = _userService.GetCurrentLoggedInUserWithPhotos(User);
@@ -55,10 +56,49 @@ namespace Luxa.Controllers
 				}
 
 				ModelState.AddModelError("", "Niepoprawna próba logowania");
-				return View(signInVM);
 			}
 
 			return View(signInVM);
+		}
+
+		//google
+		[HttpGet]
+		public IActionResult SignInGoogle()
+		{
+			var redirectUrl = Url.Action(nameof(GoogleResponse), "Account");
+			var properties = _signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
+			return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+		}
+		[HttpGet]
+		public async Task<IActionResult> GoogleResponse()
+		{
+			var info = await _signInManager.GetExternalLoginInfoAsync();
+			if (info == null)
+			{
+				return RedirectToAction(nameof(SignIn));
+			}
+
+			var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+			if (signInResult.Succeeded)
+			{
+				return RedirectToAction("Index", "Home");
+			}
+
+			var user = new UserModel
+			{
+				UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+				Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+			};
+
+			var result = await _userManager.CreateAsync(user);
+			if (result.Succeeded)
+			{
+				await _userManager.AddLoginAsync(user, info);
+				await _signInManager.SignInAsync(user, isPersistent: false);
+				return RedirectToAction("Index", "Home");
+			}
+
+			return RedirectToAction(nameof(SignIn));
 		}
 
 		[HttpGet]

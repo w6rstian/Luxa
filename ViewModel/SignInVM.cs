@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Authentication;
+using System.ComponentModel.DataAnnotations;
 
 namespace Luxa.ViewModel
 {
@@ -14,5 +15,5 @@ namespace Luxa.ViewModel
         public string? Password { get; set; }
         [Display(Name = "Zapamiętaj mnie")]
         public bool RememberMe { get; set; }
-    }
+	}
 }

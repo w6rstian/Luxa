@@ -3,6 +3,8 @@ using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.Repository;
 using Luxa.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,21 +58,19 @@ namespace Luxa
 			builder.Services.AddScoped<IContactService, ContactService>();
 			builder.Services.AddScoped<IUserService, UserService>();
 
+			// Google
+			builder.Services.AddAuthentication()
+				.AddGoogle(options =>
+				{
+					IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("GoogleKeys");
+					options.ClientId = googleAuthNSection["ClientId"];
+					options.ClientSecret = googleAuthNSection["ClientSecret"];
+				});
 
 			var app = builder.Build();
 
 			NotificationsDataInit.SeedNotifications(app);
 			_ = IdentityDataInit.SeedUsersAndRolesAsync(app);
-
-
-
-
-
-
-
-
-
-
 
 			// Configure the HTTP request pipeline.
 			if (!app.Environment.IsDevelopment())
