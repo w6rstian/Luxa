@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = null;
+}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+<style>
+    body {
+        background-color: #4A4A4A;
+        background-image: url("https://cdn.discordapp.com/attachments/716072797574529076/1248353857810075831/landingBG.png?ex=66635ba0&is=66620a20&hm=49a8098dd97e6fb339f93219f65745dc42bf1a81000a4c6b272cd512491c92f1&");
+    }
+    #bg { 
+        height: 100%;
+        width: 100%;
+    }
+    .flex {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .flexitems {
+        width: auto;
+        color: white;
+        text-align: center;
+        font-family: "Lato";
+    }
+    #register {
+        background-color: #FF715B;
+        border-radius: 5pt;
+        padding: 10px;
+        text-decoration: none;
+        color: white;
+        font-size: 32pt;
+        font-weight: bold;
+    }
+    p a {
+        color: #1EA896;
+    }
+    #smalltext {
+        font-size: 14pt;
+    }
+    #title {
+        font-size: 128pt;
+        font-family: "Times New Roman";
+    }
+</style>
+<div id="bg" class="flex">
+    <div class="flexitems">
+        <div id="title">LUXA</div>
+        <a id="register" asp-controller="Account" asp-action="SignUp">Zarejestruj się</a>
+        <p id="smalltext">Masz już konto? <a asp-controller="Account" asp-action="SignIn">Zaloguj się!</a></p>
+    </div>
+</div>
+
