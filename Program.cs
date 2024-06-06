@@ -50,6 +50,7 @@ namespace Luxa
 			//Services
 			builder.Services.AddScoped<NotificationService>();
 			builder.Services.AddScoped<ISettingsService, SettingsService>();
+			builder.Services.AddScoped<IHomeService, HomeService>();
 			builder.Services.AddScoped<IPhotoService, PhotoService>();
 			builder.Services.AddScoped<ITagService, TagService>();
 			builder.Services.AddScoped<IContactService, ContactService>();
