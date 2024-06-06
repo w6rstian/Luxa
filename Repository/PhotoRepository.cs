@@ -42,8 +42,13 @@ namespace Luxa.Repository
 				.Where(e => e.Id == idPhoto)
 				.First();
 
+        public async Task<Photo> GetPhotoByIdAsync(int idPhoto)
+            => _context.Photo
+                .Where(e => e.Id == idPhoto)
+                .First();
 
-		public bool Save()
+
+        public bool Save()
 			=> _context.SaveChanges() > 0;
 
 		public async Task<bool> SaveAsync()

@@ -2,9 +2,11 @@
 using Luxa.Interfaces;
 using Luxa.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.NetworkInformation;
 //using AspNetCore;
 
 namespace Luxa.Controllers
@@ -35,8 +37,43 @@ namespace Luxa.Controllers
 			=> View(await _context.Photo.Include(m => m.Owner).ToListAsync());
 
 
-		// GET: Photos/Details/5
-		public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> DownloadImage(int id)
+        { 
+			var photo = await _photoService.GetImageByIdAsync(id);
+            string filePath = Path.Combine(_hostEnvironment.WebRootPath,"Image/" + photo.Name);
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            if (photo == null)
+            {
+                return null;
+            }
+            string extension = Path.GetExtension(photo.Name);
+            string contentType = GetContentType(extension);
+            return File(fileBytes,contentType, photo.Name);
+        }
+		private string GetContentType(string extension)
+    {
+        return extension.ToLower() switch
+        {
+            ".jpg" => "image/jpeg",
+            ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream",
+        };
+    }
+
+        /*public async Task<IActionResult> Index()
+        {
+            var photos = await _photoService.GetAllImagesAsync();
+            return View(photos);
+        }*/
+
+
+
+
+        // GET: Photos/Details/5
+        public async Task<IActionResult> Details(int? id)
 		{
 			if (id == null)
 			{

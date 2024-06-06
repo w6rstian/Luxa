@@ -12,8 +12,8 @@ namespace Luxa.Services
 
 		}
 		private List<string> TagsToList(string tags)
-			=> tags.Split(",").ToList();
-		public bool Add(string tags)
+            => tags?.Split(',').ToList() ?? new List<string>();
+        public bool Add(string tags)
 		{
 			List<string> listTagsFromString = TagsToList(tags);
 			foreach (var item in listTagsFromString)
@@ -31,7 +31,7 @@ namespace Luxa.Services
 			return true;
 		}
 
-		public List<TagModel> GetTagsFromString(string tags)
+		public List<TagModel> GetTagsFromString(string? tags)
 		{
 			List<string> listTagsFromString = TagsToList(tags);
 			return _tagRepository.GetTagsFromCollection(listTagsFromString);

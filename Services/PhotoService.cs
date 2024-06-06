@@ -1,10 +1,11 @@
 ﻿using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Repository;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Luxa.Services
 {
@@ -15,6 +16,7 @@ namespace Luxa.Services
 		private readonly UserManager<UserModel> _userManager;
 		private readonly IWebHostEnvironment _hostEnvironment;
 		private readonly ITagService _tagService;
+		
 
 		public PhotoService(ApplicationDbContext context,
 			UserManager<UserModel> userManager,
@@ -25,10 +27,19 @@ namespace Luxa.Services
 			_userManager = userManager;
 			_hostEnvironment = hostEnvironment;
 			_photoRepository = photoRepository;
-			_tagService = tagService;
-		}
+            _tagService = tagService;
+        }
 
-		public async Task<bool> Create(UserModel user)
+        public async Task<Photo> GetImageByIdAsync(int id)
+        {
+			return await _photoRepository.GetPhotoByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<Photo>> GetAllImagesAsync()
+        {
+            return await _context.Photo.ToListAsync();
+        }
+        public async Task<bool> Create(UserModel user)
 		{
 			return true;
 		}
@@ -244,5 +255,14 @@ namespace Luxa.Services
 		{
 			throw new NotImplementedException();
 		}
-	}
+        /*public Task<Photo> GetImageByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Photo>> GetAllImagesAsync()
+        {
+            throw new NotImplementedException();
+        }*/
+    }
 }
