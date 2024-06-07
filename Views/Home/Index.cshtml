@@ -328,10 +328,11 @@
 		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
 			console.log("pętla: " + isLoadingPhotos);
 			isLoadingPhotos = true;
-			await loadPhotos();
+			if (await loadPhotos()) {
 				isLoadingPhotos = false;
-				console.log("then: "+isLoadingPhotos);
-			console.log("after: " + isLoadingPhotos);
+			} else {
+				break;
+			}
 		}
 	});
 	// window.addEventListener('load', function ()

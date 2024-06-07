@@ -1,4 +1,5 @@
 ﻿using Luxa.Data;
+using Luxa.Data.Enums;
 using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.ViewModel;
@@ -240,15 +241,72 @@ namespace Luxa.Services
 			return _photoRepository.Save();
 		}
 
-		public Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedForDiscoverAsync(int pageNumber, int pageSize, UserModel user, string tag = "", string category = "", bool order = false, string sortBy = "")
+		public async Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedForDiscoverAsync(int pageNumber, int pageSize, UserModel user, string tag = "", string category = "", bool order = false, string sortBy = "")
 		{
-			var photos = _photoRepository.GetAllPhotos();
-
-
-
-			throw new NotImplementedException();
+			var photos = await _photoRepository.GetAllPhotos();
+			if (tag!="") 
+			{
+				photos=photos.Where(p => p.PhotoTags.Any(pt => pt.Tag.TagName == tag));
+            }
+			var enumCategory = GetEnumCategory(category);
+            if (enumCategory!=null)
+            {
+                photos=photos.Where(p => p.Category == enumCategory);
+            }
+            foreach (var photo in photos)
+            {
+                _photoRepository.LikeCount(photo);
+            }
+            string sortByWithDirection = sortBy+GetOrder(order);
+			switch(sortByWithDirection)
+			{
+				case "Date":
+					photos = photos.OrderBy(p => p.AddTime);
+					break;
+                case "Views":
+                    photos = photos.OrderBy(p => p.Views);
+                    break;
+                case "Likes":
+                    photos = photos.OrderBy(p => p.LikeCount);
+                    break;
+				case "Date_Desc":
+                    photos = photos.OrderByDescending(p => p.AddTime);
+                    break;
+				case "Views_Desc":
+                    photos = photos.OrderByDescending(p => p.Views);
+                    break;
+				case "Likes_Desc":
+                    photos = photos.OrderByDescending(p => p.LikeCount);
+                    break;
+                default:
+					//można pomyśleć 
+					break;
+			}
+			photos=photos.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var likedPhotos = await GetLikedPhotos(user);
+            var likedPhotoIds = new HashSet<int>(likedPhotos.Select(p => p.Id));
+            var photosWithIsLiked = photos.Select(photo => new PhotoWithIsLikedVM
+            {
+                Photo = photo,
+                IsLiked = likedPhotoIds.Contains(photo.Id),
+                OwnerName = photo.Owner.UserName
+            }).ToList();
+            return photosWithIsLiked;
 		}
+		private string GetOrder(bool order)
+			=> (order) ? "" : "_Desc"; 
+		
+        private CategoryOfPhotos? GetEnumCategory(string category)
+        {
+            foreach (CategoryOfPhotos item in Enum.GetValues(typeof(CategoryOfPhotos)))
+            {
+                if (category.Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
 
-
-	}
+    }
 }

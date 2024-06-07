@@ -104,6 +104,7 @@
 
 
 	async function loadPhotos() {
+		console.log(pageNumber+" "+pageSize+" "+tag+" "+category+" "+orderAsc+" " +sortBy);
 		const response = await fetch(`/Photos/LoadPhotos?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
 		const photos = await response.json();
 		if (photos.length > 0) {
@@ -225,10 +226,14 @@
 
 
 	window.addEventListener('DOMContentLoaded', async function () {
+		console.log("wczytywanie");
 		generateColumns(getWindowWidth());
+		console.log("generowanie kolumn");
 		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
 			isLoadingPhotos = true;
+			console.log("wczytywanie zdjęć");
 			await loadPhotos();
+			console.log("Po wczytaniu");
 			isLoadingPhotos = false;
 		}
 	});
