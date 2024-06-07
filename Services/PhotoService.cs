@@ -242,7 +242,13 @@ namespace Luxa.Services
 
 		public Task<List<PhotoWithIsLikedVM>> GetPhotosWithIsLikedForDiscoverAsync(int pageNumber, int pageSize, UserModel user, string tag = "", string category = "", bool order = false, string sortBy = "")
 		{
+			var photos = _photoRepository.GetAllPhotos();
+
+
+
 			throw new NotImplementedException();
 		}
+
+
 	}
 }

@@ -5,5 +5,6 @@ namespace Luxa.Interfaces
 	public interface IHomeService
 	{
 		List<SelectListItem> GetOrderBySelectListItem();
+		List<SelectListItem> GetCategoriesSelectListItem();
 	}
 }

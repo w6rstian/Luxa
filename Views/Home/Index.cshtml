@@ -207,7 +207,7 @@
 		const photos = await response.json();
 		if (photos.length > 0) {
 			addPhotosToColumns(photos);
-			//pageNumber++;
+			pageNumber++;
 			return true;
 		}
 		else {

@@ -22,7 +22,6 @@ namespace Luxa.Controllers
 		[Authorize]
 		public IActionResult Index()
         {
-
             return View();
         }
 
@@ -40,7 +39,8 @@ namespace Luxa.Controllers
         public IActionResult Discover(string? tag) 
         {
             ViewBag.SelectItemListOrderBy = _homeService.GetOrderBySelectListItem();
-
+            ViewBag.SelectItemListCategory = _homeService.GetCategoriesSelectListItem();
+            ViewBag.Tag = tag;
             return View();
         }
     }

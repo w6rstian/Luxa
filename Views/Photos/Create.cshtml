@@ -118,7 +118,7 @@
 		const tagsInput = document.getElementById('tags');
 
 		inputField.addEventListener('keydown', function (event) {
-			if (event.key === ' ') {
+			if (event.key === ' ' && event.key === ',') {
 				event.preventDefault();
 				createBlock(inputField.value.trim());
 				inputField.value = '';
