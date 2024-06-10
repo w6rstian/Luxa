@@ -283,7 +283,7 @@ namespace Luxa.Services
 					break;
 			}
 			photos = photos.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-			var listPhotos = await photos.ToListAsync();
+			var listPhotos = await photos.Include(p => p.Owner).ToListAsync();
 			foreach (var photo in listPhotos)
 			{
 				_photoRepository.LikeCount(photo);

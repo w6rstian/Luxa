@@ -44,6 +44,7 @@
 	let orderAsc = false;
 	let sortBy = "date";
 	var tag = "";
+	let isNotAllPhotos = true; 
 	// document.addEventListener('DOMContentLoaded', function () {
 	// 	const containers = document.querySelectorAll('.photo-galery');
 	// 	console.log(containers);
@@ -154,14 +155,15 @@
 		return shortestColumn;
 	}
 	function changeLikeButton(id) {
-		const url = window.location.origin + '/';
-		console.log(url);
+		const url = window.location.origin;
+		console.log(url+" "+img+" "+like);
 		var img = document.getElementById('photo.' + id);
 		var like = document.getElementById('likes.' + id);
 		let currentValue = parseInt(like.textContent);
 		console.log(like);
 		var src = img.src;
-		console.log('img.src: ' + img.src + ' likePath: ' + likePath)
+		console.log('img.src: ' + img.src + ' likePath: ' + likePath);
+		console.log('ścieżka: ' +url + unlikePath);
 		if (img.src === url + unlikePath) {
 			img.src = url + likePath;
 			console.log('niby prawda że unlike jest');
@@ -185,6 +187,7 @@
 			const photoDiv = document.createElement('div');
 			//trzeba pobrać wartość z modelu
 			const isLiked = photo.isLiked
+			console.log("isLiked"+isLiked);
 			if (isLiked) {
 				var likeString = likePath;
 			}
@@ -217,10 +220,11 @@
 
 	window.addEventListener('scroll', () => {
 
-		if (!isLoadingPhotos && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+		if (!isLoadingPhotos && isNotAllPhotos && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
 			console.log("Scroll zadziałał");
 			isLoadingPhotos = true;
-			loadPhotos().then(() => {
+			loadPhotos().then((result) => {
+				isNotAllPhotos = result;
 				isLoadingPhotos = false;
 			});
 		}
@@ -230,12 +234,13 @@
 	async function initPhotos() 
 	{
 		generateColumns(getWindowWidth());
-		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
+		while (!isLoadingPhotos && isNotAllPhotos && (window.innerHeight >= document.body.offsetHeight)) {
 			console.log("pętla: " + isLoadingPhotos);
 			isLoadingPhotos = true;
 			if (await loadPhotos()) {
 				isLoadingPhotos = false;
 			} else {
+				isNotAllPhotos = false;
 				break;
 			}
 		}
@@ -295,6 +300,7 @@
 		category = document.getElementById("category").value;
 		orderAsc = getOrder();
 		sortBy = document.getElementById("orderBy").value;
+		isNotAllPhotos = true;
 		await initPhotos();
 
 	};
