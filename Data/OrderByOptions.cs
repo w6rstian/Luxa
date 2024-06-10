@@ -4,6 +4,6 @@
 	{
 		public const string Date = "Data";
 		public const string Views = "Wyświetlenia";
-		public const string Likes = "Polubienia";
+		//public const string Likes = "Polubienia";
 	}
 }

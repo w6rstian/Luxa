@@ -60,16 +60,21 @@ namespace Luxa.Controllers
 			var user = _userService.GetCurrentLoggedInUser(User);
 			if (user == null)
 				//To jest do zmiany i przemyœlenia
-				throw new NotImplementedException();
+				return Unauthorized("User not logged in.");
+			//throw new NotImplementedException();
 			var photos = await _photoService.GetPhotosWithIsLikedForDiscoverAsync(pageNumber, pageSize, user, tag, category, order, sortBy);
-
-			/*
+			List<Photo> viewedPhotos = []; 
 			foreach (var photo in photos)
 			{
 				var sessionKey = $"viewed_photo_{photo.Photo.Id}";
 				if (HttpContext.Session.GetString(sessionKey) == null)
+				{
 					HttpContext.Session.SetString(sessionKey, "viewed");
-			}*/
+					viewedPhotos.Add(photo.Photo);
+				}
+            }
+			_photoService.IncrementViewCountAsync(viewedPhotos);
+
 			return Json(photos);
 		}
 

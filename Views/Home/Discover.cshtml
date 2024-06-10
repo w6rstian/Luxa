@@ -10,21 +10,21 @@
 					<label for="categoryFilter">Tag:</label>
 					<input class="form-control me-2" type="search" placeholder="Wyszukaj tag" aria-label="Search" id="searchTag">
 					<label for="category">Kategoria:</label>
-					@Html.DropDownList("category", (IEnumerable<SelectListItem>)ViewBag.SelectItemListCategory, new { @class = "form-select form-select-lg mb-3" })
+					@Html.DropDownList("category", (IEnumerable<SelectListItem>)ViewBag.SelectItemListCategory, new { @class = "form-select form-select-lg mb-3", @id = "category"})
 					<label for="orderBy">Sortuj według:</label>
-					@Html.DropDownList("orderBy", (IEnumerable<SelectListItem>)ViewBag.SelectItemListOrderBy, new { @class = "form-select form-select-lg mb-3" })
+					@Html.DropDownList("orderBy", (IEnumerable<SelectListItem>)ViewBag.SelectItemListOrderBy, new { @class = "form-select form-select-lg mb-3", @id="orderBy" })
 					<label for="stateFilter">Kierunek sortowania: </label>
-					<select>
+					<select class="form-select form-select-lg mb-3" id="orderDirection">
 						<option value="DSC">Malejąco</option>
 						<option value="ASC">Rosnąco</option>
 					</select>
-					<button class="btn btn-primary" onclick="applyFilter()">Filtruj</button>
+					<button class="btn btn-primary" onclick="changeData()">Filtruj</button>
 				</div>
 			</blockquote>
 		</div>
 	</div>
 	<div class="newBox">
-		<div class="photo-galery">
+		<div id="photo-galery" class="photo-galery">
 		</div>
 	</div>
 
@@ -43,6 +43,7 @@
 	let category = "";
 	let orderAsc = false;
 	let sortBy = "date";
+	var tag = "";
 	// document.addEventListener('DOMContentLoaded', function () {
 	// 	const containers = document.querySelectorAll('.photo-galery');
 	// 	console.log(containers);
@@ -103,7 +104,7 @@
 
 
 	async function loadPhotos() {
-		let tag = document.getElementById('tag').value;
+		
 		console.log(tag);
 		console.log(pageNumber+" "+pageSize+" "+tag+" "+category+" "+orderAsc+" " +sortBy);
 		const response = await fetch(`/Home/LoadPhotosForDiscover?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
@@ -226,8 +227,8 @@
 
 	});
 
-
-	window.addEventListener('DOMContentLoaded', async function () {
+	async function initPhotos() 
+	{
 		generateColumns(getWindowWidth());
 		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
 			console.log("pętla: " + isLoadingPhotos);
@@ -238,6 +239,15 @@
 				break;
 			}
 		}
+		isLoadingPhotos = false;
+
+	}
+
+	window.addEventListener('DOMContentLoaded', async function () {
+		tag = document.getElementById('tag').value;
+		console.log("chuj" + tag);
+		await initPhotos();
+
 	});
 	// window.addEventListener('load', function ()
 	// {
@@ -262,5 +272,30 @@
 			});
 		});
 	};
+	function getOrder() 
+	{
+		const orderDirection = document.getElementById("orderDirection").value;
+		console.log(orderDirection);
+		if (orderDirection === "ASC") 
+		{
+			return true; 
+		}
+		else 
+		{
+			return false;
+		}
+	};
 
+	async function changeData() 
+	{
+		var photoGalery = document.getElementById("photo-galery");
+		photoGalery.innerHTML = '';
+		pageNumber = 1;
+		tag = document.getElementById("searchTag").value;
+		category = document.getElementById("category").value;
+		orderAsc = getOrder();
+		sortBy = document.getElementById("orderBy").value;
+		await initPhotos();
+
+	};
 </script>

@@ -235,9 +235,12 @@ namespace Luxa.Services
 			return _photoRepository.Save();
 		}
 
-		public bool IncrementViewCountAsync(Photo photo)
+		public bool IncrementViewCountAsync(List<Photo> photos)
 		{
-			photo.Views++;
+			foreach (var item in photos) 
+			{
+				item.Views++;
+			}
 			return _photoRepository.Save();
 		}
 
@@ -250,7 +253,7 @@ namespace Luxa.Services
 			string? sortBy = "")
 		{
 			var photos = _photoRepository.GetPhotosAsync();
-			if (tag != "")
+			if (tag != "" && tag !=null)
 			{
 				photos = photos.Where(p => p.PhotoTags.Any(pt => pt.Tag.TagName == tag));
 			}
@@ -258,10 +261,6 @@ namespace Luxa.Services
 			if (enumCategory != null)
 			{
 				photos = photos.Where(p => p.Category == enumCategory);
-			}
-			foreach (var photo in photos)
-			{
-				_photoRepository.LikeCount(photo);
 			}
 			string sortByWithDirection = sortBy + GetOrder(order);
 			switch (sortByWithDirection)
@@ -272,24 +271,23 @@ namespace Luxa.Services
 				case "views":
 					photos = photos.OrderBy(p => p.Views);
 					break;
-				case "likes":
-					photos = photos.OrderBy(p => p.LikeCount);
-					break;
 				case "date_Desc":
 					photos = photos.OrderByDescending(p => p.AddTime);
 					break;
 				case "views_Desc":
 					photos = photos.OrderByDescending(p => p.Views);
 					break;
-				case "likes_Desc":
-					photos = photos.OrderByDescending(p => p.LikeCount);
-					break;
 				default:
+					photos = photos.OrderByDescending(p => p.AddTime);
 					//można pomyśleć 
 					break;
 			}
 			photos = photos.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 			var listPhotos = await photos.ToListAsync();
+			foreach (var photo in listPhotos)
+			{
+				_photoRepository.LikeCount(photo);
+			}
 			var likedPhotos = await GetLikedPhotos(user);
 			var likedPhotoIds = new HashSet<int>(likedPhotos.Select(p => p.Id));
 			var photosWithIsLiked = listPhotos.Select(photo => new PhotoWithIsLikedVM
