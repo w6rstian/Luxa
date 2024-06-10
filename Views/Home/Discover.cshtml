@@ -31,14 +31,13 @@
 </div>
 
 <script>
-	let tag = document.getElementById('tag');;
 	let pageNumber = 1;
 	const pageSize = 30;
 	const maxQuantityOfColumns = 6;
 	//Przy 1920px to 6 kolumn
 	const pixelsPerColumn = 300;
 	let isLoadingPhotos = false;
-	const path = 'assets/';
+	const path = '/assets/';
 	const likePath = path + 'likeButton.png';
 	const unlikePath = path + 'unlikeButton.png';
 	let category = "";
@@ -104,9 +103,12 @@
 
 
 	async function loadPhotos() {
+		let tag = document.getElementById('tag').value;
+		console.log(tag);
 		console.log(pageNumber+" "+pageSize+" "+tag+" "+category+" "+orderAsc+" " +sortBy);
-		const response = await fetch(`/Photos/LoadPhotos?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
+		const response = await fetch(`/Home/LoadPhotosForDiscover?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
 		const photos = await response.json();
+		console.log(photos);
 		if (photos.length > 0) {
 			addPhotosToColumns(photos);
 			pageNumber++;
@@ -192,7 +194,7 @@
 			photoDiv.classList.add('photo', 'trigger');
 			photoDiv.innerHTML = `
 										<a type="button" href="Photos/Details/${photo.photo.id}">
-											<img src="Image/${photo.photo.name}" alt="Photo">
+											<img src="/Image/${photo.photo.name}" alt="Photo">
 										</a>
 											<div class="target">
 												<div class="like">
@@ -226,15 +228,15 @@
 
 
 	window.addEventListener('DOMContentLoaded', async function () {
-		console.log("wczytywanie");
 		generateColumns(getWindowWidth());
-		console.log("generowanie kolumn");
 		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
+			console.log("pętla: " + isLoadingPhotos);
 			isLoadingPhotos = true;
-			console.log("wczytywanie zdjęć");
-			await loadPhotos();
-			console.log("Po wczytaniu");
-			isLoadingPhotos = false;
+			if (await loadPhotos()) {
+				isLoadingPhotos = false;
+			} else {
+				break;
+			}
 		}
 	});
 	// window.addEventListener('load', function ()
