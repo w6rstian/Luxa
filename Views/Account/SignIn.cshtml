@@ -1,10 +1,24 @@
 ﻿@{
 	ViewData["Title"] = "Logowanie";
+	Layout = "_NoNavbarFooterLayout";
 }
 @model Luxa.ViewModel.SignInVM
+<style>
+	body {
+		background-color: #4A4A4A;
+	}
+
+	.btn-primary {
+		background-color: #1EA896;
+	}
+
+	.row {
+		margin-top: 10%;
+	}
+</style>
 <div class="row d-flex align-itemsalign-content-center justify-content-center">
 	<div class="col col-md-3 card p-3">
-		<h3 class="text-center text-info">Zaloguj się!</h3>
+		<h3 class="text-center text-info text-black">Zaloguj się!</h3>
 			<form method="post" asp-controller="Account" asp-action="SignIn">
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 				<div class="mb-1">
