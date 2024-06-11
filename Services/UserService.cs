@@ -43,10 +43,6 @@ namespace Luxa.Services
         public async Task<UserModel?> GetUserByUserName(string userName)
         {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName);
-            if (user != null && string.IsNullOrEmpty(user.AvatarUrl))
-            {
-                user.AvatarUrl = "/assets/blank-profile-picture.png";
-            }
             return user;
         }
 

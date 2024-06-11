@@ -314,7 +314,7 @@ namespace Luxa.Controllers
             return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName = userName });
         }
 
-        //profil i avatar
+        //profil avatar i tlo
         [Authorize]
         public async Task<IActionResult> UserProfile(string userName)
         {
@@ -333,11 +333,14 @@ namespace Luxa.Controllers
 
                 // domyslny avatar
                 var avatarUrl = !string.IsNullOrEmpty(profileUser.AvatarUrl) ? profileUser.AvatarUrl : "/assets/blank-profile-picture.png";
+                // domyslny avatar
+                var backgroundUrl = !string.IsNullOrEmpty(profileUser.BackgroundUrl) ? profileUser.BackgroundUrl : "/assets/prostokat.png";
 
                 var model = new UserProfileVM
                 {
                     UserName = profileUser.UserName,
-                    AvatarUrl = avatarUrl
+                    AvatarUrl = avatarUrl,
+                    BackgroundUrl = backgroundUrl
                 };
 
                 return View(model);
@@ -369,6 +372,31 @@ namespace Luxa.Controllers
 
             return RedirectToAction("UserProfile", new { userName = User.Identity.Name });
         }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UploadBackground(IFormFile background)
+        {
+            if (background != null && background.Length > 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var fileName = Path.GetFileName(background.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await background.CopyToAsync(stream);
+                }
+
+                user.BackgroundUrl = $"/avatars/{fileName}";
+                await _userManager.UpdateAsync(user);
+
+                return RedirectToAction("UserProfile", new { userName = user.UserName });
+            }
+
+            return RedirectToAction("UserProfile", new { userName = User.Identity.Name });
+        }
+
     }
 
 }
