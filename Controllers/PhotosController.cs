@@ -212,40 +212,8 @@ namespace Luxa.Controllers
 		{
 			return _context.Photo.Any(e => e.Id == id);
 		}
-		[Authorize]
-		[HttpGet]
-		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
-		{
-			var user = _userService.GetCurrentLoggedInUser(User);
-			if (user == null)
-				//tutaj chyba wywala się na krzywy pyszczek
-				return RedirectToAction("SignIn");
-			var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize, user);
-			foreach (var photo in photos)
-			{
-				var sessionKey = $"viewed_photo_{photo.Photo.Id}";
-				if (HttpContext.Session.GetString(sessionKey) == null)
-					HttpContext.Session.SetString(sessionKey, "viewed");
-			}
 
-			return Json(photos);
-		}
-        public async Task<IActionResult> LoadPhotosForDiscover(int pageNumber, int pageSize, string tag,string category, bool order,string sortBy)
-        {
-            var user = _userService.GetCurrentLoggedInUser(User);
-            if (user == null)
-                //tutaj chyba wywala się na krzywy pyszczek
-                return RedirectToAction("SignIn");
-            var photos = await _photoService.GetPhotosWithIsLikedForDiscoverAsync(pageNumber, pageSize, user,tag,category,order,sortBy);
-            
-			foreach (var photo in photos)
-            {
-                var sessionKey = $"viewed_photo_{photo.Photo.Id}";
-                if (HttpContext.Session.GetString(sessionKey) == null)
-                    HttpContext.Session.SetString(sessionKey, "viewed");
-            }
-            return Json(photos);
-        }
+       
         [HttpPost]
 		public async Task<bool> LikeOrUnlikePhoto(int idPhoto)
 		{

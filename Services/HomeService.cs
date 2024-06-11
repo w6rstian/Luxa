@@ -1,6 +1,8 @@
 ﻿using Luxa.Data;
+using Luxa.Data.Enums;
 using Luxa.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Luxa.Services
 {
@@ -18,12 +20,26 @@ namespace Luxa.Services
 							.ToList();
 
 			// Dodaj opcję domyślną na początku listy
-			orderByList.Insert(0, new SelectListItem { Text = "Nie sortuj", Value = "" });
+			//orderByList.Insert(0, new SelectListItem { Text = "Nie sortuj", Value = "" });
 			return orderByList;
 		}
-		public List<SelectListItem> GetCategoriesSelectListItem() 
+		public List<SelectListItem> GetCategoriesSelectListItem()
 		{
-			throw new NotImplementedException();
+			var categoryList = Enum.GetValues(typeof(CategoryOfPhotos))
+					   .Cast<CategoryOfPhotos>()
+					   .Select(e =>
+					   {
+						   var displayAttribute = typeof(CategoryOfPhotos).GetField(e.ToString())
+							   ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+							   .SingleOrDefault() as DisplayAttribute;
+						   var displayName = displayAttribute?.GetName() ?? e.ToString();
+						   return new SelectListItem { Text = displayName, Value = e.ToString() };
+					   })
+					   .ToList();
+			categoryList.Insert(0, new SelectListItem { Text = "Wszystkie", Value = "" });
+			return categoryList;
+
 		}
 	}
 }
+	

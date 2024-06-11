@@ -50,6 +50,7 @@ namespace Luxa.Controllers
 					var user = _userService.GetCurrentLoggedInUserWithPhotos(User);
 					if (user != null)
 					{
+						//HttpContext.Session.Clear();
 						await _userService.UpdateReputation(user);
 						return RedirectToAction("Index", "Home");
 					}
@@ -152,7 +153,20 @@ namespace Luxa.Controllers
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
+			foreach (var key in HttpContext.Session.Keys)
+			{
+				Console.WriteLine($"Sesja zawiera klucz: {key}");
+			}
 			HttpContext.Session.Clear();
+			foreach (var key in HttpContext.Session.Keys)
+			{
+				Console.WriteLine($"Sesja nie zawiera klucz: {key}");
+			}
+
+			if (HttpContext.Request.Cookies[".AspNetCore.Session"] != null)
+			{
+				Response.Cookies.Delete(".AspNetCore.Session");
+			}
 			return RedirectToAction("Index", "Home");
 		}
 

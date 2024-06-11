@@ -34,8 +34,8 @@
 	var notificationsCount = await notificationService.GetNotificationsCountAsync(userId);
 	<ul class="navbar-nav flex-grow-1 mx-3">
 		<li>
-			<form class="d-flex" role="search">
-				<input class="form-control me-2" type="search" placeholder="Wyszukaj tag" aria-label="Search">
+			<form class="d-flex" role="search" action="/Home/Discover" method="get">
+				<input class="form-control me-2" type="search" name="tag" placeholder="Wyszukaj tag" aria-label="Search">
 				<button class="btn btn-primary" type="submit">Szukaj</button>
 			</form>
 		</li>

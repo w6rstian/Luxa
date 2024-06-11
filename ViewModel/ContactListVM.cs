@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Luxa.Models
+namespace Luxa.ViewModel
 {
 	public class ContactListVM
 	{

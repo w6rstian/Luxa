@@ -17,6 +17,8 @@ namespace Luxa.Repository
 		{
 			throw new NotImplementedException();
 		}
+		public IQueryable<Photo> GetPhotosAsync()
+			=> _context.Photo.AsQueryable();
 
 		public IQueryable<Photo> GetPhotosAsync(int pageNumber, int pageSize)
 			=> _context.Photo
@@ -82,6 +84,7 @@ namespace Luxa.Repository
 
 		public bool LikeCount(Photo photo)
 		{
+
 			photo.LikeCount = _context.UserLikedPhotos.Count(ul => ul.PhotoId == photo.Id);
 			return Save();
 

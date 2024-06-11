@@ -1,5 +1,6 @@
 ﻿using Luxa.Data.Enums;
 using Luxa.Models;
+using Luxa.ViewModel;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
