@@ -61,6 +61,10 @@
     <div id="name-desc">
         <h2>@Model.UserName</h2>
     </div>
+    <div id="description">
+        <h4>About me:</h4>
+        <textarea readonly>@Model.Description</textarea>
+    </div>
     <div id="edit-button">
         <a class="btn btn-primary" asp-action="ChangeData" asp-controller="Settings">Edit Profile</a>
     </div>

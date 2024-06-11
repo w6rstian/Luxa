@@ -340,7 +340,8 @@ namespace Luxa.Controllers
                 {
                     UserName = profileUser.UserName,
                     AvatarUrl = avatarUrl,
-					BackgroundUrl = backgroundUrl
+					BackgroundUrl = backgroundUrl,
+                    Description = profileUser.Description
                 };
 
                 return View(model);
@@ -396,7 +397,6 @@ namespace Luxa.Controllers
 
             return RedirectToAction("UserProfile", new { userName = User.Identity.Name });
         }
-
     }
 
 }

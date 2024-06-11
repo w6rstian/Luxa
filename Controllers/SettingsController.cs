@@ -1,6 +1,10 @@
 ﻿using Luxa.Interfaces;
+using Luxa.Models;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Blazor;
+using System.Drawing.Printing;
 
 namespace Luxa.Controllers
 {
@@ -8,10 +12,12 @@ namespace Luxa.Controllers
     {
         private readonly ISettingsService _settingsService;
         private readonly IUserService _userService;
-        public SettingsController(ISettingsService settingsService, IUserService userService)
+        private readonly UserManager<UserModel> _userManager;
+        public SettingsController(ISettingsService settingsService, IUserService userService, UserManager<UserModel> userManager)
         {
             _settingsService = settingsService;
             _userService = userService;
+            _userManager = userManager;
         }
         public IActionResult Options()
         {
@@ -71,7 +77,6 @@ namespace Luxa.Controllers
             var result = new PrivacyChangeVM { IsPrivate = user?.IsPrivate ?? false };
             return View(result);
         }
-
         [HttpPost]
         public async Task<IActionResult> ChangePrivacy(PrivacyChangeVM privacyChangeVM)
         {
@@ -79,6 +84,24 @@ namespace Luxa.Controllers
             ViewData["Message"] = await _settingsService.ChangePrivacy(user, privacyChangeVM.IsPrivate);
             var result = new PrivacyChangeVM { IsPrivate = privacyChangeVM.IsPrivate };
             return View(result);
+        }
+        //zmiana opisu profilu
+        [HttpGet]
+        public IActionResult ChangeProfile()
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            var result = new ProfileChangeVM { Description = user.Description };
+            return View(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeProfile(ProfileChangeVM profileChangeVM)
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            user.Description = profileChangeVM.Description;
+            await _userManager.UpdateAsync(user);
+            ViewData["Message"] = "Profile updated successfully!";
+            return View(profileChangeVM);
         }
     }
 }

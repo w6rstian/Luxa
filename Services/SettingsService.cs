@@ -93,5 +93,18 @@ namespace Luxa.Services
             }
             return "Coś poszło nie tak.";
         }
+
+        public async Task<string> ChangeProfile(UserModel? user, string Description)
+        {
+            if (user != null)
+            {
+                user.Description = Description;
+                if (await _userService.SaveUser(user))
+                {
+                    return "Zmiana opisu powiodła się.";
+                }
+            }
+            return "Coś poszło nie tak.";
+        }
     }
 }
