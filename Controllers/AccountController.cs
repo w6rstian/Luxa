@@ -294,35 +294,22 @@ namespace Luxa.Controllers
 		{
 			return View();
 		}
-/*		[Authorize]
-		public async Task<IActionResult> UserProfile(string userName)
-		{
-			//zalogowany
-			var user = _userService.GetCurrentLoggedInUser(User);
-			//jeśli nazwa w adresie jest w bazie użytkowników to przechodzimy dalej 
-			if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
-			{
-				ViewBag.UserName = userName;
-				return View();
-			}
-			return NotFound();
-		}*/
+
 		public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
 		{
 			return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName=userName });
 		}
 
-        //mojewypociny
+        //profil i avatar
         [Authorize]
         public async Task<IActionResult> UserProfile(string userName)
         {
-            // Get the currently logged-in user
+            // zalogowany uzytkownik
             var user = _userService.GetCurrentLoggedInUser(User);
 
-            // Check if the user exists and the username in the URL is valid
+            // czy istnieje
             if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
             {
-                // Get the user by username
                 var profileUser = await _userService.GetUserByUserName(userName);
 
                 if (profileUser == null)
@@ -330,10 +317,9 @@ namespace Luxa.Controllers
                     return NotFound();
                 }
 
-                // Set default avatar if none is set
+                // domyslny avatar
                 var avatarUrl = !string.IsNullOrEmpty(profileUser.AvatarUrl) ? profileUser.AvatarUrl : "/assets/blank-profile-picture.png";
 
-                // Populate the UserProfileVM
                 var model = new UserProfileVM
                 {
                     UserName = profileUser.UserName,
