@@ -10,33 +10,50 @@
     <link rel="stylesheet" href="~/Luxa.styles.css" asp-append-version="true" />
 </head>
 <style>
+    :root {
+        --darker-violet: #2b2735;
+        --dark-violet: #373341;
+        --light-violet: #4C3C78;
+        --lighter-violet: #614D99;
+        --yellowish: #FAF0E6;
+    }
      top-line {
          border-top: 1px solid black;
      }
      .footer .container a {
          text-decoration: none;
-        color: #FAF0E6;
+        color: var(--yellowish);
      }
      .yellowish {
-        color: #FAF0E6;
+        color: var(--yellowish);
      }
 
      body {
-        background: #2b2735;
-        color: #FAF0E6;
+        background: var(--darker-violet);
+        color: var(--yellowish);
      }
+
+     .navbar {
+         background-color: var(--dark-violet);
+     }
+
+     .footer {
+         background-color: var(--dark-violet);
+     }
+
      .card {
-        background: #373341;
-        color: #FAF0E6;
+        background: var(--dark-violet);
+        color: var(--yellowish);
      }
 
      .btn-primary {
-        border-color: #B9B4C7;
-        background-color: #B9B4C7;
+        border-color: var(--lighter-violet);
+        background-color: var(--lighter-violet);
      }
+
      .btn-primary:hover {
-            border-color: #5C5470;
-            background-color: #5C5470;
+        border-color: var(--light-violet);
+        background-color: var(--light-violet);
      }
 </style>
 <body>
@@ -48,8 +65,8 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div id="nav-tabs" class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav">
                         @* <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Strona domowa</a>
                         </li> *@
