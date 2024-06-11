@@ -21,6 +21,7 @@ namespace Luxa.Interfaces
 		bool LikePhoto(int idPhoto, UserModel user);
         bool UnlikePhoto(int idPhoto, UserModel user);
         bool IncrementViewCountAsync(List<Photo> photo);
+        void IncrementViewsCountIfNotViewed(List<PhotoWithIsLikedVM> photos);
 
 	}
 }

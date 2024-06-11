@@ -10,9 +10,9 @@
 					<label for="categoryFilter">Tag:</label>
 					<input class="form-control me-2" type="search" placeholder="Wyszukaj tag" aria-label="Search" id="searchTag">
 					<label for="category">Kategoria:</label>
-					@Html.DropDownList("category", (IEnumerable<SelectListItem>)ViewBag.SelectItemListCategory, new { @class = "form-select form-select-lg mb-3", @id = "category"})
+					@Html.DropDownList("category", (IEnumerable<SelectListItem>)ViewBag.SelectItemListCategory, new { @class = "form-select form-select-lg mb-3", @id = "category" })
 					<label for="orderBy">Sortuj według:</label>
-					@Html.DropDownList("orderBy", (IEnumerable<SelectListItem>)ViewBag.SelectItemListOrderBy, new { @class = "form-select form-select-lg mb-3", @id="orderBy" })
+					@Html.DropDownList("orderBy", (IEnumerable<SelectListItem>)ViewBag.SelectItemListOrderBy, new { @class = "form-select form-select-lg mb-3", @id = "orderBy" })
 					<label for="stateFilter">Kierunek sortowania: </label>
 					<select class="form-select form-select-lg mb-3" id="orderDirection">
 						<option value="DSC">Malejąco</option>
@@ -44,7 +44,249 @@
 	let orderAsc = false;
 	let sortBy = "date";
 	var tag = "";
-	let isNotAllPhotos = true; 
+	let isNotAllPhotos = true;
+
+	function getWindowWidth() {
+		var windowWidth = document.documentElement.clientWidth;
+		console.log('Szerokość okna:', windowWidth);
+		return windowWidth;
+	}
+	function generateColumns(windowWidth) {
+		const galery = document.querySelector('.photo-galery');
+		var quantity = Math.floor(windowWidth / 300);
+		if (quantity === 0)
+			quantity = 1;
+		if (quantity > maxQuantityOfColumns)
+			quantity = maxQuantityOfColumns;
+		for (let i = 0; i < quantity; i++) {
+			const columnDiv = document.createElement('div');
+			columnDiv.classList.add('column');
+			columnDiv.innerHTML = '<div class=columnHeight></div>';
+			galery.appendChild(columnDiv)
+		}
+	}
+
+	async function loadPhotos() {
+
+		console.log(tag);
+		console.log(pageNumber + " " + pageSize + " " + tag + " " + category + " " + orderAsc + " " + sortBy);
+		const response = await fetch(`/Home/LoadPhotosForDiscover?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
+
+		if (response.status === 401) {
+			alert("Nie jesteś zalogowany. Zaloguj się");
+			window.location.href = '/SignIn';
+			return false;
+		}
+
+
+		const photos = await response.json();
+		console.log(photos);
+		if (photos.length > 0) {
+			addPhotosToColumns(photos);
+			pageNumber++;
+			return true;
+		}
+		else {
+			const newBox = document.querySelector('.newBox');
+			const info = document.createElement('div');
+			info.classList.add('photos-info');
+			info.id ='photos-info';
+			info.innerHTML = '<div class="alert alert-primary" role="alert">Nie ma więcej zdjęć do wyświetlenia</div>';
+			newBox.appendChild(info);
+			return false;
+			//Tu trzeba będzie jakiś komunikat wyświetlić że brak zdjęć albo coś
+		}
+	}
+
+
+	function likeOrUnlikePhoto(id) {
+		$.ajax({
+			url: '/Photos/LikeOrUnlikePhoto/',
+			type: 'POST',
+			data: { idPhoto: id },
+			success: function (response) {
+				changeLikeButton(id);
+				console.log(response);
+				if (true === response) {
+
+				}
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr);
+				console.log(status);
+				console.log('nie działa: ' + error);
+			}
+		});
+	}
+
+	function getShortestColumn(columns) {
+		let shortestColumn = columns[0];
+		for (let i = 1; i < columns.length; i++) {
+			const currentColumnHeight = columns[i].clientHeight;
+			const shortestColumnHeight = shortestColumn.clientHeight;
+			if (currentColumnHeight < shortestColumnHeight) {
+				shortestColumn = columns[i];
+			}
+		}
+		return shortestColumn;
+	}
+	function changeLikeButton(id) {
+		const url = window.location.origin;
+		console.log(url + " " + img + " " + like);
+		var img = document.getElementById('photo.' + id);
+		var like = document.getElementById('likes.' + id);
+		let currentValue = parseInt(like.textContent);
+		console.log(like);
+		var src = img.src;
+		console.log('img.src: ' + img.src + ' likePath: ' + likePath);
+		console.log('ścieżka: ' + url + unlikePath);
+		if (img.src === url + unlikePath) {
+			img.src = url + likePath;
+			console.log('niby prawda że unlike jest');
+			currentValue++;
+		}
+		else {
+			img.src = url + unlikePath;
+			console.log('niby prawda że like jest');
+			currentValue--;
+		}
+		like.textContent = currentValue;
+
+	}
+	function addPhotosToColumns(photos) {
+		const columns = document.querySelectorAll('.columnHeight');
+		photos.forEach((photo, index) => {
+			console.log(photo);
+			console.log("len:" + columns.length);
+			console.log("~/Image/" + photo.photo.name);
+			const column = getShortestColumn(columns);
+			const photoDiv = document.createElement('div');
+			//trzeba pobrać wartość z modelu
+			const isLiked = photo.isLiked
+			console.log("isLiked" + isLiked);
+			if (isLiked) {
+				var likeString = likePath;
+			}
+			else {
+				var likeString = unlikePath;
+			}
+
+			photoDiv.classList.add('photo', 'trigger');
+			photoDiv.innerHTML = `
+		<a type="button" href="Photos/Details/${photo.photo.id}">
+			<img src="/Image/${photo.photo.name}" alt="Photo">
+		</a>
+		<div class="target">
+			<div class="like">
+				<a onclick="likeOrUnlikePhoto(${photo.photo.id})" type="button">
+					<img id="photo.${photo.photo.id}" src="${likeString}">
+				</a>
+			</div>
+			<div class="like-text" id="likes.${photo.photo.id}">${photo.photo.likeCount}</div>
+			<div class="user">
+				${photo.ownerName}
+			</div>
+		</div>`;
+			column.appendChild(photoDiv);
+		});
+		addTrigger();
+	}
+
+	window.addEventListener('scroll', () => {
+
+		if (!isLoadingPhotos && isNotAllPhotos && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+			console.log("Scroll zadziałał");
+			isLoadingPhotos = true;
+			loadPhotos().then((result) => {
+				isNotAllPhotos = result;
+				isLoadingPhotos = false;
+			});
+		}
+
+	});
+
+	async function initPhotos() {
+		generateColumns(getWindowWidth());
+		while (!isLoadingPhotos && isNotAllPhotos && (window.innerHeight >= document.body.offsetHeight)) {
+			console.log("pętla: " + isLoadingPhotos);
+			isLoadingPhotos = true;
+			if (await loadPhotos()) {
+				isLoadingPhotos = false;
+			} else {
+				isNotAllPhotos = false;
+				break;
+			}
+		}
+		isLoadingPhotos = false;
+
+	}
+
+	window.addEventListener('DOMContentLoaded', async function () {
+		tag = document.getElementById('tag').value;
+		await initPhotos();
+
+	});
+
+	function addTrigger() {
+		const triggers = document.querySelectorAll('.photo.trigger');
+		triggers.forEach(trigger => {
+			const target = trigger.querySelector('.target');
+
+			trigger.addEventListener('mouseenter', function () {
+				target.style.opacity = '1';
+				console.log("zmiana na 1");
+			});
+
+			trigger.addEventListener('mouseleave', function () {
+				target.style.opacity = '0';
+				console.log("zmiana na 0");
+			});
+		});
+	};
+	function getOrder() {
+		const orderDirection = document.getElementById("orderDirection").value;
+		console.log(orderDirection);
+		if (orderDirection === "ASC") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	};
+
+	async function changeData() {
+		const photoGalery = document.getElementById("photo-galery");
+		photoGalery.innerHTML = '';
+		pageNumber = 1;
+		tag = document.getElementById("searchTag").value;
+		category = document.getElementById("category").value;
+		orderAsc = getOrder();
+		sortBy = document.getElementById("orderBy").value;
+		isNotAllPhotos = true;
+		const info = document.getElementById("photos-info");
+		if (info) {
+			info.remove();
+		}
+		await initPhotos();
+
+	};
+</script>
+
+@*
+		let pageNumber = 1;
+	const pageSize = 30;
+	const maxQuantityOfColumns = 6;
+	//Przy 1920px to 6 kolumn
+	const pixelsPerColumn = 300;
+	let isLoadingPhotos = false;
+	const path = '/assets/';
+	const likePath = path + 'likeButton.png';
+	const unlikePath = path + 'unlikeButton.png';
+	let category = "";
+	let orderAsc = false;
+	let sortBy = "date";
+	var tag = "";
+	let isNotAllPhotos = true;
 	// document.addEventListener('DOMContentLoaded', function () {
 	// 	const containers = document.querySelectorAll('.photo-galery');
 	// 	console.log(containers);
@@ -105,22 +347,31 @@
 
 
 	async function loadPhotos() {
-		
+
 		console.log(tag);
 		console.log(pageNumber+" "+pageSize+" "+tag+" "+category+" "+orderAsc+" " +sortBy);
-		const response = await fetch(`/Home/LoadPhotosForDiscover?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
-		const photos = await response.json();
-		console.log(photos);
-		if (photos.length > 0) {
-			addPhotosToColumns(photos);
-			pageNumber++;
-			return true;
+			const response = await fetch(`/Home/LoadPhotosForDiscover?pageNumber=${pageNumber}&pageSize=${pageSize}&tag=${tag}&category=${category}&orderAsc=${orderAsc}&sortBy=${sortBy}`);
+
+			if (response.status === 401) {
+				alert("Nie jesteś zalogowany. Zaloguj się");
+				window.location.href = '/SignIn';
+				return false;
+			}
+
+
+			const photos = await response.json();
+			console.log(photos);
+			if (photos.length > 0) {
+				addPhotosToColumns(photos);
+				pageNumber++;
+				return true;
+			}
+			else {
+				alert("Brak więcej zdjęć do wyświetlenia");
+				return false;
+				//Tu trzeba będzie jakiś komunikat wyświetlić że brak zdjęć albo coś
+			}
 		}
-		else {
-			return false;
-			//Tu trzeba będzie jakiś komunikat wyświetlić że brak zdjęć albo coś
-		}
-	}
 
 
 	function likeOrUnlikePhoto(id) {
@@ -197,20 +448,20 @@
 
 			photoDiv.classList.add('photo', 'trigger');
 			photoDiv.innerHTML = `
-										<a type="button" href="Photos/Details/${photo.photo.id}">
-											<img src="/Image/${photo.photo.name}" alt="Photo">
-										</a>
-											<div class="target">
-												<div class="like">
-													<a onclick="likeOrUnlikePhoto(${photo.photo.id})" type="button">
-														<img id="photo.${photo.photo.id}" src="${likeString}">
-													</a>
-												</div>
-													<div class="like-text" id="likes.${photo.photo.id}">${photo.photo.likeCount}</div>
-												<div class="user">
-													 ${photo.ownerName}
-												</div>
-											</div>
+<a type="button" href="Photos/Details/${photo.photo.id}">
+	<img src="/Image/${photo.photo.name}" alt="Photo">
+</a>
+<div class="target">
+	<div class="like">
+		<a onclick="likeOrUnlikePhoto(${photo.photo.id})" type="button">
+			<img id="photo.${photo.photo.id}" src="${likeString}">
+		</a>
+	</div>
+	<div class="like-text" id="likes.${photo.photo.id}">${photo.photo.likeCount}</div>
+	<div class="user">
+		${photo.ownerName}
+	</div>
+</div>
 
 								`;
 			column.appendChild(photoDiv);
@@ -231,7 +482,7 @@
 
 	});
 
-	async function initPhotos() 
+	async function initPhotos()
 	{
 		generateColumns(getWindowWidth());
 		while (!isLoadingPhotos && isNotAllPhotos && (window.innerHeight >= document.body.offsetHeight)) {
@@ -250,7 +501,6 @@
 
 	window.addEventListener('DOMContentLoaded', async function () {
 		tag = document.getElementById('tag').value;
-		console.log("chuj" + tag);
 		await initPhotos();
 
 	});
@@ -277,21 +527,21 @@
 			});
 		});
 	};
-	function getOrder() 
+	function getOrder()
 	{
 		const orderDirection = document.getElementById("orderDirection").value;
 		console.log(orderDirection);
-		if (orderDirection === "ASC") 
+		if (orderDirection === "ASC")
 		{
-			return true; 
+			return true;
 		}
-		else 
+		else
 		{
 			return false;
 		}
 	};
 
-	async function changeData() 
+	async function changeData()
 	{
 		var photoGalery = document.getElementById("photo-galery");
 		photoGalery.innerHTML = '';
@@ -303,5 +553,4 @@
 		isNotAllPhotos = true;
 		await initPhotos();
 
-	};
-</script>
+	}; *@

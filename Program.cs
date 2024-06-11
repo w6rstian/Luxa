@@ -56,7 +56,7 @@ namespace Luxa
 			builder.Services.AddScoped<IContactService, ContactService>();
 			builder.Services.AddScoped<IUserService, UserService>();
 
-
+			builder.Services.AddHttpContextAccessor();
 			var app = builder.Build();
 
 			NotificationsDataInit.SeedNotifications(app);
@@ -83,9 +83,9 @@ namespace Luxa
 			app.UseStaticFiles();
 
 			app.UseRouting();
-
-			app.UseAuthorization();
 			app.UseSession();
+			app.UseAuthorization();
+
 
 			app.MapControllerRoute(
 				name: "default",

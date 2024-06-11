@@ -1,5 +1,7 @@
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Services;
+using Luxa.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -60,23 +62,26 @@ namespace Luxa.Controllers
 			var user = _userService.GetCurrentLoggedInUser(User);
 			if (user == null)
 				//To jest do zmiany i przemyœlenia
-				return Unauthorized("User not logged in.");
+				return Unauthorized("U¿ytkownik jest niezalogowany");
 			//throw new NotImplementedException();
 			var photos = await _photoService.GetPhotosWithIsLikedForDiscoverAsync(pageNumber, pageSize, user, tag, category, order, sortBy);
-			List<Photo> viewedPhotos = []; 
-			foreach (var photo in photos)
-			{
-				var sessionKey = $"viewed_photo_{photo.Photo.Id}";
-				if (HttpContext.Session.GetString(sessionKey) == null)
-				{
-					HttpContext.Session.SetString(sessionKey, "viewed");
-					viewedPhotos.Add(photo.Photo);
-				}
-            }
-			_photoService.IncrementViewCountAsync(viewedPhotos);
+			_photoService.IncrementViewsCountIfNotViewed(photos);
+			//List<Photo> viewedPhotos = [];
+			//foreach (var photo in photos)
+			//{
+			//	var sessionKey = $"viewed_photo_{photo.Photo.Id}";
+   //             await Console.Out.WriteLineAsync((HttpContext.Session.GetString(sessionKey)));
+   //             if (HttpContext.Session.GetString(sessionKey) == null)
+			//	{
+			//		HttpContext.Session.SetString(sessionKey, "viewed");
+			//		viewedPhotos.Add(photo.Photo);
+			//	}
+   //         }
+			//_photoService.IncrementViewCountAsync(viewedPhotos);
 
 			return Json(photos);
 		}
 
 	}
+
 }

@@ -94,3 +94,8 @@
     position: relative;
     left: 0;
 }
+.photos-info {
+    position: relative;
+    text-align: center;
+    margin-top: 50px;
+}

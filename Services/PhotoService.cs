@@ -3,6 +3,7 @@ using Luxa.Data.Enums;
 using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,17 +17,21 @@ namespace Luxa.Services
 		private readonly UserManager<UserModel> _userManager;
 		private readonly IWebHostEnvironment _hostEnvironment;
 		private readonly ITagService _tagService;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 
 		public PhotoService(ApplicationDbContext context,
 			UserManager<UserModel> userManager,
 			IWebHostEnvironment hostEnvironment,
-			IPhotoRepository photoRepository, ITagService tagService)
+			IPhotoRepository photoRepository,
+			ITagService tagService,
+			IHttpContextAccessor httpContextAccessor)
 		{
 			_context = context;
 			_userManager = userManager;
 			_hostEnvironment = hostEnvironment;
 			_photoRepository = photoRepository;
 			_tagService = tagService;
+			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public async Task<bool> Create(UserModel user)
@@ -318,5 +323,23 @@ namespace Luxa.Services
 			return null;
 		}
 
+		public void IncrementViewsCountIfNotViewed(List<PhotoWithIsLikedVM> photos)
+		{
+			var httpContext = _httpContextAccessor.HttpContext;
+			List<Photo> viewedPhotos = [];
+			if (httpContext != null)
+			{
+				foreach (var photo in photos)
+				{
+					var sessionKey = $"viewed_photo_{photo.Photo.Id}";
+					if (httpContext.Session.GetString(sessionKey) == null)
+					{
+						httpContext.Session.SetString(sessionKey, "viewed");
+						viewedPhotos.Add(photo.Photo);
+					}
+				}
+				IncrementViewCountAsync(viewedPhotos);
+			}
+		}
 	}
 }
