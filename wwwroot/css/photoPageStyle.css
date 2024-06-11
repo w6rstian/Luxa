@@ -1,4 +1,12 @@
-﻿.target {
+﻿:root {
+    --darker-violet: #2b2735;
+    --dark-violet: #373341;
+    --light-violet: #4C3C78;
+    --lighter-violet: #614D99;
+    --yellowish: #FAF0E6;
+}
+
+.target {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -94,8 +102,15 @@
     position: relative;
     left: 0;
 }
+
 .photos-info {
     position: relative;
     text-align: center;
     margin-top: 50px;
+}
+
+.alert {
+    background-color: var(--lighter-violet);
+    border-color: var(--lighter-violet);
+    color: var(--yellowish);
 }
