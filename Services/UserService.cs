@@ -40,9 +40,15 @@ namespace Luxa.Services
 			return currentUser;
 		}
 
-        public async Task<UserModel> GetUserByUserName(string userName)
-            =>await _context.Users.SingleAsync(u => u.UserName == userName);
-        
+        public async Task<UserModel?> GetUserByUserName(string userName)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName);
+            if (user != null && string.IsNullOrEmpty(user.AvatarUrl))
+            {
+                user.AvatarUrl = "/assets/blank-profile-picture.png";
+            }
+            return user;
+        }
 
         public async Task<bool> IsUserWithUserNameExist(string userName)
 			=>await _context.Users.AnyAsync(u=>u.UserName==userName);

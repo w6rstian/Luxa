@@ -1,0 +1,8 @@
+﻿namespace Luxa.ViewModel
+{
+    public class UserProfileVM
+    {
+        public string UserName { get; set; } = string.Empty;
+        public string? AvatarUrl { get; set; } = "/assets/blank-profile-picture.png";
+    }
+}

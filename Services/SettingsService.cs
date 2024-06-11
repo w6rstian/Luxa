@@ -11,9 +11,6 @@ namespace Luxa.Services
 {
 	public class SettingsService : ISettingsService
 	{
-
-
-
 		private readonly SignInManager<UserModel> _signInManager;
 		private readonly UserManager<UserModel> _userManager;
 		private readonly IUserService _userService;
@@ -87,8 +84,5 @@ namespace Luxa.Services
 			}
 			return "Coś poszło nie tak.";
 		}
-
-
-
 	}
 }

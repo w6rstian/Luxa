@@ -294,24 +294,81 @@ namespace Luxa.Controllers
 		{
 			return View();
 		}
-		[Authorize]
+/*		[Authorize]
 		public async Task<IActionResult> UserProfile(string userName)
 		{
 			//zalogowany
-            var user = _userService.GetCurrentLoggedInUser(User);
+			var user = _userService.GetCurrentLoggedInUser(User);
 			//jeśli nazwa w adresie jest w bazie użytkowników to przechodzimy dalej 
-            if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
+			if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
 			{
-                ViewBag.UserName = userName;
+				ViewBag.UserName = userName;
 				return View();
 			}
 			return NotFound();
-		}
+		}*/
 		public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
 		{
 			return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName=userName });
 		}
 
+        //mojewypociny
+        [Authorize]
+        public async Task<IActionResult> UserProfile(string userName)
+        {
+            // Get the currently logged-in user
+            var user = _userService.GetCurrentLoggedInUser(User);
+
+            // Check if the user exists and the username in the URL is valid
+            if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
+            {
+                // Get the user by username
+                var profileUser = await _userService.GetUserByUserName(userName);
+
+                if (profileUser == null)
+                {
+                    return NotFound();
+                }
+
+                // Set default avatar if none is set
+                var avatarUrl = !string.IsNullOrEmpty(profileUser.AvatarUrl) ? profileUser.AvatarUrl : "/assets/blank-profile-picture.png";
+
+                // Populate the UserProfileVM
+                var model = new UserProfileVM
+                {
+                    UserName = profileUser.UserName,
+                    AvatarUrl = avatarUrl
+                };
+
+                return View(model);
+            }
+
+            return NotFound();
+        }
+
+        [Authorize]
+		[HttpPost]
+		public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+		{
+			if (avatar != null && avatar.Length > 0)
+			{
+				var user = await _userManager.GetUserAsync(User);
+				var fileName = Path.GetFileName(avatar.FileName);
+				var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+
+				using (var stream = new FileStream(filePath, FileMode.Create))
+				{
+					await avatar.CopyToAsync(stream);
+				}
+
+				user.AvatarUrl = $"/avatars/{fileName}";
+				await _userManager.UpdateAsync(user);
+
+				return RedirectToAction("UserProfile", new { userName = user.UserName });
+			}
+
+			return RedirectToAction("UserProfile", new { userName = User.Identity.Name });
+		}
 	}
 
 }

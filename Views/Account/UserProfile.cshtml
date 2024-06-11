@@ -1,24 +1,42 @@
-﻿@{
+﻿@model Luxa.ViewModel.UserProfileVM
+@{
     ViewData["Title"] = "Profil użytkownika";
 }
-<h2>@ViewData["Title"] @ViewBag.UserName</h2>
+<h2>@ViewData["Title"] @Model.UserName</h2>
 
-jakaś nazwa użytkownika, dane a potem
-
-<div id="photo-gallery">
-    @await Component.InvokeAsync("ProfilePhoto", new { pageNumber = 1, pageSize = 10, userName = ViewBag.UserName })
+<div>
+    <label for="avatar-input" style="cursor: pointer;">
+        <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
+    </label>
+    <form asp-action="UploadAvatar" asp-controller="Account" enctype="multipart/form-data" method="post">
+        <input type="file" name="avatar" id="avatar-input" style="display: none;" />
+        <button type="submit" id="upload-button" style="display: none;">Upload Avatar</button>
+    </form>
 </div>
 
-@* <button id="load-more" onclick="loadMorePhotos()">Załaduj więcej</button> *@
+<p>@Model.UserName</p>
+
+<a asp-action="ChangeData" asp-controller="Settings">Edit Profile</a>
+
+<div id="photo-gallery">
+    @await Component.InvokeAsync("ProfilePhoto", new { pageNumber = 1, pageSize = 10, userName = Model.UserName })
+</div>
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const avatarInput = document.getElementById('avatar-input');
+            const uploadButton = document.getElementById('upload-button');
+
+            avatarInput.addEventListener('change', function () {
+                uploadButton.click();
+            });
+
             let pageNumber = 2;
             const pageSize = 10;
             const gallery = document.getElementById('photo-gallery');
-            const loadMoreButton = document.getElementById('load-more');
-            const userName = '@ViewBag.UserName';
+            const userName = '@Model.UserName';
+
             function loadMorePhotos() {
                 fetch(`/Photo/LoadMorePhotos?pageNumber=${pageNumber}&pageSize=${pageSize}&userName=${userName}`)
                     .then(response => response.text())
@@ -30,5 +48,3 @@ jakaś nazwa użytkownika, dane a potem
         });
     </script>
 }
-
-
