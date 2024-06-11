@@ -34,7 +34,7 @@ namespace Luxa
 			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 			builder.Services.ConfigureApplicationCookie(options =>
 			{
-				options.LoginPath = "/SignIn";
+				options.LoginPath = "/Home/Landing";
 			});
 			builder.Services.AddDistributedMemoryCache();
 			builder.Services.AddSession(options =>
