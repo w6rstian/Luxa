@@ -31,14 +31,36 @@ namespace Luxa.Controllers
 			ViewData["Message"] = await _settingsService.ChangePassword(user, passwordChange.OldPassword, passwordChange.NewPassword);
 			return View();
 		}
-		[HttpGet]
-		public IActionResult ChangeData()
-		{
-			var user = _userService.GetCurrentLoggedInUser(User);
-			var result = _settingsService.GetDataChangeVMFromUser(user);
-			return result != null ? View(result) : RedirectToAction("Error", "Home");
-		}
-		[HttpPost]
+        [HttpGet]
+        public IActionResult ChangeData()
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            var result = _settingsService.GetDataChangeVMFromUser(user);
+            if (result != null)
+            {
+                result.Countries = new List<string>
+				{
+					"Polska",
+					"Niemcy",
+					"Francja",
+					"Stany Zjednoczone",
+					"Włochy",
+					"Hiszpania",
+					"Japonia",
+					"Wielka Brytania",
+					"Kanada",
+					"Australia",
+					"Rosja",
+					"Chiny",
+					"Indie",
+					"Brazylia",
+					"Meksyk",
+				};
+                return View(result);
+            }
+            return RedirectToAction("Error", "Home");
+        }
+        [HttpPost]
 		public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM) 
 		{
 			var user = _userService.GetCurrentLoggedInUser(User);

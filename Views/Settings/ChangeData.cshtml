@@ -25,7 +25,9 @@
                         </div>
                         <div class="mb-1">
                             <label asp-for="Country" class="control-label"></label>
-                            <input asp-for="Country" class="form-control" value="@Model.Country" /><br />
+                            <select asp-for="Country" class="form-control" asp-items="@(new SelectList(Model.Countries))">
+                                <option value="">Wybierz kraj</option>
+                            </select>
                             <span asp-validation-for="Country" class="text-danger"></span>
                         </div>
                         <div class="mb-1">
