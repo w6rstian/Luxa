@@ -4,14 +4,21 @@
 @inject Luxa.Services.NotificationService notificationService
 
 <style>
+	:root {
+		--darker-violet: #2b2735;
+		--dark-violet: #373341;
+		--light-violet: #4C3C78;
+		--lighter-violet: #614D99;
+		--yellowish: #FAF0E6;
+	}
 	.btn-primary {
-		border-color: #B9B4C7;
-		background-color: #B9B4C7;
+		border-color: var(--lighter-violet);
+		background-color: var(--lighter-violet);
 	}
 
 	.btn-primary:hover {
-		border-color: #5C5470;
-		background-color: #5C5470;
+		border-color: var(--light-violet);
+		background-color: var(--light-violet);
 	}
 
 	.dropdown-menu {
@@ -19,11 +26,15 @@
 	}
 
 	.dropdown-item {
-		color: #FAF0E6;
+		color: var(--yellowish);
 	}
 
 	.dropdown-item:active {
-		background-color: #5C5470; !important
+		background-color: var(--lighter-violet);
+	}
+
+	#search-bar {
+		margin-left: 20% !important;
 	}
 </style>
 
@@ -32,7 +43,7 @@
 
 	var userId = (User as ClaimsPrincipal)?.FindFirstValue(ClaimTypes.NameIdentifier);
 	var notificationsCount = await notificationService.GetNotificationsCountAsync(userId);
-	<ul class="navbar-nav flex-grow-1 mx-3">
+	<ul id="search-bar" class="navbar-nav flex-grow-1 mx-3">
 		<li>
 			<form class="d-flex" role="search" action="/Home/Discover" method="get">
 				<input class="form-control me-2" type="search" name="tag" placeholder="Wyszukaj tag" aria-label="Search">
