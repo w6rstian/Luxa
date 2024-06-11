@@ -39,7 +39,7 @@ namespace Luxa.Models
         //}
         public bool IsPrivate { get; set; } = false;
         public string? AvatarUrl { get; set; } = "/assets/blank-profile-picture.png";
-		public string? BackgroundUrl { get; set; } = "/assets/prostokąt.png";
+		public string? BackgroundUrl { get; set; } = "/assets/prostokat.png";
         public string? Description { get; set; } = "Hej, jestem użytkownikiem Luxy";
         public ICollection<UserNotificationModel> UserNotifiacations { get; set; } = [];
         public ICollection<UserPhotoModel> UserLikedPhotos { get; set; } = [];
