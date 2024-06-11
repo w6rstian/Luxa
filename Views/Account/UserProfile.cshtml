@@ -2,23 +2,65 @@
 @{
     ViewData["Title"] = "Profil użytkownika";
 }
-<h2>@ViewData["Title"] @Model.UserName</h2>
 
-<div>
-    <label for="avatar-input" style="cursor: pointer;">
-        <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
-    </label>
-    <form asp-action="UploadAvatar" asp-controller="Account" enctype="multipart/form-data" method="post">
-        <input type="file" name="avatar" id="avatar-input" style="display: none;" />
-        <button type="submit" id="upload-button" style="display: none;">Upload Avatar</button>
-    </form>
+<style>
+    body {
+        /* background-color: #4A4A4A; */
+    }
+    #profile-wrapper {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        border: 1px black;
+        border-radius: 20%;
+    }
+
+    #avatar {
+        flex-grow: 1;
+    }
+
+    #name-desc {
+        flex-grow: 48;
+        color: #FAF0E6;
+    }
+
+    #edit-button {
+        width: 87px;
+        height: 32px;
+        flex-grow: 1;
+    }
+
+    #edit-button a {
+            color: #FAF0E6;
+        text-decoration: none;
+        /* background-color: #FF715B; */
+        padding: 5px 5px;
+        border-radius: 5pt;
+    }
+</style>
+
+<div id="profile-wrapper">
+    <div id="avatar">
+        <label for="avatar-input" style="cursor: pointer;">
+            <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
+        </label>
+        <form asp-action="UploadAvatar" asp-controller="Account" enctype="multipart/form-data" method="post">
+            <input type="file" name="avatar" id="avatar-input" style="display: none;" />
+            <button type="submit" id="upload-button" style="display: none;">Upload Avatar</button>
+        </form>
+    </div>
+    <div id="name-desc">
+        <h2>@Model.UserName</h2>
+    </div>
+    <div id="edit-button">
+        <a class="btn btn-primary" asp-action="ChangeData" asp-controller="Settings">Edit Profile</a>
+    </div>
 </div>
-
-<a asp-action="ChangeData" asp-controller="Settings">Edit Profile</a>
-
+</hr>
 <div id="photo-gallery">
     @await Component.InvokeAsync("ProfilePhoto", new { pageNumber = 1, pageSize = 10, userName = Model.UserName })
 </div>
+
 
 @section Scripts {
     <script>

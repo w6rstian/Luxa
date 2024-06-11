@@ -10,7 +10,18 @@
 	}
 
 	.btn-primary {
-		background-color: #1EA896;
+		border-color: #B9B4C7;
+		background-color: #B9B4C7;
+	}
+
+	.btn-primary:hover {
+		border-color: #5C5470;
+		background-color: #5C5470;
+	}
+
+	.col {
+		background: #373341;
+		color: #FAF0E6;
 	}
 
 	.row {
@@ -19,7 +30,7 @@
 </style>
 <div class="row d-flex align-itemsalign-content-center justify-content-center">
 	<div class="col col-md-3 card p-3">
-		<h3 class="text-center text-info text-black">Zarejestruj się!</h3>
+		<h3 class="text-center text-info text-light">Zarejestruj się!</h3>
 		<form method="post" asp-controller="Account" asp-action="SignUp">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<div class="mb-1">

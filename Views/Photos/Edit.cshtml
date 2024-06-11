@@ -39,14 +39,14 @@
            
         </form>
         <a asp-controller="Photos" asp-action="DownloadImage" asp-route-id="@Model.Id">
-            <button>Download</button>
+            <button class="btn btn-primary">Download</button>
         </a>
         
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-primary" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
