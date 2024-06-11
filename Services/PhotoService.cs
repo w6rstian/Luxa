@@ -32,9 +32,9 @@ namespace Luxa.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Photo> GetImageByIdAsync(int id)
+        public Photo GetImageById(int id)
         {
-            return await _photoRepository.GetPhotoByIdAsync(id);
+            return _photoRepository.GetPhotoById(id);
         }
 
         public async Task<IEnumerable<Photo>> GetAllImagesAsync()

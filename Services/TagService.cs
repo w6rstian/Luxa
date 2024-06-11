@@ -31,7 +31,7 @@ namespace Luxa.Services
             return true;
         }
 
-        public List<TagModel> GetTagsFromString(string? tags)
+        public List<TagModel> GetTagsFromString(string tags)
         {
             List<string> listTagsFromString = TagsToList(tags);
             return _tagRepository.GetTagsFromCollection(listTagsFromString);

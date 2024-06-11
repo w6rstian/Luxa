@@ -89,6 +89,8 @@ namespace Luxa.Services
             foreach (var item in changedStateList)
             {
                 var contactModel = await _contactRepository.GetContactById(item.Key);
+                if (contactModel == null)
+                    return false;
                 contactModel.State = (ContactState)Enum.Parse(typeof(ContactState), item.Value);
             }
             return _contactRepository.Save();

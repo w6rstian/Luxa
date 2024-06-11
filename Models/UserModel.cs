@@ -6,12 +6,10 @@ namespace Luxa.Models
     public class UserModel : IdentityUser
     {
 
-        public string? Country { get; set; } = default!;
-        public string? FirstName { get; set; } = default!;
-        public string? LastName { get; set; } = default!;
-
+        public string? Country { get; set; }
+        public string? FirstName { get; set; } 
+        public string? LastName { get; set; }
         public int Reputation { get; set; } = 0;
-
         [NotMapped]
         public string Level
         {
@@ -29,19 +27,11 @@ namespace Luxa.Models
                 return "Lv " + thresholds.Length + 1;
             }
         }
-
-        //{
-        //	get
-        //	{
-        //		return Photos?.Sum(e => e.LikeCount) ?? 0;
-        //	}
-        //	private set { }
-        //}
         public bool IsPrivate { get; set; } = false;
         public string? AvatarUrl { get; set; } = "/assets/blank-profile-picture.png";
         public ICollection<UserNotificationModel> UserNotifiacations { get; set; } = [];
         public ICollection<UserPhotoModel> UserLikedPhotos { get; set; } = [];
-        public /*virtual*/ ICollection<Photo> Photos { get; set; } = [];
+        public ICollection<Photo> Photos { get; set; } = [];
 
 
     }

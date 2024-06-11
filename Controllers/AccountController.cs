@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Luxa.Controllers
@@ -121,8 +122,35 @@ namespace Luxa.Controllers
                 };
 
                 var resultAddUser = await _userManager.CreateAsync(user, signUpVM.Password!);
-                var resultAddRole = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
-                if (resultAddUser.Succeeded && resultAddRole.Succeeded)
+                if (resultAddUser.Errors.Count() > 0) 
+                {
+                    foreach (var error in resultAddUser.Errors)
+                    {
+                        switch (error.Code)
+                        {
+                            case "PasswordTooShort":
+								ModelState.AddModelError("", "Hasło musi zawierać minimum 6 znaków");
+                                break;
+                            case "DuplicateUserName":
+								ModelState.AddModelError("", "Użytkownik o danej nazwie użytkownika już istnieje, wybierz inną nazwę");
+								break;
+							default:
+								ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+                                break;
+						}
+                    }
+					return View(signUpVM);
+				}
+				var resultAddRole = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
+				foreach (var error in resultAddRole.Errors)
+				{
+					ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+				}
+				if (resultAddRole.Errors.Count() > 0)
+				{
+					return View(signUpVM);
+				}
+				if (resultAddUser.Succeeded && resultAddRole.Succeeded)
                 {
                     var notifications = _context.Notifications.ToList();
                     user.UserNotifiacations.Add(new UserNotificationModel
@@ -133,36 +161,14 @@ namespace Luxa.Controllers
                     await _signInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
-
-                foreach (var error in resultAddUser.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                foreach (var error in resultAddRole.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                return View(signUpVM);
             }
-
             return View(signUpVM);
         }
 
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            foreach (var key in HttpContext.Session.Keys)
-            {
-                Console.WriteLine($"Sesja zawiera klucz: {key}");
-            }
             HttpContext.Session.Clear();
-            foreach (var key in HttpContext.Session.Keys)
-            {
-                Console.WriteLine($"Sesja nie zawiera klucz: {key}");
-            }
-
             if (HttpContext.Request.Cookies[".AspNetCore.Session"] != null)
             {
                 Response.Cookies.Delete(".AspNetCore.Session");
@@ -326,7 +332,7 @@ namespace Luxa.Controllers
             {
                 var profileUser = await _userService.GetUserByUserName(userName);
 
-                if (profileUser == null)
+                if (profileUser == null || profileUser.UserName == null)
                 {
                     return NotFound();
                 }
