@@ -49,6 +49,15 @@
             <button type="submit" id="upload-button" style="display: none;">Upload Avatar</button>
         </form>
     </div>
+    <div id="background">
+        <label for="background-input" style="cursor: pointer;">
+            <img src="@Model.BackgroundUrl" alt="Background" class="background" />
+        </label>
+        <form asp-action="UploadBackground" asp-controller="Account" enctype="multipart/form-data" method="post">
+            <input type="file" name="background" id="background-input" style="display: none;" />
+            <button type="submit" id="upload-background-button" style="display: none;">Upload Background</button>
+        </form>
+    </div>
     <div id="name-desc">
         <h2>@Model.UserName</h2>
     </div>
@@ -70,6 +79,15 @@
 
             avatarInput.addEventListener('change', function () {
                 uploadButton.click();
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const backgroundInput = document.getElementById('background-input');
+                const uploadBackgroundButton = document.getElementById('upload-background-button');
+
+                backgroundInput.addEventListener('change', function () {
+                    uploadBackgroundButton.click();
+                });
             });
 
             let pageNumber = 2;

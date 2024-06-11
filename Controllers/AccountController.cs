@@ -340,7 +340,7 @@ namespace Luxa.Controllers
                 {
                     UserName = profileUser.UserName,
                     AvatarUrl = avatarUrl,
-                    BackgroundUrl = backgroundUrl
+					BackgroundUrl = backgroundUrl
                 };
 
                 return View(model);
