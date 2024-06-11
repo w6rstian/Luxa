@@ -4,6 +4,13 @@
 	ViewData["Title"] = "Dodaj zdjęcie";
 }
 <style>
+	:root {
+		--darker-violet: #2b2735;
+		--dark-violet: #373341;
+		--light-violet: #4C3C78;
+		--lighter-violet: #614D99;
+		--yellowish: #FAF0E6;
+	}
 
 	.input-container {
 		display: flex;
@@ -11,6 +18,7 @@
 		border: 1px solid #ccc;
 		padding: 5px;
 		width: 300px;
+		background-color: white;
 	}
 
 	.input-blocks {
@@ -28,7 +36,7 @@
 	}
 
 	.input-block {
-		background-color: #e0e0e0;
+		background-color: var(--lighter-violet);
 		border-radius: 5px;
 		padding: 5px 10px;
 		display: flex;
