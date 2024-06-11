@@ -1,9 +1,9 @@
 ﻿namespace Luxa.Data.Enums
 {
-	public enum ContactState
-	{
-		Added,
-		DuringImplementation,
-		Finished
-	}
+    public enum ContactState
+    {
+        Added,
+        DuringImplementation,
+        Finished
+    }
 }

@@ -2,9 +2,9 @@
 
 namespace Luxa.Interfaces
 {
-	public interface ITagService
-	{
-		bool Add(string tags);
-		List<TagModel> GetTagsFromString(string tags);
-	}
+    public interface ITagService
+    {
+        bool Add(string tags);
+        List<TagModel> GetTagsFromString(string tags);
+    }
 }

@@ -1,63 +1,58 @@
-﻿using Luxa.Data;
-using Luxa.Data.Enums;
-using Luxa.Interfaces;
-using Luxa.Models;
-using Luxa.Services;
+﻿using Luxa.Interfaces;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace Luxa.Controllers
 {
-	public class ContactController : Controller
-	{
-		private readonly IContactService _contactService;
-		private readonly IUserService _userService;
-		
-		public ContactController(IContactService contactService,IUserService userService)
-		{
-			_contactService = contactService;
-			_userService = userService;
-		}
-		public IActionResult UserContact()
-		{
-			return View();
-		}
-		[HttpPost]
-		public IActionResult UserContact(ContactVM contactVM)
-		{
-			var user = _userService.GetCurrentLoggedInUser(User);
-			var category = _contactService.GetEnumCategory(contactVM.Category);
-			_contactService.CreateContact(ModelState.IsValid, user, category, contactVM.Description, contactVM.DetailedCategory);
-			return View();
-		}
-		[HttpGet]
-		public IActionResult GetDetailedCategory(string selectedValue)
-		{
-			var select = _contactService.GetTextAndValueToSelect(selectedValue);
-			//var detailedCategories = new List<SelectListItem>();
-			//detailedCategories.AddRange(filteredList.Select(p => new SelectListItem { Text = p.Item2, Value = p.Item1 }));
-			return Json(new { text = select.Item1, value = select.Item2 });
-		}
-		public async Task<IActionResult> ContactList()
-		{
-			
-			//return View(contactsToDisplay);
-			ViewBag.CategorySelectItems = _contactService.GetCategorySelectItems();
-			ViewBag.DetailedCategorySelectItems = _contactService.GetDetailedCategorySelectItems();
-			ViewBag.StateSelectItems = _contactService.GetStateSelectItems(true);
-			ViewBag.StateSelectChangeItems = _contactService.GetStateSelectItems(false);
-			//List <ContactListVM> lista = await _contactService.chuj2();
-			return View(await _contactService.ShowContacts());
-		}
-		[HttpPost]
-		public bool EditState(string data) =>		
-			_contactService.PrepareToUpdateState(data).Result;
+    public class ContactController : Controller
+    {
+        private readonly IContactService _contactService;
+        private readonly IUserService _userService;
 
-			//var deserializedData = JsonSerializer.Deserialize<>
-		
+        public ContactController(IContactService contactService, IUserService userService)
+        {
+            _contactService = contactService;
+            _userService = userService;
+        }
+        public IActionResult UserContact()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult UserContact(ContactVM contactVM)
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            var category = _contactService.GetEnumCategory(contactVM.Category);
+            _contactService.CreateContact(ModelState.IsValid, user, category, contactVM.Description, contactVM.DetailedCategory);
+            return View();
+        }
+        [HttpGet]
+        public IActionResult GetDetailedCategory(string selectedValue)
+        {
+            var select = _contactService.GetTextAndValueToSelect(selectedValue);
+            //var detailedCategories = new List<SelectListItem>();
+            //detailedCategories.AddRange(filteredList.Select(p => new SelectListItem { Text = p.Item2, Value = p.Item1 }));
+            return Json(new { text = select.Item1, value = select.Item2 });
+        }
+        public async Task<IActionResult> ContactList()
+        {
 
-		/*[HttpPost]
+            //return View(contactsToDisplay);
+            ViewBag.CategorySelectItems = _contactService.GetCategorySelectItems();
+            ViewBag.DetailedCategorySelectItems = _contactService.GetDetailedCategorySelectItems();
+            ViewBag.StateSelectItems = _contactService.GetStateSelectItems(true);
+            ViewBag.StateSelectChangeItems = _contactService.GetStateSelectItems(false);
+            //List <ContactListVM> lista = await _contactService.chuj2();
+            return View(await _contactService.ShowContacts());
+        }
+        [HttpPost]
+        public bool EditState(string data) =>
+            _contactService.PrepareToUpdateState(data).Result;
+
+        //var deserializedData = JsonSerializer.Deserialize<>
+
+
+        /*[HttpPost]
 		public async Task<IActionResult> SendChanges()
 		{
 			try
@@ -74,7 +69,7 @@ namespace Luxa.Controllers
 			}
 		}*/
 
-		/*[HttpPost]
+        /*[HttpPost]
 		public IActionResult AddStateToTempData(string data)
 		{
 			try
@@ -128,7 +123,7 @@ namespace Luxa.Controllers
 
 
 
-		/*
+        /*
 		public void AddCookieToList(string idChangedState, string stateName)
 		{
 			List<HttpCookie> cookieList;
@@ -179,27 +174,27 @@ namespace Luxa.Controllers
 
 
 
-		//[HttpPost]
-		//public IActionResult SubmitChanges([FromBody] Dictionary<string, string> changes)
-		//{
-		//	foreach (var change in changes)
-		//	{
-		//		var recordId = change.Key;
-		//		var newValue = change.Value;
+        //[HttpPost]
+        //public IActionResult SubmitChanges([FromBody] Dictionary<string, string> changes)
+        //{
+        //	foreach (var change in changes)
+        //	{
+        //		var recordId = change.Key;
+        //		var newValue = change.Value;
 
-		//		// Twoja logika do aktualizacji rekordu w bazie danych
-		//		UpdateRecord(recordId, newValue);
-		//	}
+        //		// Twoja logika do aktualizacji rekordu w bazie danych
+        //		UpdateRecord(recordId, newValue);
+        //	}
 
-		//	return Json(new { success = true });
-		//}
+        //	return Json(new { success = true });
+        //}
 
-		//private void UpdateRecord(string recordId, string newValue)
-		//{
-		//	// Implementacja aktualizacji rekordu w bazie danych
-		//}
+        //private void UpdateRecord(string recordId, string newValue)
+        //{
+        //	// Implementacja aktualizacji rekordu w bazie danych
+        //}
 
-		/*
+        /*
 						public async Task<IActionResult> UsersList()
 				{
 					var users = _context.Users.ToList();
@@ -225,5 +220,5 @@ namespace Luxa.Controllers
 
 
 
-	}
+    }
 }
