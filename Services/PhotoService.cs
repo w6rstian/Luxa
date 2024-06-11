@@ -240,7 +240,7 @@ namespace Luxa.Services
 			return _photoRepository.Save();
 		}
 
-		public bool IncrementViewCountAsync(List<Photo> photos)
+		private bool IncrementViewCountAsync(List<Photo> photos)
 		{
 			foreach (var item in photos) 
 			{

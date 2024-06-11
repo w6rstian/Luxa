@@ -40,7 +40,7 @@ namespace Luxa.Controllers
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
-
+		[Authorize]
 		public IActionResult Discover(string? tag)
 		{
 			ViewBag.SelectItemListOrderBy = _homeService.GetOrderBySelectListItem();
@@ -52,6 +52,19 @@ namespace Luxa.Controllers
 
 
 		//Ajax, Js
+		//Index
+		[HttpGet]
+		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
+		{
+			var user = _userService.GetCurrentLoggedInUser(User);
+			if (user == null)
+				return Unauthorized("U¿ytkownik jest niezalogowany");
+			var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize, user);
+			_photoService.IncrementViewsCountIfNotViewed(photos);
+			return Json(photos);
+		}
+		//Discover
+		[HttpGet]
 		public async Task<IActionResult> LoadPhotosForDiscover(int pageNumber,
 			int pageSize,
 			string? tag,
@@ -61,24 +74,9 @@ namespace Luxa.Controllers
 		{
 			var user = _userService.GetCurrentLoggedInUser(User);
 			if (user == null)
-				//To jest do zmiany i przemyœlenia
 				return Unauthorized("U¿ytkownik jest niezalogowany");
-			//throw new NotImplementedException();
 			var photos = await _photoService.GetPhotosWithIsLikedForDiscoverAsync(pageNumber, pageSize, user, tag, category, order, sortBy);
 			_photoService.IncrementViewsCountIfNotViewed(photos);
-			//List<Photo> viewedPhotos = [];
-			//foreach (var photo in photos)
-			//{
-			//	var sessionKey = $"viewed_photo_{photo.Photo.Id}";
-   //             await Console.Out.WriteLineAsync((HttpContext.Session.GetString(sessionKey)));
-   //             if (HttpContext.Session.GetString(sessionKey) == null)
-			//	{
-			//		HttpContext.Session.SetString(sessionKey, "viewed");
-			//		viewedPhotos.Add(photo.Photo);
-			//	}
-   //         }
-			//_photoService.IncrementViewCountAsync(viewedPhotos);
-
 			return Json(photos);
 		}
 

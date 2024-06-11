@@ -175,35 +175,7 @@ namespace Luxa.Controllers
 		{
 			return _context.Photo.Any(e => e.Id == id);
 		}
-		[Authorize]
-		[HttpGet]
-		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
-		{
-			var user = _userService.GetCurrentLoggedInUser(User);
-			if (user == null)
-                //tutaj chyba wywala się na krzywy pyszczek
-                throw new NotImplementedException();
-            var photos = await _photoService.GetPhotosWithIsLikedAsync(pageNumber, pageSize, user);
-			_photoService.IncrementViewsCountIfNotViewed(photos);
-			//List<Photo> viewedPhotos = [];
-			//foreach (var key in HttpContext.Session.Keys)
-			//{
-			//	Console.WriteLine($"Sesja zawiera klucz: {key}");
-			//}
-			//foreach (var photo in photos)
-			//{
-			//	var sessionKey = $"viewed_photo_{photo.Photo.Id}";
-			//	await Console.Out.WriteLineAsync((HttpContext.Session.GetString(sessionKey)));
-			//	if (HttpContext.Session.GetString(sessionKey) == null)
-			//	{
-			//		HttpContext.Session.SetString(sessionKey, "viewed");
-			//		viewedPhotos.Add(photo.Photo);
-			//	}
-			//}
-			//_photoService.IncrementViewCountAsync(viewedPhotos);
 
-			return Json(photos);
-		}
        
         [HttpPost]
 		public async Task<bool> LikeOrUnlikePhoto(int idPhoto)

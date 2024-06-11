@@ -42,33 +42,10 @@
 	//Przy 1920px to 6 kolumn
 	const pixelsPerColumn = 300;
 	let isLoadingPhotos = false;
-	const path = 'assets/';
+	const path = '/assets/';
 	const likePath = path + 'likeButton.png';
 	const unlikePath = path + 'unlikeButton.png';
-
-	// document.addEventListener('DOMContentLoaded', function () {
-	// 	const containers = document.querySelectorAll('.photo-galery');
-	// 	console.log(containers);
-
-	// 	containers.forEach(container => {
-	// 		console.log(container);
-	// 		const trigger = container.querySelector('.trigger');
-	// 		const target = container.querySelector('.target');
-	// 		console.log(trigger);
-	// 		console.log(target);
-	// 		trigger.addEventListener('mouseenter', function () {
-	// 			target.style.opacity = '1';
-	// 		});
-
-	// 		trigger.addEventListener('mouseleave', function () {
-	// 			target.style.opacity = '0';
-	// 		});
-	// 	});
-	// });
-
-
-
-
+	let isNotAllPhotos = true;
 
 	function getWindowWidth() {
 		var windowWidth = document.documentElement.clientWidth;
@@ -92,24 +69,14 @@
 
 
 	}
-	// function getMainHeight() {
-	// 	var headerHeight = document.querySelector('header').offsetHeight;
-	// 	var footerHeight = document.querySelector('footer').offsetHeight;
-	// 	var windowHeight = window.innerHeight;
-	// 	return mainHeight = windowHeight - headerHeight - footerHeight;
-	// }
-
-	// window.addEventListener("load", function () {
-	// 	console.log(getMainHeight());
-
-	// });
-
-
-
-
 
 	async function loadPhotos() {
-		const response = await fetch(`/Photos/LoadPhotos?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+		const response = await fetch(`/Home/LoadPhotos?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+		if (response.status === 401) {
+			alert("Nie jesteś zalogowany. Zaloguj się");
+			window.location.href = '/SignIn';
+			return false;
+		}
 		const photos = await response.json();
 		if (photos.length > 0) {
 			addPhotosToColumns(photos);
@@ -117,8 +84,13 @@
 			return true;
 		}
 		else {
+			const newBox = document.querySelector('.newBox');
+			const info = document.createElement('div');
+			info.classList.add('photos-info');
+			info.id = 'photos-info';
+			info.innerHTML = '<div class="alert alert-primary" role="alert">Nie ma więcej zdjęć do wyświetlenia</div>';
+			newBox.appendChild(info);
 			return false;
-			//Tu trzeba będzie jakiś komunikat wyświetlić że brak zdjęć albo coś
 		}
 	}
 
@@ -155,8 +127,8 @@
 		return shortestColumn;
 	}
 	function changeLikeButton(id) {
-		const url = window.location.origin + '/';
-		console.log(url);
+		const url = window.location.origin;
+		console.log(url + " " + img + " " + like);
 		var img = document.getElementById('photo.' + id);
 		var like = document.getElementById('likes.' + id);
 		let currentValue = parseInt(like.textContent);
@@ -181,7 +153,7 @@
 		photos.forEach((photo, index) => {
 			console.log(photo);
 			console.log("len:" + columns.length);
-			console.log("~/Image/" + photo.photo.name);
+			console.log("/Image/" + photo.photo.name);
 			const column = getShortestColumn(columns);
 			const photoDiv = document.createElement('div');
 			//trzeba pobrać wartość z modelu
@@ -196,7 +168,7 @@
 			photoDiv.classList.add('photo', 'trigger');
 			photoDiv.innerHTML = `
 									<a type="button" href="Photos/Details/${photo.photo.id}">
-										<img src="Image/${photo.photo.name}" alt="Photo">
+											<img src="Image/${photo.photo.name}" alt="${photo.photo.name}">
 									</a>
 										<div class="target">
 											<div class="like">
@@ -218,10 +190,11 @@
 
 	window.addEventListener('scroll', () => {
 
-		if (!isLoadingPhotos && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+		if (!isLoadingPhotos && isNotAllPhotos && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
 			console.log("Scroll zadziałał");
 			isLoadingPhotos = true;
-			loadPhotos().then(() => {
+			loadPhotos().then((result) => {
+				isNotAllPhotos = result;
 				isLoadingPhotos = false;
 			});
 		}
@@ -231,21 +204,16 @@
 
 	window.addEventListener('DOMContentLoaded', async function () {
 		generateColumns(getWindowWidth());
-		while (!isLoadingPhotos && (window.innerHeight >= document.body.offsetHeight)) {
+		isLoadingPhotos = true;
+		while (isLoadingPhotos && isNotAllPhotos && (window.innerHeight >= document.body.offsetHeight)) {
 			console.log("pętla: " + isLoadingPhotos);
-			isLoadingPhotos = true;
-			if (await loadPhotos()) {
-				isLoadingPhotos = false;
-			} else {
+			if (!(await loadPhotos())) {
+				isNotAllPhotos = false;
 				break;
 			}
 		}
+		isLoadingPhotos = false;
 	});
-	// window.addEventListener('load', function ()
-	// {
-	// 	addTrigger();
-	// });
-	// Load initial photos
 
 	function addTrigger() {
 		const triggers = document.querySelectorAll('.photo.trigger');
