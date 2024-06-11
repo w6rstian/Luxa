@@ -84,5 +84,18 @@ namespace Luxa.Services
 			}
 			return "Coś poszło nie tak.";
 		}
-	}
+
+        public async Task<string> ChangePrivacy(UserModel? user, bool isPrivate)
+        {
+            if (user != null)
+            {
+                user.IsPrivate = isPrivate;
+                if (await _userService.SaveUser(user))
+                {
+                    return "Zmiana ustawień prywatności powiodła się.";
+                }
+            }
+            return "Coś poszło nie tak.";
+        }
+    }
 }

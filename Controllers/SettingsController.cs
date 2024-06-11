@@ -67,6 +67,21 @@ namespace Luxa.Controllers
 			ViewData["Message"] = await _settingsService.ChangeData(user,ModelState.IsValid,dataChangeVM);
 			return View(dataChangeVM);
 		}
-		
-	}
+        [HttpGet]
+        public IActionResult ChangePrivacy()
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            var result = new PrivacyChangeVM { IsPrivate = user?.IsPrivate ?? false };
+            return View(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePrivacy(PrivacyChangeVM privacyChangeVM)
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            ViewData["Message"] = await _settingsService.ChangePrivacy(user, privacyChangeVM.IsPrivate);
+            var result = new PrivacyChangeVM { IsPrivate = privacyChangeVM.IsPrivate };
+            return View(result);
+        }
+    }
 }

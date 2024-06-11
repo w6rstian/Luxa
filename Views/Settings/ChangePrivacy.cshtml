@@ -1,0 +1,23 @@
+﻿@model Luxa.ViewModel.PrivacyChangeVM
+
+<div class="container">
+    <div class="row">
+        @await Component.InvokeAsync("SettingsMenu")
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" id="itemHead">Zmień ustawienia prywatności</h5>
+                    <form method="post" asp-controller="Settings" asp-action="ChangePrivacy">
+                        <div class="mb-1">
+                            <label asp-for="IsPrivate" class="control-label"></label>
+                            <input asp-for="IsPrivate" class="form-check-input" type="checkbox" />
+                            <span asp-validation-for="IsPrivate" class="text-danger"></span>
+                        </div>
+                        <input type="submit" value="Zatwierdź zmiany" class="btn btn-primary float-end" />
+                    </form>
+                    @ViewData["Message"]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
