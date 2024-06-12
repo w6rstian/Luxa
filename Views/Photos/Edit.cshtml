@@ -1,10 +1,10 @@
 ﻿@model Luxa.Models.Photo
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Photo";
 }
 
-<h1>Edit</h1>
+<h1>Edit Photo</h1>
 
 <h4>Photo</h4>
 <hr />
@@ -13,11 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Owner" class="control-label"></label>
-                <input asp-for="Owner" class="form-control" />
-                <span asp-validation-for="Owner" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="OwnerId" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -28,27 +24,27 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="AddTime" class="control-label"></label>
-                <input asp-for="AddTime" class="form-control" />
-                <span asp-validation-for="AddTime" class="text-danger"></span>
+                <label asp-for="Views" class="control-label"></label>
+                <input asp-for="Views" class="form-control" />
+                <span asp-validation-for="Views" class="text-danger"></span>
             </div>
+            
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-           
         </form>
-        <a asp-controller="Photos" asp-action="DownloadImage" asp-route-id="@Model.Id">
-            <button class="btn btn-primary">Download</button>
-        </a>
-        
     </div>
 </div>
 
 <div>
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

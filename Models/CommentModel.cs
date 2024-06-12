@@ -9,5 +9,6 @@
 
         public Photo Photo { get; set; } = default!;
         public UserModel Owner { get; set; } = default!;
+        //public DateTime AddTime { get; set; } = DateTime.Now;
     }
 }
