@@ -5,11 +5,12 @@
     foreach (var comment in Model)
     {
         <div class="comment">
-            <p>@comment.Comment</p>
+            <div class="comment-author">@comment.OwnerId</div>
+            <div class="comment-text">@comment.Comment</div>
             <form asp-action="RemoveComment" asp-controller="Comment" method="post">
                 <input type="hidden" name="commentId" value="@comment.Id" />
                 <input type="hidden" name="photoId" value="@comment.PhotoId" />
-                <button type="submit" class="btn btn-danger">Usuń</button>
+                <button type="submit" class="btn btn-danger">-</button>
             </form>
         </div>
     }

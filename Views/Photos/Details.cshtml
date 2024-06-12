@@ -31,6 +31,7 @@
 
     #photo-right-panel {
         width: 40%;
+        height: 80%;
         display: flex;
         flex-direction: column;
         padding: 10px;
@@ -59,6 +60,42 @@
         padding-top: 5px;
     }
 
+    .add-comment-div {
+        display: flex;
+    }
+
+    .input-comment {
+        width: 100%;
+    }
+    
+    .input-comment textarea {
+        resize: none;
+    }
+
+    .comment {
+        margin: 2px;
+        padding: 10px;
+        background-color: var(--dark-violet);
+        border-radius: 5px;
+        display: flex;
+    }
+
+    #comment-list {
+        display: flex;
+        flex-direction: column-reverse;
+        overflow-y: auto;
+        max-height: 248px;
+    }
+
+    .comment-author {
+        width: 10%;
+        border-right: 1px solid black;
+        margin: 0 10px;
+    }
+    .comment-text {
+        width: 90%;
+    }
+
 </style>
 <div id="photo-details">
     <div id="photoSquare">
@@ -83,17 +120,18 @@
         <hr/>
         <div id="comments-section">
             <div id="comment-form">
-                <h4>Dodaj komentarz</h4>
-                <form asp-action="AddComment" asp-controller="Comment" method="post">
+                @* <h4>Dodaj komentarz</h4> *@
+                <form class="add-comment-div" asp-action="AddComment" asp-controller="Comment" method="post">
                     <input type="hidden" name="photoId" value="@ViewBag.PhotoId" /> <!-- Przekazujemy ID zdjęcia -->
-                    <div class="form-group">
+                    <div class="form-group input-comment">
                         <textarea class="form-control" name="Content" rows="3" placeholder="Napisz komentarz..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" ,asp-action="Photos">Dodaj komentarz</button>
+                    <button type="submit" class="btn btn-primary" ,asp-action="Photos">+</button>
                 </form>
             </div>
+            <hr/>
             <div id="comment-list">
-                <h4>Komentarze</h4>
+                @* <h4>Komentarze</h4> *@
                 <!-- Wyświetl komentarze przy użyciu widoku częściowego _CommentsPartial -->
                 @await Html.PartialAsync("_CommentsPartial", ViewData["Comments"])
             </div>
@@ -107,9 +145,4 @@
     <a asp-controller="Photos" asp-action="DownloadImage" asp-route-id="@Model.Id">
         <button class="btn btn-primary">Download</button>
     </a>
-</div>
-
-iv>
-<div id="comments-section">
-
 </div>
