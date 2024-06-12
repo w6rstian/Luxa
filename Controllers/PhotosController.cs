@@ -158,7 +158,7 @@ namespace Luxa.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {
