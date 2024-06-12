@@ -70,6 +70,25 @@
         padding: 5px 5px;
         border-radius: 5pt;
     }
+
+    .photo-gallery {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .photo-gallery a {
+        width: 32%;
+        height: fit-content;
+        margin: 0 8px;
+    }
+
+    .photo-gallery img {
+        width: 100%;
+        max-height: 415px;
+        object-fit: cover;
+    }
 </style>
 
 @if (Model.IsCurrentUserProfile)
