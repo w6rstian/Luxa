@@ -358,7 +358,7 @@ namespace Luxa.Controllers
             {
                 var user = await _userManager.GetUserAsync(User);
                 var fileName = Path.GetFileName(avatar.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+                var filePath = Path.Combine("wwwroot/avatars", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -382,7 +382,7 @@ namespace Luxa.Controllers
             {
                 var user = await _userManager.GetUserAsync(User);
                 var fileName = Path.GetFileName(background.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+                var filePath = Path.Combine("wwwroot/avatars", fileName); ;
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {

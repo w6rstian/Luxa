@@ -107,7 +107,7 @@ namespace Luxa.Services
                 if (avatar != null)
                 {
                     var avatarFileName = Guid.NewGuid().ToString() + "_" + avatar.FileName;
-                    var avatarFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", avatarFileName);
+                    var avatarFilePath = Path.Combine("wwwroot/avatars", avatarFileName);
 
                     using (var stream = new FileStream(avatarFilePath, FileMode.Create))
                     {
@@ -120,7 +120,7 @@ namespace Luxa.Services
                 if (background != null)
                 {
                     var backgroundFileName = Guid.NewGuid().ToString() + "_" + background.FileName;
-                    var backgroundFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", backgroundFileName);
+                    var backgroundFilePath = Path.Combine("wwwroot/avatars", backgroundFileName);
 
                     using (var stream = new FileStream(backgroundFilePath, FileMode.Create))
                     {

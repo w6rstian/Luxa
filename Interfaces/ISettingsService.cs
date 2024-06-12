@@ -11,6 +11,6 @@ namespace Luxa.Interfaces
         DataChangeVM? GetDataChangeVMFromUser(UserModel? user);
         Task<string> ChangeData(UserModel? user, bool isValid, DataChangeVM dataChangeVM);
         Task<string> ChangePrivacy(UserModel? user, bool isPrivate);
-        Task<string> ChangeProfile(UserModel? user, string description, IFormFile avatar, IFormFile background);
+        Task<string> ChangeProfile(UserModel? user, string? description, IFormFile? avatar, IFormFile? background);
     }
 }
