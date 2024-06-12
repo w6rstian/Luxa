@@ -4,8 +4,9 @@
 	ViewData["Title"] = "Panel administracyjny";
 }
 <h3>@ViewData["Title"]</h3>
-
-
+@* <div class="alert alert-primary" role="alert">@TempData["errorMessage"]</div>
+@TempData["errorMessage"]
+@TempData["successMessage"] *@
 <form>
 	<button asp-action="CreateUser" asp-controller="Account" class="btn btn-primary">Stwórz nowego użytkownika</button>
 	<table class="table table-responsive table-hover">
@@ -62,7 +63,7 @@
 		console.log("test");
 		
 		// $.ajax({
-		// 	url: '/Contact/EditState',
+		// 	url: '/Account/DeleteUser',
 		// 	type: 'POST',
 		// 	data: { id: id },
 		// 	success: function (response) {

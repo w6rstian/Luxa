@@ -122,35 +122,35 @@ namespace Luxa.Controllers
                 };
 
                 var resultAddUser = await _userManager.CreateAsync(user, signUpVM.Password!);
-                if (resultAddUser.Errors.Any()) 
+                if (resultAddUser.Errors.Any())
                 {
                     foreach (var error in resultAddUser.Errors)
                     {
                         switch (error.Code)
                         {
                             case "PasswordTooShort":
-								ModelState.AddModelError("", "Hasło musi zawierać minimum 6 znaków");
+                                ModelState.AddModelError("", "Hasło musi zawierać minimum 6 znaków");
                                 break;
                             case "DuplicateUserName":
-								ModelState.AddModelError("", "Użytkownik o danej nazwie użytkownika już istnieje, wybierz inną nazwę");
-								break;
-							default:
-								ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+                                ModelState.AddModelError("", "Użytkownik o danej nazwie użytkownika już istnieje, wybierz inną nazwę");
                                 break;
-						}
+                            default:
+                                ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+                                break;
+                        }
                     }
-					return View(signUpVM);
-				}
-				var resultAddRole = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
-				foreach (var error in resultAddRole.Errors)
-				{
-					ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
-				}
-				if (resultAddRole.Errors.Any())
-				{
-					return View(signUpVM);
-				}
-				if (resultAddUser.Succeeded && resultAddRole.Succeeded)
+                    return View(signUpVM);
+                }
+                var resultAddRole = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
+                foreach (var error in resultAddRole.Errors)
+                {
+                    ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+                }
+                if (resultAddRole.Errors.Any())
+                {
+                    return View(signUpVM);
+                }
+                if (resultAddUser.Succeeded && resultAddRole.Succeeded)
                 {
                     var notifications = _context.Notifications.ToList();
                     user.UserNotifiacations.Add(new UserNotificationModel
@@ -273,9 +273,25 @@ namespace Luxa.Controllers
             return View(editUserVM);
         }
         [HttpPost]
-        public IActionResult EditUser(EditUserVM editUserVM)
+        public async Task<IActionResult> EditUser(string Id, EditUserVM editUserVM)
         {
-            return View();
+            if (string.IsNullOrEmpty(Id))
+            {
+                return NotFound();
+            }
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.FirstName = editUserVM.FirstName;
+            user.LastName = editUserVM.LastName;
+            user.Country = editUserVM.Country;
+            if (await _userService.SaveUser(user))
+                return RedirectToAction("UsersList", "Account");
+            else
+                return View(editUserVM);
+
         }
         [Authorize]
         public IActionResult UserNotifications()
