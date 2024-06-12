@@ -1,4 +1,5 @@
-﻿using Luxa.Interfaces;
+﻿using Luxa.Data;
+using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -42,24 +43,7 @@ namespace Luxa.Controllers
             var result = _settingsService.GetDataChangeVMFromUser(user);
             if (result != null)
             {
-                result.Countries = new List<string>
-                {
-                    "Polska",
-                    "Niemcy",
-                    "Francja",
-                    "Stany Zjednoczone",
-                    "Włochy",
-                    "Hiszpania",
-                    "Japonia",
-                    "Wielka Brytania",
-                    "Kanada",
-                    "Australia",
-                    "Rosja",
-                    "Chiny",
-                    "Indie",
-                    "Brazylia",
-                    "Meksyk",
-                };
+                result.Countries = [.. CountryOptions.Countries];
                 return View(result);
             }
             return RedirectToAction("Error", "Home");

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Luxa.Controllers
@@ -121,7 +122,34 @@ namespace Luxa.Controllers
                 };
 
                 var resultAddUser = await _userManager.CreateAsync(user, signUpVM.Password!);
+                if (resultAddUser.Errors.Any())
+                {
+                    foreach (var error in resultAddUser.Errors)
+                    {
+                        switch (error.Code)
+                        {
+                            case "PasswordTooShort":
+                                ModelState.AddModelError("", "Hasło musi zawierać minimum 6 znaków");
+                                break;
+                            case "DuplicateUserName":
+                                ModelState.AddModelError("", "Użytkownik o danej nazwie użytkownika już istnieje, wybierz inną nazwę");
+                                break;
+                            default:
+                                ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+                                break;
+                        }
+                    }
+                    return View(signUpVM);
+                }
                 var resultAddRole = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
+                foreach (var error in resultAddRole.Errors)
+                {
+                    ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
+                }
+                if (resultAddRole.Errors.Any())
+                {
+                    return View(signUpVM);
+                }
                 if (resultAddUser.Succeeded && resultAddRole.Succeeded)
                 {
                     var notifications = _context.Notifications.ToList();
@@ -133,36 +161,14 @@ namespace Luxa.Controllers
                     await _signInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
-
-                foreach (var error in resultAddUser.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                foreach (var error in resultAddRole.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                return View(signUpVM);
             }
-
             return View(signUpVM);
         }
 
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            foreach (var key in HttpContext.Session.Keys)
-            {
-                Console.WriteLine($"Sesja zawiera klucz: {key}");
-            }
             HttpContext.Session.Clear();
-            foreach (var key in HttpContext.Session.Keys)
-            {
-                Console.WriteLine($"Sesja nie zawiera klucz: {key}");
-            }
-
             if (HttpContext.Request.Cookies[".AspNetCore.Session"] != null)
             {
                 Response.Cookies.Delete(".AspNetCore.Session");
@@ -253,7 +259,7 @@ namespace Luxa.Controllers
             var user = await _userManager.FindByIdAsync(Id);
             if (user == null)
                 return RedirectToAction("Error", "Home");
-            EditUserVM editUserVM = new EditUserVM()
+            EditUserVM editUserVM = new()
             {
                 UserName = user.UserName,
                 FirstName = user.FirstName,
@@ -267,9 +273,25 @@ namespace Luxa.Controllers
             return View(editUserVM);
         }
         [HttpPost]
-        public IActionResult EditUser(EditUserVM editUserVM)
+        public async Task<IActionResult> EditUser(string Id, EditUserVM editUserVM)
         {
-            return View();
+            if (string.IsNullOrEmpty(Id))
+            {
+                return NotFound();
+            }
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.FirstName = editUserVM.FirstName;
+            user.LastName = editUserVM.LastName;
+            user.Country = editUserVM.Country;
+            if (await _userService.SaveUser(user))
+                return RedirectToAction("UsersList", "Account");
+            else
+                return View(editUserVM);
+
         }
         [Authorize]
         public IActionResult UserNotifications()
@@ -311,7 +333,7 @@ namespace Luxa.Controllers
 
         public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
         {
-            return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName = userName });
+            return ViewComponent("ProfilePhoto", new { pageNumber, pageSize, userName });
         }
 
         //profil avatar i tlo
@@ -327,7 +349,7 @@ namespace Luxa.Controllers
             {
                 var profileUser = await _userService.GetUserByUserName(userName);
 
-                if (profileUser == null)
+                if (profileUser == null || profileUser.UserName == null)
                 {
                     return NotFound();
                 }

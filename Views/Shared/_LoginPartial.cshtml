@@ -40,9 +40,7 @@
 
 @if (signInManager.IsSignedIn(User))
 {
-
-	var userId = (User as ClaimsPrincipal)?.FindFirstValue(ClaimTypes.NameIdentifier);
-	var notificationsCount = await notificationService.GetNotificationsCountAsync(userId);
+	var notificationsCount = await notificationService.GetNotificationsCountAsync(User);
 	<ul id="search-bar" class="navbar-nav flex-grow-1 mx-3">
 		<li>
 			<form class="d-flex" role="search" action="/Home/Discover" method="get">

@@ -10,6 +10,9 @@ namespace Luxa.Interfaces
         Task<bool> UpdateReputation(UserModel userModel);
         UserModel? GetCurrentLoggedInUserWithPhotos(ClaimsPrincipal user);
         Task<bool> IsUserWithUserNameExist(string userName);
-        Task<UserModel> GetUserByUserName(string userName);
+        Task<UserModel?> GetUserByUserName(string userName);
+
+
+
     }
 }
