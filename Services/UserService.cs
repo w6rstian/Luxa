@@ -24,13 +24,13 @@ namespace Luxa.Services
             _context = context;
         }
 
-
         public UserModel? GetCurrentLoggedInUser(ClaimsPrincipal user)
         {
             var currentUserTask = _userManager.GetUserAsync(user);
             currentUserTask.Wait();
             return currentUserTask.Result;
         }
+
         public UserModel? GetCurrentLoggedInUserWithPhotos(ClaimsPrincipal user)
         {
             var userId = _userManager.GetUserId(user);
@@ -42,33 +42,15 @@ namespace Luxa.Services
 
         public async Task<UserModel?> GetUserByUserName(string userName) 
             => await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName);
-   
-        
 
         public async Task<bool> IsUserWithUserNameExist(string userName)
             => await _context.Users.AnyAsync(u => u.UserName == userName);
-
 
         public async Task<bool> SaveUser(UserModel userModel)
         {
             var result = await _userManager.UpdateAsync(userModel);
             return result.Succeeded;
         }
-
-        /*public int GetUserLevel(int reputation)
-		{
-			int[] thresholds = { 20, 50, 100, 200, 500, 1000, 5000 };
-			for (int i = 1; i <= thresholds.Length; i++)
-			{
-				if (reputation < thresholds[i])
-				{
-					return i;
-				}
-			}
-			return thresholds.Length + 1;
-
-		}*/
-
 
         public async Task<bool> UpdateReputation(UserModel userModel)
         {
