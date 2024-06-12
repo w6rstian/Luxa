@@ -63,6 +63,14 @@ namespace Luxa.Data
             //	.WithOne(p => p.Owner)
             //	.OnDelete(DeleteBehavior.Cascade);
 
+            // jeden do wielu - zdjęcie/komentarz
+            modelBuilder.Entity<CommentModel>()
+                .HasOne(p => p.Photo)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(p => p.PhotoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
 
             modelBuilder.Entity<IdentityUserLogin<string>>()
         .HasKey(l => new { l.LoginProvider, l.ProviderKey });

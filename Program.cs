@@ -46,7 +46,10 @@ namespace Luxa
             builder.Services.AddScoped<IContactRepository, ContactRepository>();
             builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
             builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
+
+            
             //Services
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddScoped<ISettingsService, SettingsService>();
@@ -55,6 +58,7 @@ namespace Luxa
             builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<IContactService, ContactService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ICommentService, CommentService>();
 
             // Google
             builder.Services.AddAuthentication()

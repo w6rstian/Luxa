@@ -38,7 +38,10 @@ namespace Luxa.Models
         public IFormFile ImageFile { get; set; } = default!;
         public /*virtual*/ ICollection<UserPhotoModel> UserLikedPhotos { get; set; } = [];
         public ICollection<PhotoTagModel> PhotoTags { get; set; } = [];
-
-
+        public ICollection<CommentModel> Comments { get; set; }
+        public Photo photo { get; set; }
     }
+
+
 }
+
