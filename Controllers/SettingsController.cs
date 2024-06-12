@@ -91,28 +91,35 @@ namespace Luxa.Controllers
         public IActionResult ChangeProfile()
         {
             var user = _userService.GetCurrentLoggedInUser(User);
-            var result = new ProfileChangeVM { Description = user.Description };
+            var result = new ProfileChangeVM { Description = user?.Description };
             return View(result);
         }
+
         [HttpPost]
-        public async Task<IActionResult> ChangeProfile(ProfileChangeVM profileChangeVM)
+        public async Task<IActionResult> ChangeDescription(ProfileChangeVM profileChangeVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
+            if (user == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             user.Description = profileChangeVM.Description;
             await _userManager.UpdateAsync(user);
-            ViewData["Message"] = "Profile updated successfully!";
-            return View(profileChangeVM);
+
+            ViewData["DescriptionMessage"] = "Profil zmodyfikowany pomyślnie!";
+            return View("ChangeProfile", profileChangeVM);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+        public async Task<IActionResult> UploadAvatar(IFormFile? avatar)
         {
             if (avatar != null && avatar.Length > 0)
             {
                 var user = await _userManager.GetUserAsync(User);
                 var fileName = Path.GetFileName(avatar.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+                var filePath = Path.Combine("wwwroot/avatars", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -122,21 +129,23 @@ namespace Luxa.Controllers
                 user.AvatarUrl = $"/avatars/{fileName}";
                 await _userManager.UpdateAsync(user);
 
+                ViewData["AvatarMessage"] = "Profil zmodyfikowany pomyślnie!";
                 return RedirectToAction("ChangeProfile");
             }
 
+            ViewData["AvatarMessage"] = "Nie wybrano pliku.";
             return RedirectToAction("ChangeProfile");
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> UploadBackground(IFormFile background)
+        public async Task<IActionResult> UploadBackground(IFormFile? background)
         {
             if (background != null && background.Length > 0)
             {
                 var user = await _userManager.GetUserAsync(User);
                 var fileName = Path.GetFileName(background.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+                var filePath = Path.Combine("wwwroot/avatars", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -146,9 +155,11 @@ namespace Luxa.Controllers
                 user.BackgroundUrl = $"/avatars/{fileName}";
                 await _userManager.UpdateAsync(user);
 
+                ViewData["BackgroundMessage"] = "Profil zmodyfikowany pomyślnie!";
                 return RedirectToAction("ChangeProfile");
             }
 
+            ViewData["BackgroundMessage"] = "Nie wybrano pliku.";
             return RedirectToAction("ChangeProfile");
         }
     }
