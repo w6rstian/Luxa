@@ -370,7 +370,9 @@ namespace Luxa.Controllers
                     Description = profileUser.Description,
                     IsCurrentUserProfile = currentUser.UserName == userName,
                     IsFollowing = await _userService.IsFollowing(currentUser.Id, profileUser.Id),
-                    //PendingFollowRequests = currentUser.UserName == userName ? await _userService.GetPendingFollowRequests(currentUser.Id) : new List<FollowRequestModel>() //nie działa
+                    PendingFollowRequests = currentUser.UserName == userName
+                        ? await _userService.GetPendingFollowRequests(currentUser.Id)
+                        : new List<FollowModel>()
                 };
 
                 return View(model);
@@ -519,7 +521,7 @@ namespace Luxa.Controllers
             _context.FollowRequests.Remove(followRequest);
             await _context.SaveChangesAsync();
 
-            // Notify the follower that their request was rejected
+            // powiadomienie o odrzuceniu prosby o obserwacje
             // await _notificationService.SendFollowRejectedNotification(followRequest.Follower, currentUser);
 
             return RedirectToAction("UserProfile", new { userName = currentUser.UserName });

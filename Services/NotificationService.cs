@@ -46,17 +46,50 @@ namespace Luxa.Services
 
         public async Task SendFollowRequestNotification(UserModel followee, UserModel follower)
         {
+            var notification = new UserNotificationModel
+            {
+                UserId = followee.Id,
+                Notification = new NotificationModel
+                {
+                    Title = "New Follow Request",
+                    Description = $"{follower.UserName} chce cię obserwować."
+                }
+            };
 
+            _context.UserNotifications.Add(notification);
+            await _context.SaveChangesAsync();
         }
 
         public async Task SendFollowApprovedNotification(UserModel follower, UserModel followee)
         {
+            var notification = new UserNotificationModel
+            {
+                UserId = follower.Id,
+                Notification = new NotificationModel
+                {
+                    Title = "Follow Request Approved",
+                    Description = $"{followee.UserName} zatwierdził twoja prośbę o obserwowanie."
+                }
+            };
 
+            _context.UserNotifications.Add(notification);
+            await _context.SaveChangesAsync();
         }
 
         public async Task SendFollowRejectedNotification(UserModel follower, UserModel followee)
         {
+            var notification = new UserNotificationModel
+            {
+                UserId = follower.Id,
+                Notification = new NotificationModel
+                {
+                    Title = "Follow Request Rejected",
+                    Description = $"{followee.UserName} odrzucił twpją prośbę o obserwowanie."
+                }
+            };
 
+            _context.UserNotifications.Add(notification);
+            await _context.SaveChangesAsync();
         }
     }
 }
