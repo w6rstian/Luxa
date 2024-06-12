@@ -155,6 +155,33 @@ else
             <h2>@Model.UserName</h2>
             <textarea readonly disabled>@Model.Description</textarea>
         </div>
+        @if (Model.IsFollowing)
+        {
+            <div id="edit-button">
+                <a class="btn btn-danger" asp-action="Unfollow" asp-route-userName="@Model.UserName">Unfollow</a>
+            </div>
+        }
+        else
+        {
+            <div id="edit-button">
+                <a class="btn btn-success" asp-action="Follow" asp-route-userName="@Model.UserName">Follow</a>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.IsCurrentUserProfile)
+{
+    <div>
+        <h3>Pending Follow Requests</h3>
+        @foreach (var request in Model.PendingFollowRequests)
+        {
+            <div>
+                <p>@request.Follower.UserName</p>
+                <a class="btn btn-primary" asp-action="ApproveFollow" asp-route-requestId="@request.Id">Approve</a>
+                <a class="btn btn-danger" asp-action="RejectFollow" asp-route-requestId="@request.Id">Reject</a>
+            </div>
+        }
     </div>
 }
 

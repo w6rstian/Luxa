@@ -63,6 +63,21 @@ namespace Luxa.Services
             return result.Succeeded;
         }
 
+        /*public int GetUserLevel(int reputation)
+		{
+			int[] thresholds = { 20, 50, 100, 200, 500, 1000, 5000 };
+			for (int i = 1; i <= thresholds.Length; i++)
+			{
+				if (reputation < thresholds[i])
+				{
+					return i;
+				}
+			}
+			return thresholds.Length + 1;
+
+		}*/
+
+
         public async Task<bool> UpdateReputation(UserModel userModel)
         {
             int reputation = 0;
@@ -73,6 +88,20 @@ namespace Luxa.Services
             }
             userModel.Reputation = reputation;
             return await SaveUser(userModel);
+        }
+
+        public async Task<bool> IsFollowing(string followerId, string followeeId)
+        {
+            return await _context.FollowRequests
+                .AnyAsync(fr => fr.FollowerId == followerId && fr.FolloweeId == followeeId && fr.IsApproved);
+        }
+
+        public async Task<List<FollowModel>> GetPendingFollowRequests(string userId)
+        {
+            return await _context.FollowRequests
+                .Where(fr => fr.FolloweeId == userId && !fr.IsApproved)
+                .Include(fr => fr.Follower)
+                .ToListAsync();
         }
     }
 }

@@ -34,7 +34,8 @@ namespace Luxa.Models
         public ICollection<UserNotificationModel> UserNotifiacations { get; set; } = [];
         public ICollection<UserPhotoModel> UserLikedPhotos { get; set; } = [];
         public ICollection<Photo> Photos { get; set; } = [];
-
-
+        public ICollection<FollowModel> Followers { get; set; } = new List<FollowModel>();
+        public ICollection<FollowModel> Following { get; set; } = new List<FollowModel>();
+        //public ICollection<FollowModel> MutualFollowers { get; set; } = new List<FollowModel>();
     }
 }
