@@ -103,32 +103,6 @@ namespace Luxa.Services
                 {
                     return "Zmiana opisu powiodła się.";
                 }
-
-                if (avatar != null)
-                {
-                    var avatarFileName = Guid.NewGuid().ToString() + "_" + avatar.FileName;
-                    var avatarFilePath = Path.Combine("wwwroot/avatars", avatarFileName);
-
-                    using (var stream = new FileStream(avatarFilePath, FileMode.Create))
-                    {
-                        await avatar.CopyToAsync(stream);
-                    }
-
-                    user.AvatarUrl = $"/avatars/{avatarFileName}";
-                }
-
-                if (background != null)
-                {
-                    var backgroundFileName = Guid.NewGuid().ToString() + "_" + background.FileName;
-                    var backgroundFilePath = Path.Combine("wwwroot/avatars", backgroundFileName);
-
-                    using (var stream = new FileStream(backgroundFilePath, FileMode.Create))
-                    {
-                        await background.CopyToAsync(stream);
-                    }
-
-                    user.BackgroundUrl = $"/avatars/{backgroundFileName}";
-                }
             }
 
             if (await _userService.SaveUser(user))
