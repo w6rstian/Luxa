@@ -15,7 +15,7 @@ namespace Luxa.Models
         {
             get
             {
-                int[] thresholds = { 20, 50, 100, 200, 500, 1000, 5000 };
+                int[] thresholds = [20, 50, 100, 200, 500, 1000, 5000];
                 for (int i = 1; i <= thresholds.Length; i++)
                 {
                     if (Reputation < thresholds[i])

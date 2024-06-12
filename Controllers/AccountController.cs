@@ -122,7 +122,7 @@ namespace Luxa.Controllers
                 };
 
                 var resultAddUser = await _userManager.CreateAsync(user, signUpVM.Password!);
-                if (resultAddUser.Errors.Count() > 0) 
+                if (resultAddUser.Errors.Any()) 
                 {
                     foreach (var error in resultAddUser.Errors)
                     {
@@ -146,7 +146,7 @@ namespace Luxa.Controllers
 				{
 					ModelState.AddModelError("", $"Nastąpił błąd {error.Code}, spróbuj ponownie");
 				}
-				if (resultAddRole.Errors.Count() > 0)
+				if (resultAddRole.Errors.Any())
 				{
 					return View(signUpVM);
 				}
@@ -259,7 +259,7 @@ namespace Luxa.Controllers
             var user = await _userManager.FindByIdAsync(Id);
             if (user == null)
                 return RedirectToAction("Error", "Home");
-            EditUserVM editUserVM = new EditUserVM()
+            EditUserVM editUserVM = new()
             {
                 UserName = user.UserName,
                 FirstName = user.FirstName,
@@ -317,7 +317,7 @@ namespace Luxa.Controllers
 
         public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
         {
-            return ViewComponent("ProfilePhoto", new { pageNumber = pageNumber, pageSize = pageSize, userName = userName });
+            return ViewComponent("ProfilePhoto", new { pageNumber, pageSize, userName });
         }
 
         //profil i avatar

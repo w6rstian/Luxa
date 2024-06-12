@@ -275,25 +275,14 @@ namespace Luxa.Services
                 photos = photos.Where(p => p.Category == enumCategory);
             }
             string sortByWithDirection = sortBy + GetOrder(order);
-            switch (sortByWithDirection)
+            photos = sortByWithDirection switch
             {
-                case "date":
-                    photos = photos.OrderBy(p => p.AddTime);
-                    break;
-                case "views":
-                    photos = photos.OrderBy(p => p.Views);
-                    break;
-                case "date_Desc":
-                    photos = photos.OrderByDescending(p => p.AddTime);
-                    break;
-                case "views_Desc":
-                    photos = photos.OrderByDescending(p => p.Views);
-                    break;
-                default:
-                    photos = photos.OrderByDescending(p => p.AddTime);
-                    //można pomyśleć 
-                    break;
-            }
+                "date" => photos.OrderBy(p => p.AddTime),
+                "views" => photos.OrderBy(p => p.Views),
+                "date_Desc" => photos.OrderByDescending(p => p.AddTime),
+                "views_Desc" => photos.OrderByDescending(p => p.Views),
+                _ => photos.OrderByDescending(p => p.AddTime),
+            };
             photos = photos.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             var listPhotos = await photos.Include(p => p.Owner).ToListAsync();
             foreach (var photo in listPhotos)

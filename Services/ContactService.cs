@@ -37,10 +37,10 @@ namespace Luxa.Services
         //sprawdzona
         public List<SelectListItem> GetCategorySelectItems()
         {
-            List<SelectListItem> categoriesList = new()
-            {
+            List<SelectListItem> categoriesList =
+            [
                 new SelectListItem {Value = "All", Text="Wszystkie"}
-            };
+            ];
             foreach (CategoryOfContact item in Enum.GetValues(typeof(CategoryOfContact)))
             {
                 categoriesList.Add(new SelectListItem { Value = item.ToString(), Text = item.ToString() });
@@ -76,9 +76,11 @@ namespace Luxa.Services
 
             foreach (ContactState item in Enum.GetValues(typeof(ContactState)))
             {
-                var selectListItem = new SelectListItem();
-                selectListItem.Value = item.ToString();
-                selectListItem.Text = item.ToString();
+                var selectListItem = new SelectListItem
+                {
+                    Value = item.ToString(),
+                    Text = item.ToString()
+                };
                 stateList.Add(selectListItem);
             }
             return stateList;
@@ -164,8 +166,8 @@ namespace Luxa.Services
         }
         public Tuple<List<string>, List<string>> GetTextAndValueToSelect(string selectedValue)
         {
-            List<string> filteredText = new();
-            List<string> filteredValue = new();
+            List<string> filteredText = [];
+            List<string> filteredValue = [];
             if (selectedValue == "All")
             {
                 filteredText = typeof(DatailedContactCategories)
