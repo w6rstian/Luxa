@@ -1,39 +1,60 @@
-﻿using Luxa.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
 using Luxa.Models;
-using Microsoft.AspNetCore.Mvc;
+using Luxa.Services;
+using Luxa.Interfaces;
+using Luxa.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 namespace Luxa.Controllers
 {
     public class CommentController : Controller
     {
         private readonly ICommentService _commentService;
+        private readonly IPhotoService _photoService;
+        private readonly ApplicationDbContext _context; //wstrzykiwanie kontekstu
+        private readonly UserManager<UserModel> _userManager;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IUserService _userService;
+    
 
-        public CommentController(ICommentService commentService)
+        public CommentController(ICommentService commentService, IUserService userService, ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
         {
             _commentService = commentService;
+            _context = context;
+            _userManager = userManager;
+            _hostEnvironment = hostEnvironment;
+            _photoService = photoService;
+            _userService = userService;
+            
+
         }
 
+        // Akcja pobierająca komentarze dla określonego zdjęcia
+        public async Task<IActionResult> GetCommentsForPhoto(int photoId)
+        {
+            var comments = await _commentService.GetCommentsForPhoto(photoId);
+            return PartialView("_CommentsPartial", comments);
+        }
+
+        // Akcja dodawania komentarza do zdjęcia
         [HttpPost]
-        public ActionResult AddComment(CommentModel comment)
+        public async Task<IActionResult> AddComment(string Content, int photoId)
         {
             if (ModelState.IsValid)
             {
-                _commentService.AddComment(comment);
+                var user = _userService.GetCurrentLoggedInUser(User);
+                await _commentService.AddComment(Content,photoId,user);
             }
-            return RedirectToAction("PhotoDetails", new { id = comment.PhotoId });
+            return RedirectToAction("Details", "Photos", new { id = photoId });
         }
 
+        // Akcja usuwania komentarza z zdjęcia
         [HttpPost]
-        public ActionResult DeleteComment(int id, int photoId)
+        public async Task<IActionResult> RemoveComment(int commentId, int photoId)
         {
-            _commentService.DeleteComment(id);
-            return RedirectToAction("PhotoDetails", new { id = photoId });
-        }
-
-        public ActionResult GetComments(int photoId)
-        {
-            var comments = _commentService.GetComments(photoId);
-            return PartialView("_CommentsPartial", comments);
+            await _commentService.RemoveComment(commentId);
+            return RedirectToAction("Details", "Photos", new { id = photoId });
         }
     }
 }

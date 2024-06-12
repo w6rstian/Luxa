@@ -1,6 +1,7 @@
 ﻿using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,17 @@ namespace Luxa.Controllers
         private readonly UserManager<UserModel> _userManager;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IUserService _userService;
+        private readonly ICommentService _commentService;
 
-        public PhotosController(IUserService userService, ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
+       
+        public PhotosController(IUserService userService, ApplicationDbContext context, UserManager<UserModel> userManager, IWebHostEnvironment hostEnvironment, IPhotoService photoService, ICommentService commentService)
         {
             _context = context;
             _userManager = userManager;
             _hostEnvironment = hostEnvironment;
             _photoService = photoService;
             _userService = userService;
+            _commentService = commentService;
         }
 
         [Authorize(Roles = "admin,moderator")]
@@ -71,13 +75,13 @@ namespace Luxa.Controllers
 
 
         // GET: Photos/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            //Tutaj ta sama historia
+
             var photo = await _context.Photo
                 .Include(m => m.Owner)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -86,6 +90,14 @@ namespace Luxa.Controllers
             {
                 return NotFound();
             }
+            // Pobierz komentarze dla tego zdjęcia
+            var comments = await _commentService.GetCommentsForPhoto(id);
+            // Przekaż komentarze do widoku
+            ViewData["Comments"] = comments; 
+
+            // Przekazanie id zdjęcia do widoku
+            ViewBag.PhotoId = id;
+
 
             return View(photo);
         }
@@ -133,6 +145,7 @@ namespace Luxa.Controllers
             }
             return View(photo);
         }
+
 
         // POST: Photos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.

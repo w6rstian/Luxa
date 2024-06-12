@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Views\Nowy folder\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\Photo\" />
   </ItemGroup>

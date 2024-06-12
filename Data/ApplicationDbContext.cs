@@ -65,11 +65,10 @@ namespace Luxa.Data
 
             // jeden do wielu - zdjęcie/komentarz
             modelBuilder.Entity<CommentModel>()
-                .HasOne(p => p.Photo)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(p => p.PhotoId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+            .HasOne(c => c.Photo)
+            .WithMany(p => p.Comments)
+            .HasForeignKey(c => c.PhotoId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<IdentityUserLogin<string>>()
@@ -88,7 +87,8 @@ namespace Luxa.Data
         public DbSet<ContactModel> Contacts { get; set; }
         public DbSet<PhotoTagModel> PhotoTags { get; set; }
         public DbSet<TagModel> Tags { get; set; }
-
+        public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<UserModel> Users { get; set; }
 
     }
 }

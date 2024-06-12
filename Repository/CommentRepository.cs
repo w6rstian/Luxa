@@ -1,6 +1,7 @@
 ﻿using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Luxa.Repository
 {
@@ -13,26 +14,37 @@ namespace Luxa.Repository
             _context = context;
         }
 
-        public void AddComment(CommentModel comment)
+        public async Task<IEnumerable<CommentModel>> GetAllComments()
         {
-            _context.Comments.Add(comment);
-            _context.SaveChanges();
+            return await _context.Comments.ToListAsync();
         }
 
-        public void DeleteComment(int id)
+        public async Task<IEnumerable<CommentModel>> GetCommentsForPhoto(int photoId)
         {
-            var comment = _context.Comments.Find(id);
+            return await _context.Comments
+                .Where(c => c.PhotoId == photoId)
+                .ToListAsync();
+        }
+
+        public async Task<CommentModel> GetCommentById(int id)
+        {
+            return await _context.Comments.FindAsync(id);
+        }
+
+        public async Task AddComment(CommentModel comment)
+        {
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveComment(int id)
+        {
+            var comment = await _context.Comments.FindAsync(id);
             if (comment != null)
             {
                 _context.Comments.Remove(comment);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
-
-        public IEnumerable<CommentModel> GetCommentsByPhotoId(int photoId)
-        {
-            return _context.Comments.Where(c => c.PhotoId == photoId).ToList();
-        }
     }
-
 }

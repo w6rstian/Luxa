@@ -6,25 +6,42 @@ namespace Luxa.Services
     public class CommentService : ICommentService
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IPhotoService _photoService;
+        private readonly IUserService _userService;
 
-        public CommentService(ICommentRepository commentRepository)
+
+
+        public CommentService(ICommentRepository commentRepository, IPhotoService photoService, IUserService userService)
         {
             _commentRepository = commentRepository;
+            _photoService = photoService;
+            _userService = userService;
         }
 
-        public void AddComment(CommentModel comment)
+        public async Task<IEnumerable<CommentModel>> GetAllComments()
         {
-            _commentRepository.AddComment(comment);
+            return await _commentRepository.GetAllComments();
         }
 
-        public void DeleteComment(int id)
+        public async Task<IEnumerable<CommentModel>> GetCommentsForPhoto(int photoId)
         {
-            _commentRepository.DeleteComment(id);
+            return await _commentRepository.GetCommentsForPhoto(photoId);
         }
 
-        public IEnumerable<CommentModel> GetComments(int photoId)
+        public async Task AddComment(string comment, int photoId, UserModel user)
         {
-            return _commentRepository.GetCommentsByPhotoId(photoId);
+            var photo = await _photoService.GetImageByIdAsync(photoId);
+
+            CommentModel commentModel = new CommentModel() 
+            {
+                Comment = comment, Photo = photo, Owner = user
+            };
+            await _commentRepository.AddComment(commentModel);
+        }
+
+        public async Task RemoveComment(int id)
+        {
+            await _commentRepository.RemoveComment(id);
         }
     }
 }

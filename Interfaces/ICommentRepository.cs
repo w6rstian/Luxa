@@ -4,8 +4,10 @@ namespace Luxa.Interfaces
 {
     public interface ICommentRepository
     {
-        void AddComment(CommentModel comment);
-        void DeleteComment(int id);
-        IEnumerable<CommentModel> GetCommentsByPhotoId(int photoId);
+        Task<IEnumerable<CommentModel>> GetAllComments();
+        Task<IEnumerable<CommentModel>> GetCommentsForPhoto(int photoId);
+        Task<CommentModel> GetCommentById(int id);
+        Task AddComment(CommentModel comment);
+        Task RemoveComment(int id);
     }
 }

@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Luxa.Models.CommentModel>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var comment in Model)
+    {
+        <div class="comment">
+            <p>@comment.Comment</p>
+            <form asp-action="RemoveComment" asp-controller="Comment" method="post">
+                <input type="hidden" name="commentId" value="@comment.Id" />
+                <input type="hidden" name="photoId" value="@comment.PhotoId" />
+                <button type="submit" class="btn btn-danger">Usuń</button>
+            </form>
+        </div>
+    }
+}
+else
+{
+    <p>Brak komentarzy.</p>
+}
