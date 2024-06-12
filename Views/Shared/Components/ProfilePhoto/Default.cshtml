@@ -1,8 +1,5 @@
 ﻿@model List<Luxa.ViewModel.PhotoWithIsLikedVM>
-Tytuł zdjęcia
-Jakiś komentarz
-
-@if(Model.Any())
+@* @if(Model.Any())
 {
     foreach (var photo in Model)
     {
@@ -11,4 +8,26 @@ Jakiś komentarz
             <p>@photo.Photo.Name</p>
         </div>
     }
-}
+} *@
+
+<div class="newBox">
+	<div class="photo-gallery">
+		@foreach (var photo in Model)
+		{
+			<a type="button" href="/Photos/Details/@photo.Photo.Id">
+				<img src="/Image/@photo.Photo.Name" alt="@photo.Photo.Name">
+			</a>
+			@* <div class="target">
+				<div class="like">
+					<a onclick="likeOrUnlikePhoto(@photo.Photo.Id)" type="button">
+						<img id="photo.@photo.Photo.Id" src="${likeString}">
+					</a>
+				</div>
+				<div class="like-text" id="likes.@photo.Photo.Id">@photo.Photo.LikeCount</div>
+				<div class="user">
+					@photo.Photo.OwnerId
+				</div>
+			</div> *@
+		}
+	</div>
+</div>
