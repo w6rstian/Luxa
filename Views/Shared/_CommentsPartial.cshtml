@@ -5,7 +5,14 @@
     foreach (var comment in Model)
     {
         <div class="comment">
-            <div class="comment-author">@comment.OwnerId</div>
+            <div class="comment-author">
+                <a asp-controller="Account" asp-action="UserProfile" asp-route-userName="@(comment.Owner.UserName)">
+                    <img class="comment-avatar" src="@(comment.Owner.AvatarUrl)" />
+                    <div class="comment-author-name">
+                        @comment.Owner.UserName
+                    </div>
+                </a>
+            </div>
             <div class="comment-text">@comment.Comment</div>
             <form asp-action="RemoveComment" asp-controller="Comment" method="post">
                 <input type="hidden" name="commentId" value="@comment.Id" />

@@ -88,12 +88,33 @@
     }
 
     .comment-author {
-        width: 10%;
+        min-width: 15%;
         border-right: 1px solid black;
-        margin: 0 10px;
+        padding-right: 10px;
+    }
+    
+    .comment-author a {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: var(--yellowish);
+    }
+
+    .comment-author-name {
+        word-break: break-all;
+    }
+
+    .comment-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
     }
     .comment-text {
         width: 90%;
+        padding: 0 10px;
+        word-break: break-all;
     }
 
 </style>
