@@ -98,58 +98,42 @@ namespace Luxa.Controllers
         public async Task<IActionResult> ChangeProfile(ProfileChangeVM profileChangeVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
+            if (user == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            if (profileChangeVM.Avatar != null && profileChangeVM.Avatar.Length > 0)
+            {
+                var avatarFileName = Path.GetFileName(profileChangeVM.Avatar.FileName);
+                var avatarFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", avatarFileName);
+
+                using (var stream = new FileStream(avatarFilePath, FileMode.Create))
+                {
+                    await profileChangeVM.Avatar.CopyToAsync(stream);
+                }
+
+                user.AvatarUrl = $"/avatars/{avatarFileName}";
+            }
+
+            if (profileChangeVM.Background != null && profileChangeVM.Background.Length > 0)
+            {
+                var backgroundFileName = Path.GetFileName(profileChangeVM.Background.FileName);
+                var backgroundFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", backgroundFileName);
+
+                using (var stream = new FileStream(backgroundFilePath, FileMode.Create))
+                {
+                    await profileChangeVM.Background.CopyToAsync(stream);
+                }
+
+                user.BackgroundUrl = $"/avatars/{backgroundFileName}";
+            }
+
             user.Description = profileChangeVM.Description;
             await _userManager.UpdateAsync(user);
-            ViewData["Message"] = "Profile updated successfully!";
+
+            ViewData["Message"] = "Profil zaaktualizowany pomyślnie";
             return View(profileChangeVM);
-        }
-
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
-        {
-            if (avatar != null && avatar.Length > 0)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                var fileName = Path.GetFileName(avatar.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await avatar.CopyToAsync(stream);
-                }
-
-                user.AvatarUrl = $"/avatars/{fileName}";
-                await _userManager.UpdateAsync(user);
-
-                return RedirectToAction("ChangeProfile");
-            }
-
-            return RedirectToAction("ChangeProfile");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> UploadBackground(IFormFile background)
-        {
-            if (background != null && background.Length > 0)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                var fileName = Path.GetFileName(background.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await background.CopyToAsync(stream);
-                }
-
-                user.BackgroundUrl = $"/avatars/{fileName}";
-                await _userManager.UpdateAsync(user);
-
-                return RedirectToAction("ChangeProfile");
-            }
-
-            return RedirectToAction("ChangeProfile");
         }
     }
 }

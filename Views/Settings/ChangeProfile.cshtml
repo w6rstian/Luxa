@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title" id="itemHead">Zmodyfikuj profil</h5>
-                    <form method="post" asp-controller="Settings" asp-action="ChangeProfile">
+                    <form method="post" asp-controller="Settings" asp-action="ChangeProfile" enctype="multipart/form-data">
                         <div class="mb-1">
                             <label asp-for="Avatar" class="control-label"></label>
                             <input type="file" asp-for="Avatar" class="form-control" />
