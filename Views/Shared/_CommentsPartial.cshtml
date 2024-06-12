@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Luxa.Models.CommentModel>
+@inject Luxa.Interfaces.IUserService userService
 
 @if (Model != null && Model.Any())
 {
@@ -14,11 +15,14 @@
                 </a>
             </div>
             <div class="comment-text">@comment.Comment</div>
-            <form asp-action="RemoveComment" asp-controller="Comment" method="post">
-                <input type="hidden" name="commentId" value="@comment.Id" />
-                <input type="hidden" name="photoId" value="@comment.PhotoId" />
-                <button type="submit" class="btn btn-danger">-</button>
-            </form>
+            @if (await userService.IsOwnerOrAdmin(comment.Owner.UserName, User))
+            {
+                <form asp-action="RemoveComment" asp-controller="Comment" method="post">
+                    <input type="hidden" name="commentId" value="@comment.Id" />
+                    <input type="hidden" name="photoId" value="@comment.PhotoId" />
+                    <button type="submit" class="btn btn-danger">-</button>
+                </form>
+            }
         </div>
     }
 }

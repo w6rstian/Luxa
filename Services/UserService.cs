@@ -103,5 +103,17 @@ namespace Luxa.Services
                 .Include(fr => fr.Follower)
                 .ToListAsync();
         }
+        public async Task<bool> IsOwnerOrAdmin(string? OwnerName, ClaimsPrincipal user) 
+        {
+            var loggedUser = GetCurrentLoggedInUser(user);
+            if (loggedUser == null) 
+                return false;
+            var isInRoleAdmin = await _signInManager.UserManager.IsInRoleAsync(loggedUser, UserRoles.Admin);
+            var isInRoleModerator = await _signInManager.UserManager.IsInRoleAsync(loggedUser, UserRoles.Moderator);
+           
+            if (isInRoleAdmin ||  isInRoleModerator || loggedUser.UserName == OwnerName)
+                return true;
+            return false;
+        }
     }
 }

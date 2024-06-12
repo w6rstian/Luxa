@@ -22,7 +22,7 @@ namespace Luxa.Repository
         public async Task<IEnumerable<CommentModel>> GetCommentsForPhoto(int photoId)
         {
             return await _context.Comments
-                .Where(c => c.PhotoId == photoId)
+                .Where(c => c.PhotoId == photoId).Include(c => c.Owner)
                 .ToListAsync();
         }
 
