@@ -71,6 +71,24 @@ namespace Luxa.Data
             modelBuilder.Entity<IdentityUserToken<string>>()
                 .HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
 
+            //obserwujący
+            modelBuilder.Entity<FollowModel>()
+               .HasOne(f => f.Follower)
+               .WithMany(u => u.Following)
+               .HasForeignKey(f => f.FollowerId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FollowModel>()
+                .HasOne(f => f.Followee)
+                .WithMany(u => u.Followers)
+                .HasForeignKey(f => f.FolloweeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+/*            modelBuilder.Entity<FollowModel>()
+                .HasOne(f => f.Follower)
+                .WithMany(u => u.MutualFollowers)
+                .HasForeignKey(f => f.FollowerId)
+                .OnDelete(DeleteBehavior.Restrict);*/
         }
 
         public DbSet<UserNotificationModel> UserNotifications { get; set; }
@@ -80,7 +98,6 @@ namespace Luxa.Data
         public DbSet<ContactModel> Contacts { get; set; }
         public DbSet<PhotoTagModel> PhotoTags { get; set; }
         public DbSet<TagModel> Tags { get; set; }
-
-
+        public DbSet<FollowModel> FollowRequests { get; set; }
     }
 }

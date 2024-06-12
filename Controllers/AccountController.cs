@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Luxa.Controllers
@@ -363,9 +363,11 @@ namespace Luxa.Controllers
                 {
                     UserName = profileUser.UserName,
                     AvatarUrl = avatarUrl,
-					BackgroundUrl = backgroundUrl,
+                    BackgroundUrl = backgroundUrl,
                     Description = profileUser.Description,
-                    IsCurrentUserProfile = currentUser.UserName == userName
+                    IsCurrentUserProfile = currentUser.UserName == userName,
+                    IsFollowing = await _userService.IsFollowing(currentUser.Id, profileUser.Id),
+                    //PendingFollowRequests = currentUser.UserName == userName ? await _userService.GetPendingFollowRequests(currentUser.Id) : new List<FollowRequestModel>() //nie działa
                 };
 
                 return View(model);
@@ -420,6 +422,104 @@ namespace Luxa.Controllers
             }
 
             return RedirectToAction("UserProfile", new { userName = User.Identity.Name });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Follow(string userName)
+        {
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
+            var followee = await _userService.GetUserByUserName(userName);
+
+            if (followee == null || currentUser == null || currentUser.Id == followee.Id)
+                return NotFound();
+
+            var existingRequest = await _context.FollowRequests
+                .FirstOrDefaultAsync(fr => fr.FollowerId == currentUser.Id && fr.FolloweeId == followee.Id);
+
+            if (existingRequest == null)
+            {
+                var followRequest = new FollowModel
+                {
+                    FollowerId = currentUser.Id,
+                    FolloweeId = followee.Id,
+                    IsApproved = !followee.IsPrivate
+                    //IsMutual = await _context.FollowRequests.AnyAsync(fr => fr.FollowerId == followee.Id && fr.FolloweeId == currentUser.Id && fr.IsApproved)
+                };
+
+                _context.FollowRequests.Add(followRequest);
+                await _context.SaveChangesAsync();
+
+                if (followee.IsPrivate)
+                {
+                    await _notificationService.SendFollowRequestNotification(followee, currentUser);
+                }
+            }
+
+            return RedirectToAction("UserProfile", new { userName });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Unfollow(string userName)
+        {
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
+            var followee = await _userService.GetUserByUserName(userName);
+
+            if (followee == null || currentUser == null || currentUser.Id == followee.Id)
+                return NotFound();
+
+            var followRequest = await _context.FollowRequests
+                .FirstOrDefaultAsync(fr => fr.FollowerId == currentUser.Id && fr.FolloweeId == followee.Id);
+
+            if (followRequest != null)
+            {
+                _context.FollowRequests.Remove(followRequest);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("UserProfile", new { userName });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ApproveFollow(int requestId)
+        {
+            var followRequest = await _context.FollowRequests
+                .Include(fr => fr.Followee)
+                .FirstOrDefaultAsync(fr => fr.Id == requestId);
+
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
+
+            if (followRequest == null || followRequest.FolloweeId != currentUser.Id)
+                return NotFound();
+
+            followRequest.IsApproved = true;
+            //followRequest.IsMutual = await _context.FollowRequests.AnyAsync(fr => fr.FollowerId == followRequest.FolloweeId && fr.FolloweeId == followRequest.FollowerId && fr.IsApproved);
+            await _context.SaveChangesAsync();
+
+            // powiadomienie o potwierdzeniu prosby o obserwacje
+            await _notificationService.SendFollowApprovedNotification(followRequest.Follower, currentUser);
+
+            return RedirectToAction("UserProfile", new { userName = currentUser.UserName });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> RejectFollow(int requestId)
+        {
+            var followRequest = await _context.FollowRequests
+                .Include(fr => fr.Followee)
+                .FirstOrDefaultAsync(fr => fr.Id == requestId);
+
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
+
+            if (followRequest == null || followRequest.FolloweeId != currentUser.Id)
+                return NotFound();
+
+            _context.FollowRequests.Remove(followRequest);
+            await _context.SaveChangesAsync();
+
+            // Notify the follower that their request was rejected
+            // await _notificationService.SendFollowRejectedNotification(followRequest.Follower, currentUser);
+
+            return RedirectToAction("UserProfile", new { userName = currentUser.UserName });
         }
     }
 

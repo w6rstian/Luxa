@@ -43,5 +43,20 @@ namespace Luxa.Services
                 return -1;
             return await GetNotificationsCountAsync(currentUser.Id);
 		}
+
+        public async Task SendFollowRequestNotification(UserModel followee, UserModel follower)
+        {
+
+        }
+
+        public async Task SendFollowApprovedNotification(UserModel follower, UserModel followee)
+        {
+
+        }
+
+        public async Task SendFollowRejectedNotification(UserModel follower, UserModel followee)
+        {
+
+        }
     }
 }

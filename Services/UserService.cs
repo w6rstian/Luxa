@@ -69,7 +69,6 @@ namespace Luxa.Services
 
 		}*/
 
-
         public async Task<bool> UpdateReputation(UserModel userModel)
         {
             int reputation = 0;
@@ -80,6 +79,20 @@ namespace Luxa.Services
             }
             userModel.Reputation = reputation;
             return await SaveUser(userModel);
+        }
+
+        public async Task<bool> IsFollowing(string followerId, string followeeId)
+        {
+            return await _context.FollowRequests
+                .AnyAsync(fr => fr.FollowerId == followerId && fr.FolloweeId == followeeId && fr.IsApproved);
+        }
+
+        public async Task<List<FollowModel>> GetPendingFollowRequests(string userId)
+        {
+            return await _context.FollowRequests
+                .Where(fr => fr.FolloweeId == userId && !fr.IsApproved)
+                .Include(fr => fr.Follower)
+                .ToListAsync();
         }
     }
 }
