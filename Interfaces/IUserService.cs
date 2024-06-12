@@ -11,8 +11,5 @@ namespace Luxa.Interfaces
         UserModel? GetCurrentLoggedInUserWithPhotos(ClaimsPrincipal user);
         Task<bool> IsUserWithUserNameExist(string userName);
         Task<UserModel> GetUserByUserName(string userName);
-
-
-
     }
 }

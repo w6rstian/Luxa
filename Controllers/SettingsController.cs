@@ -1,6 +1,7 @@
 ﻿using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Blazor;
@@ -93,7 +94,6 @@ namespace Luxa.Controllers
             var result = new ProfileChangeVM { Description = user.Description };
             return View(result);
         }
-
         [HttpPost]
         public async Task<IActionResult> ChangeProfile(ProfileChangeVM profileChangeVM)
         {
@@ -102,6 +102,54 @@ namespace Luxa.Controllers
             await _userManager.UpdateAsync(user);
             ViewData["Message"] = "Profile updated successfully!";
             return View(profileChangeVM);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+        {
+            if (avatar != null && avatar.Length > 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var fileName = Path.GetFileName(avatar.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await avatar.CopyToAsync(stream);
+                }
+
+                user.AvatarUrl = $"/avatars/{fileName}";
+                await _userManager.UpdateAsync(user);
+
+                return RedirectToAction("ChangeProfile");
+            }
+
+            return RedirectToAction("ChangeProfile");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UploadBackground(IFormFile background)
+        {
+            if (background != null && background.Length > 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var fileName = Path.GetFileName(background.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await background.CopyToAsync(stream);
+                }
+
+                user.BackgroundUrl = $"/avatars/{fileName}";
+                await _userManager.UpdateAsync(user);
+
+                return RedirectToAction("ChangeProfile");
+            }
+
+            return RedirectToAction("ChangeProfile");
         }
     }
 }
