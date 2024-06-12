@@ -13,11 +13,6 @@ namespace Luxa.Interfaces
         Task<UserModel?> GetUserByUserName(string userName);
         Task<bool> IsFollowing(string followerId, string followeeId);
         Task<List<FollowModel>> GetPendingFollowRequests(string userId);
-    }
         Task<bool> RemoveUserById(string Id);
-
-
-
-
-	}
+    }
 }
