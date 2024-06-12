@@ -248,11 +248,13 @@ namespace Luxa.Controllers
 
             return View();
         }
-        [Authorize(Roles = "admin,moderator")]
-        public IActionResult DeleteUser(string Id)
+        [HttpPost]
+        //[Authorize(Roles = "admin,moderator")]
+        public async Task<IActionResult> DeleteUser(string Id)
         {
-            return View();
-        }
+            await _userService.RemoveUserById(Id);
+			return Ok();
+		}
         [Authorize(Roles = "admin,moderator")]
         public async Task<IActionResult> EditUser(string Id)
         {

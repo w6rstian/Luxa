@@ -46,7 +46,18 @@ namespace Luxa.Services
         public async Task<bool> IsUserWithUserNameExist(string userName)
             => await _context.Users.AnyAsync(u => u.UserName == userName);
 
-        public async Task<bool> SaveUser(UserModel userModel)
+		public async Task<bool> RemoveUserById(string Id)
+		{
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null) 
+            {
+                return false;
+            }
+            var result = await _userManager.DeleteAsync(user);
+			return result.Succeeded;
+		}
+
+		public async Task<bool> SaveUser(UserModel userModel)
         {
             var result = await _userManager.UpdateAsync(userModel);
             return result.Succeeded;
