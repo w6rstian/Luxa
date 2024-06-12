@@ -4,9 +4,8 @@
 	ViewData["Title"] = "Panel administracyjny";
 }
 <h3>@ViewData["Title"]</h3>
-@* <div class="alert alert-primary" role="alert">@TempData["errorMessage"]</div>
 @TempData["errorMessage"]
-@TempData["successMessage"] *@
+@TempData["successMessage"]
 <form>
 	<button asp-action="CreateUser" asp-controller="Account" class="btn btn-primary">Stwórz nowego użytkownika</button>
 	<table class="table table-responsive table-hover">
@@ -60,33 +59,27 @@
 
 <script>
 	function deleteUser(id) {
-		console.log("test");
-		
-		// $.ajax({
-		// 	url: '/Account/DeleteUser',
-		// 	type: 'POST',
-		// 	data: { id: id },
-		// 	success: function (response) {
-		// 		console.log(response);
-
-		// 	},
-		// 	error: function (xhr, status, error) {
-		// 		console.log(xhr);
-		// 		console.log(status);
-		// 		console.log('nie działa: ' + error);
-		// 	}
-		// });
-	}
-	function test() 
-	{
 		if (confirm("Czy na pewno chcesz usunąć tego użytkownika?")) {
-			alert("Użytkownik zostaje usunięty.");
-		} else {
-			alert("Usunięcie elementu zostało anulowane.");
+			$.ajax({
+				url: '/Account/DeleteUser',
+				type: 'POST',
+				data: { id: id },
+				success: function (response) {
+					alert("Użytkownik zostaje usunięty.");
+					location.reload();
+
+				},
+				error: function (xhr, status, error) {
+					alert("Usunięcie użytkownika nie powiodło się.");
+					console.log(xhr);
+					console.log(status);
+					console.log('nie działa: ' + error);
+				}
+			});
 		}
+		else {
+			alert("Usunięcie użytkownika zostało anulowane.");
+		}
+
 	}
-
-
 </script>
-
-@*asp-controller="Account" asp-action="DeleteUser" asp-route-id="@user.User.Id"*@

@@ -7,7 +7,6 @@ namespace Luxa.Interfaces
         Photo GetPhotoById(int idPhoto);
         bool Save();
         bool Add(Photo photo);
-        Task<IEnumerable<Photo>> GetAllPhotos();
         UserPhotoModel? GetUserPhotoModelByPhoto(int idPhoto, UserModel user);
         bool AddLikeFromPhoto(UserPhotoModel userPhoto);
         bool RemoveLikeFromPhoto(UserPhotoModel userPhoto);
