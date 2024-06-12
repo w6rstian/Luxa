@@ -17,5 +17,7 @@ namespace Luxa.Interfaces
         Task<Photo?> GetPhotoIncludedPhotoTags(int idPhoto);
         bool LikeCount(Photo photo);
         Task<Photo> GetPhotoByIdAsync(int id);
+        Task UpdatePhotoAsync(Photo photo);
+        Task<bool> PhotoExistsAsync(int id);
     }
 }

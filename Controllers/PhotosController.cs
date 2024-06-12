@@ -132,14 +132,15 @@ namespace Luxa.Controllers
 
 
         // GET: Photos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var photo = await _context.Photo.FindAsync(id);
+            var photo = await _photoService.GetImageByIdAsync(id);
+                
             if (photo == null)
             {
                 return NotFound();
@@ -147,13 +148,10 @@ namespace Luxa.Controllers
             return View(photo);
         }
 
-
         // POST: Photos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerId,Name,Description,Category,Views,LikeCount,ImageFile")] Photo photo)
         {
             if (id != photo.Id)
             {
@@ -164,12 +162,11 @@ namespace Luxa.Controllers
             {
                 try
                 {
-                    _context.Update(photo);
-                    await _context.SaveChangesAsync();
+                    await _photoService.EditPhotoAsync(photo);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PhotoExists(photo.Id))
+                    if (!await _photoService.PhotoExistsAsync(photo.Id))
                     {
                         return NotFound();
                     }
@@ -179,6 +176,24 @@ namespace Luxa.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                var errors = new List<string>();
+
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        errors.Add(error.ErrorMessage);
+                    }
+                }
+
+                // Wyświetl błędy w konsoli (lub zrób coś innego z błędami)
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error);
+                }
             }
             return View(photo);
         }

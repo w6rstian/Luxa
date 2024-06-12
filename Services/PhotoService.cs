@@ -350,5 +350,20 @@ namespace Luxa.Services
         {
             throw new NotImplementedException();
         }*/
+
+        public async Task<Photo?> GetPhotoAsync(int id)
+        {
+            return await _photoRepository.GetPhotoByIdAsync(id);
+        }
+
+        public async Task EditPhotoAsync(Photo photo)
+        {
+            await _photoRepository.UpdatePhotoAsync(photo);
+        }
+
+        public async Task<bool> PhotoExistsAsync(int id)
+        {
+            return await _photoRepository.PhotoExistsAsync(id);
+        }
     }
 }
