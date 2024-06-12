@@ -13,6 +13,7 @@ namespace Luxa.Interfaces
         Task<bool> Delete(int id, Photo photo, UserModel user);//post
 
         Photo GetImageById(int id);
+        Task<Photo> GetImageByIdAsync(int id);
         Task<IEnumerable<Photo>> GetAllImagesAsync();
 
         //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
@@ -26,6 +27,6 @@ namespace Luxa.Interfaces
         bool UnlikePhoto(int idPhoto, UserModel user);
         // bool IncrementViewCountAsync(List<Photo> photo);
         void IncrementViewsCountIfNotViewed(List<PhotoWithIsLikedVM> photos);
-
+        
     }
 }

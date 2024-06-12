@@ -83,5 +83,9 @@ namespace Luxa.Repository
             return Save();
 
         }
+        public async Task<Photo> GetPhotoByIdAsync(int id)
+        {
+            return await _context.Photo.FindAsync(id);
+        }
     }
 }

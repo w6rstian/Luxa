@@ -17,5 +17,6 @@ namespace Luxa.Interfaces
         IQueryable<Photo> GetPhotosOwnByUserAsync(int pageNumber, int pageSize, UserModel user);
         Task<Photo?> GetPhotoIncludedPhotoTags(int idPhoto);
         bool LikeCount(Photo photo);
+        Task<Photo> GetPhotoByIdAsync(int id);
     }
 }

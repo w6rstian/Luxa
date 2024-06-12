@@ -36,6 +36,10 @@ namespace Luxa.Services
         {
             return _photoRepository.GetPhotoById(id);
         }
+        public async Task<Photo> GetImageByIdAsync(int id)
+        {
+            return await _photoRepository.GetPhotoByIdAsync(id);
+        }
 
         public async Task<IEnumerable<Photo>> GetAllImagesAsync()
         {
