@@ -19,12 +19,14 @@
 
     #photoSquare {
         width: 60%;
-        height: 60%;
+        max-height: 777.6px;
+        display: flex;
+        justify-content: center;
     }
 
     #photoSquare img {
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
     }
 
     #photo-right-panel {
@@ -86,7 +88,10 @@
 </div>
 <div>
     <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
+    <a class="btn btn-primary" asp-action="Index">Back to List</a> |
+    <a asp-controller="Photos" asp-action="DownloadImage" asp-route-id="@Model.Id">
+        <button class="btn btn-primary">Download</button>
+    </a>
 </div>
 
 
