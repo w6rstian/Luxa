@@ -316,13 +316,14 @@ namespace Luxa.Controllers
 
         //profil avatar i tlo
         [Authorize]
+        //[HttpGet]
         public async Task<IActionResult> UserProfile(string userName)
         {
             // zalogowany uzytkownik
-            var user = _userService.GetCurrentLoggedInUser(User);
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
 
             // czy istnieje
-            if (await _userService.IsUserWithUserNameExist(userName) && user != null && user.UserName != null)
+            if (await _userService.IsUserWithUserNameExist(userName) && currentUser != null && currentUser.UserName != null)
             {
                 var profileUser = await _userService.GetUserByUserName(userName);
 
@@ -341,7 +342,8 @@ namespace Luxa.Controllers
                     UserName = profileUser.UserName,
                     AvatarUrl = avatarUrl,
 					BackgroundUrl = backgroundUrl,
-                    Description = profileUser.Description
+                    Description = profileUser.Description,
+                    IsCurrentUserProfile = currentUser.UserName == userName
                 };
 
                 return View(model);

@@ -65,7 +65,9 @@
     <div id="photo-right-panel">
         <div id="user-details-box">
             <div id="usr-photo-name">
-                <img id="usr-avatar" src="@(Model.Owner.AvatarUrl)"/>
+                <a asp-controller="Account" asp-action="UserProfile" asp-route-userName="@Model.Owner.UserName">
+                    <img id="usr-avatar" src="@(Model.Owner.AvatarUrl)" />
+                </a>
                 @Html.DisplayFor(model => model.Owner.UserName)
                 <hr/>
             </div>
