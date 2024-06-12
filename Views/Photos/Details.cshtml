@@ -1,15 +1,94 @@
 ﻿@model Luxa.Models.Photo
 
-@{
+@* @{
     ViewData["Title"] = "Details";
-}
+} *@
 
-<h1>Details</h1>
+<style>
+    :root {
+        --darker-violet: #2b2735;
+        --dark-violet: #373341;
+        --light-violet: #4C3C78;
+        --lighter-violet: #614D99;
+        --yellowish: #FAF0E6;
+    }
+    #photo-details {
+        display:flex;
+        flex-direction: row;
+    }
 
+    #photoSquare {
+        width: 60%;
+        height: 60%;
+    }
+
+    #photoSquare img {
+        width: 100%;
+        height: 100%;
+    }
+
+    #photo-right-panel {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        color: var(--yellowish);
+    }
+
+    #user-details-box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #usr-photo-name {
+    }
+
+    #usr-avatar {
+        width: 60px;
+        height: 60px;
+        border: 1px solid black;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    #photo-addtime {
+        font-size: 9pt;
+        color: gray;
+        padding-top: 5px;
+    }
+
+</style>
+<div id="photo-details">
+    <div id="photoSquare">
+        <img src="@("~/Image/"+Model.Name)" asp-append-version="true"/>
+    </div>
+    <div id="photo-right-panel">
+        <div id="user-details-box">
+            <div id="usr-photo-name">
+                <img id="usr-avatar" src="@(Model.Owner.AvatarUrl)"/>
+                @Html.DisplayFor(model => model.Owner.UserName)
+                <hr/>
+            </div>
+            <div id="photo-desc">
+                @Html.DisplayFor(model => model.Description)
+            </div>
+            <div id="photo-addtime">
+                @Html.DisplayFor(model => model.AddTime)
+            </div>
+        </div>
+        <hr/>
+        <div id="comments-section">
+            <p>sekcja komentarzy</p>
+        </div>
+    </div>
+</div>
 <div>
-    <h4>Photo</h4>
-    <hr />
-    <dl class="row">
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a class="btn btn-primary" asp-action="Index">Back to List</a>
+</div>
+
+
+@*     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Owner)
         </dt>
@@ -34,9 +113,4 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.AddTime)
         </dd>
-    </dl>
-</div>
-<div>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
-</div>
+    </dl> *@
