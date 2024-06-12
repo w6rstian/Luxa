@@ -1,17 +1,21 @@
 ﻿@model IEnumerable<Luxa.Models.CommentModel>
+@inject Luxa.Interfaces.IUserService userService
 
 @if (Model != null && Model.Any())
 {
     foreach (var comment in Model)
     {
         <div class="comment">
-            <div class="comment-author">@comment.OwnerId</div>
+            <div class="comment-author">@comment.Owner.UserName</div>
             <div class="comment-text">@comment.Comment</div>
-            <form asp-action="RemoveComment" asp-controller="Comment" method="post">
-                <input type="hidden" name="commentId" value="@comment.Id" />
-                <input type="hidden" name="photoId" value="@comment.PhotoId" />
-                <button type="submit" class="btn btn-danger">-</button>
-            </form>
+            @if (await userService.IsOwnerOrAdmin(comment.Owner.UserName, User))
+            {
+                <form asp-action="RemoveComment" asp-controller="Comment" method="post">
+                    <input type="hidden" name="commentId" value="@comment.Id" />
+                    <input type="hidden" name="photoId" value="@comment.PhotoId" />
+                    <button type="submit" class="btn btn-danger">-</button>
+                </form>
+            }
         </div>
     }
 }
