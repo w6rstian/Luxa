@@ -9,7 +9,7 @@ namespace Luxa.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                //Jak się wam tu wywala to sprawdźcie connection stringa
+                //Jak się wam tu wywala to sprawdźcie connection stringa lub update-database
                 if (context.Notifications.Any())
                 {
                     return;

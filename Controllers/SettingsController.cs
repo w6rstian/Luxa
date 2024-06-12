@@ -1,6 +1,8 @@
-﻿using Luxa.Interfaces;
+﻿using Luxa.Data;
+using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Blazor;
@@ -41,24 +43,7 @@ namespace Luxa.Controllers
             var result = _settingsService.GetDataChangeVMFromUser(user);
             if (result != null)
             {
-                result.Countries = new List<string>
-                {
-                    "Polska",
-                    "Niemcy",
-                    "Francja",
-                    "Stany Zjednoczone",
-                    "Włochy",
-                    "Hiszpania",
-                    "Japonia",
-                    "Wielka Brytania",
-                    "Kanada",
-                    "Australia",
-                    "Rosja",
-                    "Chiny",
-                    "Indie",
-                    "Brazylia",
-                    "Meksyk",
-                };
+                result.Countries = [.. CountryOptions.Countries];
                 return View(result);
             }
             return RedirectToAction("Error", "Home");
@@ -90,18 +75,76 @@ namespace Luxa.Controllers
         public IActionResult ChangeProfile()
         {
             var user = _userService.GetCurrentLoggedInUser(User);
-            var result = new ProfileChangeVM { Description = user.Description };
+            var result = new ProfileChangeVM { Description = user?.Description };
             return View(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeProfile(ProfileChangeVM profileChangeVM)
+        public async Task<IActionResult> ChangeDescription(ProfileChangeVM profileChangeVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
+            if (user == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             user.Description = profileChangeVM.Description;
             await _userManager.UpdateAsync(user);
-            ViewData["Message"] = "Profile updated successfully!";
-            return View(profileChangeVM);
+
+            ViewData["DescriptionMessage"] = "Profil zmodyfikowany pomyślnie!";
+            return View("ChangeProfile", profileChangeVM);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UploadAvatar(IFormFile? avatar)
+        {
+            if (avatar != null && avatar.Length > 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var fileName = Path.GetFileName(avatar.FileName);
+                var filePath = Path.Combine("wwwroot/avatars", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await avatar.CopyToAsync(stream);
+                }
+
+                user.AvatarUrl = $"/avatars/{fileName}";
+                await _userManager.UpdateAsync(user);
+
+                ViewData["AvatarMessage"] = "Profil zmodyfikowany pomyślnie!";
+                return RedirectToAction("ChangeProfile");
+            }
+
+            ViewData["AvatarMessage"] = "Nie wybrano pliku.";
+            return RedirectToAction("ChangeProfile");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UploadBackground(IFormFile? background)
+        {
+            if (background != null && background.Length > 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var fileName = Path.GetFileName(background.FileName);
+                var filePath = Path.Combine("wwwroot/avatars", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await background.CopyToAsync(stream);
+                }
+
+                user.BackgroundUrl = $"/avatars/{fileName}";
+                await _userManager.UpdateAsync(user);
+
+                ViewData["BackgroundMessage"] = "Profil zmodyfikowany pomyślnie!";
+                return RedirectToAction("ChangeProfile");
+            }
+
+            ViewData["BackgroundMessage"] = "Nie wybrano pliku.";
+            return RedirectToAction("ChangeProfile");
         }
     }
 }

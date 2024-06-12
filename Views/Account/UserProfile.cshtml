@@ -12,6 +12,26 @@
         --yellowish: #FAF0E6;
     }
 
+    .target {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        color: black;
+        text-align: center;
+        padding: 10px;
+        box-sizing: border-box;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        height: 50px;
+        display: flex;
+        gap: 10px;
+        flex-direction: row;
+    }
+
     #bg-label {
         border-radius: 10px;
         cursor: pointer;
@@ -70,33 +90,75 @@
         padding: 5px 5px;
         border-radius: 5pt;
     }
+
+    .photoGallery {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .photo {
+        position: relative;
+        width: 32%;
+        max-height: fit-content;
+        margin: 0 8px;
+    }
+
+    .photoGallery a {
+        width: 100%;
+    }
+
+    .photoGallery img {
+        width: 100%;
+        max-height: 415px;
+        object-fit: cover;
+    }
 </style>
 
-<label id="bg-label" for="background-input">
+@if (Model.IsCurrentUserProfile)
+{
+    <label id="bg-label" for="background-input">
+        <div id="profile-wrapper">
+            <div id="avatar">
+                <label for="avatar-input" style="cursor: pointer;">
+                    <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
+                </label>
+                <form asp-action="UploadAvatar" asp-controller="Account" enctype="multipart/form-data" method="post">
+                    <input type="file" name="avatar" id="avatar-input" style="display: none;" />
+                    <button type="submit" id="upload-button" style="display: none;">Upload Avatar</button>
+                </form>
+            </div>
+            <div id="name-desc">
+                <h2>@Model.UserName</h2>
+                <textarea readonly disabled>@Model.Description</textarea>
+            </div>
+            <div id="edit-button">
+                <a class="btn btn-primary" asp-action="ChangeProfile" asp-controller="Settings">Edit Profile</a>
+            </div>
+        </div>
+    </label>
+    <form asp-action="UploadBackground" asp-controller="Account" enctype="multipart/form-data" method="post">
+        <input type="file" name="background" id="background-input" style="display: none;" />
+        <button type="submit" id="upload-background-button" style="display: none;">Upload Background</button>
+    </form>
+}
+else
+{
     <div id="profile-wrapper">
         <div id="avatar">
-            <label for="avatar-input" style="cursor: pointer;">
-                <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
-            </label>
-            <form asp-action="UploadAvatar" asp-controller="Account" enctype="multipart/form-data" method="post">
-                <input type="file" name="avatar" id="avatar-input" style="display: none;" />
-                <button type="submit" id="upload-button" style="display: none;">Upload Avatar</button>
-            </form>
+            <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
         </div>
         <div id="name-desc">
             <h2>@Model.UserName</h2>
             <textarea readonly disabled>@Model.Description</textarea>
         </div>
-        <div id="edit-button">
-            <a class="btn btn-primary" asp-action="ChangeData" asp-controller="Settings">Edit Profile</a>
-        </div>
     </div>
-</label>
-<form asp-action="UploadBackground" asp-controller="Account" enctype="multipart/form-data" method="post">
-    <input type="file" name="background" id="background-input" style="display: none;" />
-    <button type="submit" id="upload-background-button" style="display: none;">Upload Background</button>
-</form>
-<div id="photo-gallery">
+}
+
+<div id="photo-gallery" class="photoGallery">
     @await Component.InvokeAsync("ProfilePhoto", new { pageNumber = 1, pageSize = 10, userName = Model.UserName })
 </div>
 

@@ -1,33 +1,94 @@
 ﻿@model List<Luxa.ViewModel.PhotoWithIsLikedVM>
-@* @if(Model.Any())
+@if (Model.Any())
 {
-    foreach (var photo in Model)
-    {
-        <div class="photo-item">
-            <img src="/Image/@photo.Photo.Name"/>
-            <p>@photo.Photo.Name</p>
-        </div>
-    }
-} *@
-
-<div class="newBox">
-	<div class="photo-gallery">
-		@foreach (var photo in Model)
-		{
-			<a type="button" href="/Photos/Details/@photo.Photo.Id">
-				<img src="/Image/@photo.Photo.Name" alt="@photo.Photo.Name">
+	@foreach (var photo in Model)
+	{
+		var likeString = (photo.IsLiked) ? ViewBag.LikePath : ViewBag.UnlikePath;
+		<div class="photo trigger">
+			<a type = "button" href = "/Photos/Details/@photo.Photo.Id">
+			<img src="/Image/@photo.Photo.Name" alt="@photo.Photo.Name">
 			</a>
-			@* <div class="target">
+			<div class="target">
 				<div class="like">
 					<a onclick="likeOrUnlikePhoto(@photo.Photo.Id)" type="button">
-						<img id="photo.@photo.Photo.Id" src="${likeString}">
+						<img id="photo.@photo.Photo.Id" src="@likeString">
 					</a>
 				</div>
-				<div class="like-text" id="likes.@photo.Photo.Id">@photo.Photo.LikeCount</div>
-				<div class="user">
-					@photo.Photo.OwnerId
+				<div class="like-text" id="likes.@photo.Photo.Id">
+				@photo.Photo.LikeCount
 				</div>
-			</div> *@
+				<div class="user">
+				@photo.OwnerName
+				</div>
+			</div>
+		</div>
+	}
+
+}
+<script>
+	var likePath = '@ViewBag.LikePath';
+	var unlikePath = '@ViewBag.UnlikePath';
+	document.addEventListener("DOMContentLoaded", function () {
+			addTrigger();
+	});
+
+	function addTrigger() {
+		const triggers = document.querySelectorAll('.photo.trigger');
+		console.log("test");
+		triggers.forEach(trigger => {
+			const target = trigger.querySelector('.target');
+
+			trigger.addEventListener('mouseenter', function () {
+				target.style.opacity = '1';
+				console.log("zmiana na 1");
+			});
+
+			trigger.addEventListener('mouseleave', function () {
+				target.style.opacity = '0';
+				console.log("zmiana na 0");
+			});
+		});
+	};
+	function likeOrUnlikePhoto(id) {
+		$.ajax({
+			url: '/Photos/LikeOrUnlikePhoto/',
+			type: 'POST',
+			data: { idPhoto: id },
+			success: function (response) {
+				changeLikeButton(id);
+				console.log(response);
+				if (true === response) {
+
+				}
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr);
+				console.log(status);
+				console.log('nie działa: ' + error);
+			}
+		});
+	};
+	function changeLikeButton(id) {
+		const url = window.location.origin;
+		console.log(url + " " + img + " " + like);
+		var img = document.getElementById('photo.' + id);
+		var like = document.getElementById('likes.' + id);
+		let currentValue = parseInt(like.textContent);
+		console.log(like);
+		var src = img.src;
+		console.log('img.src: ' + img.src + ' likePath: ' + likePath)
+		if (img.src === url + unlikePath) {
+			img.src = url + likePath;
+			console.log('niby prawda że unlike jest');
+			currentValue++;
 		}
-	</div>
-</div>
+		else {
+			img.src = url + unlikePath;
+			console.log('niby prawda że like jest');
+			currentValue--;
+		}
+		like.textContent = currentValue;
+
+	}
+
+</script>

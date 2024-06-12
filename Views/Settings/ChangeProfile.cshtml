@@ -7,15 +7,40 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title" id="itemHead">Zmodyfikuj profil</h5>
-                    <form method="post" asp-controller="Settings" asp-action="ChangeProfile">
+
+                    <form method="post" asp-controller="Settings" asp-action="UploadAvatar" enctype="multipart/form-data">
+                        <div class="mb-1">
+                            <label asp-for="Avatar" class="control-label"></label>
+                            <input type="file" asp-for="Avatar" class="form-control" />
+                            <span asp-validation-for="Avatar" class="text-danger"></span>
+                        </div>
+                        <input type="submit" value="Zmień zdjęcie profilowe" class="btn btn-primary float-end" />
+                    </form>
+                    @ViewData["AvatarMessage"]
+
+                    <hr />
+
+                    <form method="post" asp-controller="Settings" asp-action="UploadBackground" enctype="multipart/form-data">
+                        <div class="mb-1">
+                            <label asp-for="Background" class="control-label"></label>
+                            <input type="file" asp-for="Background" class="form-control" />
+                            <span asp-validation-for="Background" class="text-danger"></span>
+                        </div>
+                        <input type="submit" value="Zmień tło profilu" class="btn btn-primary float-end" />
+                    </form>
+                    @ViewData["BackgroundMessage"]
+
+                    <hr />
+
+                    <form method="post" asp-controller="Settings" asp-action="ChangeDescription">
                         <div class="mb-1">
                             <label asp-for="Description" class="control-label"></label>
                             <textarea asp-for="Description" class="form-control">@Model.Description</textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
-                        <input type="submit" value="Zatwierdź zmiany" class="btn btn-primary float-end" />
+                        <input type="submit" value="Zmień opis profilu" class="btn btn-primary float-end" />
                     </form>
-                    @ViewData["Message"]
+                    @ViewData["DescriptionMessage"]
                 </div>
             </div>
         </div>

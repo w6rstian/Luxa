@@ -2,6 +2,7 @@
 using Luxa.Models;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Luxa.Services
 {
@@ -34,5 +35,13 @@ namespace Luxa.Services
             var notifications = GetNotificationsForUser(user.Id);
             return notifications.Count(n => !n.IsViewed);
         }
+
+        public async Task<int> GetNotificationsCountAsync(ClaimsPrincipal user)
+        {
+			var currentUser = await _userManager.GetUserAsync(user);
+            if (currentUser == null) 
+                return -1;
+            return await GetNotificationsCountAsync(currentUser.Id);
+		}
     }
 }

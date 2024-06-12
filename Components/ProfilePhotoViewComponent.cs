@@ -25,7 +25,10 @@ namespace Luxa.Components
                 return Content(string.Empty);
             //pobieranie zdjęć z polubieniami oraz nazwą właściciela
             var photos = await _photoService.GetPhotosWithIsLikedForProfileAsync(pageNumber, pageSize, user);
-            return View(photos);
+            string Path = "/assets/";
+            ViewBag.LikePath = Path+ "hand-thumbs-up-fill.svg";
+            ViewBag.UnlikePath =Path+ "hand-thumbs-up.svg";
+			return View(photos);
 
         }
 

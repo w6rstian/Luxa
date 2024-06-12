@@ -94,16 +94,22 @@ namespace Luxa.Services
             return "Coś poszło nie tak.";
         }
 
-        public async Task<string> ChangeProfile(UserModel? user, string Description)
+        public async Task<string> ChangeProfile(UserModel? user, string description, IFormFile avatar, IFormFile background)
         {
             if (user != null)
             {
-                user.Description = Description;
+                user.Description = description;
                 if (await _userService.SaveUser(user))
                 {
                     return "Zmiana opisu powiodła się.";
                 }
             }
+
+            if (await _userService.SaveUser(user))
+            {
+                return "Zmiana profilu powiodła się.";
+            }
+
             return "Coś poszło nie tak.";
         }
     }

@@ -39,9 +39,9 @@ namespace Luxa.Controllers
             => View(await _context.Photo.Include(m => m.Owner).ToListAsync());
 
 
-        public async Task<IActionResult> DownloadImage(int id)
+        public IActionResult DownloadImage(int id)
         {
-            var photo = await _photoService.GetImageByIdAsync(id);
+            var photo = _photoService.GetImageById(id);
             string filePath = Path.Combine(_hostEnvironment.WebRootPath, "Image/" + photo.Name);
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
 
@@ -122,8 +122,9 @@ namespace Luxa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description,Category,AddTime,ImageFile")] Photo photo, string Tags)
         {
-            //await Console.Out.WriteLineAsync("\n\n\n"+Tags);
             var user = _userService.GetCurrentLoggedInUser(User);
+            if (user == null)
+                return Unauthorized();
             await _photoService.Create(photo, user, Tags);
             return RedirectToAction(nameof(Index));
             //return View(photo);

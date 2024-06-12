@@ -12,7 +12,7 @@ namespace Luxa.Interfaces
         Task<bool> Delete();//get
         Task<bool> Delete(int id, Photo photo, UserModel user);//post
 
-        Task<Photo> GetImageByIdAsync(int id);
+        Photo GetImageById(int id);
         Task<IEnumerable<Photo>> GetAllImagesAsync();
 
         //List<Photo>[] Prototyp(List<Photo> photos, int columnHeight);
