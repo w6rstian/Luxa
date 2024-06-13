@@ -455,7 +455,6 @@ namespace Luxa.Controllers
                     FollowerId = currentUser.Id,
                     FolloweeId = followee.Id,
                     IsApproved = !followee.IsPrivate
-                    //IsMutual = await _context.FollowRequests.AnyAsync(fr => fr.FollowerId == followee.Id && fr.FolloweeId == currentUser.Id && fr.IsApproved)
                 };
 
                 _context.FollowRequests.Add(followRequest);

@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Nowy folder\**" />
+    <Content Remove="Views\Nowy folder\**" />
+    <EmbeddedResource Remove="Views\Nowy folder\**" />
+    <None Remove="Views\Nowy folder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
@@ -24,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="Views\Nowy folder\" />
     <Folder Include="wwwroot\avatars\" />
     <Folder Include="wwwroot\Photo\" />
   </ItemGroup>

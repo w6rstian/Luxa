@@ -8,6 +8,5 @@
         public string? FolloweeId { get; set; }
         public UserModel? Followee { get; set; }
         public bool IsApproved { get; set; }
-        //public bool IsMutual { get; set; }
     }
 }

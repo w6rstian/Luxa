@@ -109,12 +109,6 @@ namespace Luxa.Data
 				.WithMany(u => u.Followers)
 				.HasForeignKey(f => f.FolloweeId)
 				.OnDelete(DeleteBehavior.Restrict);
-
-			/*            modelBuilder.Entity<FollowModel>()
-							.HasOne(f => f.Follower)
-							.WithMany(u => u.MutualFollowers)
-							.HasForeignKey(f => f.FollowerId)
-							.OnDelete(DeleteBehavior.Restrict);*/
 		}
 
 		public DbSet<UserNotificationModel> UserNotifications { get; set; }
@@ -127,6 +121,5 @@ namespace Luxa.Data
 		public DbSet<FollowModel> FollowRequests { get; set; }
 		public DbSet<CommentModel> Comments { get; set; }
 		//public DbSet<UserModel> Users { get; set; }
-
 	}
 }
