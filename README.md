@@ -10,3 +10,4 @@ Instrukcja:
 	- Smacznego
 
 2. Żeby logowanie Google działało należy pobrać pakiet "Microsoft.AspNetCore.Authentication.Google"
+   	- https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.Google
