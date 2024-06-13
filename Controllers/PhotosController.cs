@@ -126,7 +126,7 @@ namespace Luxa.Controllers
             if (user == null)
                 return Unauthorized();
             await _photoService.Create(photo, user, Tags);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index","Home");
             //return View(photo);
         }
 
@@ -134,10 +134,6 @@ namespace Luxa.Controllers
         // GET: Photos/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var photo = await _photoService.GetImageByIdAsync(id);
                 
@@ -247,7 +243,7 @@ namespace Luxa.Controllers
             //var idPhoto = int.Parse(idPhotoString);            
             var user = _userService.GetCurrentLoggedInUser(User);
             if (user == null)
-                throw new NotImplementedException();
+                return false;
             var likedPhotos = await _photoService.GetLikedPhotos(user);
             return (!_photoService.IsPhotoLiked(idPhoto, likedPhotos))
                 ? _photoService.LikePhoto(idPhoto, user)

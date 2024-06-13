@@ -52,7 +52,6 @@ namespace Luxa.Controllers
                     var user = _userService.GetCurrentLoggedInUserWithPhotos(User);
                     if (user != null)
                     {
-                        //HttpContext.Session.Clear();
                         await _userService.UpdateReputation(user);
                         return RedirectToAction("Index", "Home");
                     }

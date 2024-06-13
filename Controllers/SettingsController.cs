@@ -85,7 +85,7 @@ namespace Luxa.Controllers
             var user = _userService.GetCurrentLoggedInUser(User);
             if (user == null)
             {
-                return RedirectToAction("Error", "Home");
+                return Unauthorized();
             }
 
             user.Description = profileChangeVM.Description;
@@ -102,6 +102,10 @@ namespace Luxa.Controllers
             if (avatar != null && avatar.Length > 0)
             {
                 var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
                 var fileName = Path.GetFileName(avatar.FileName);
                 var filePath = Path.Combine("wwwroot/avatars", fileName);
 

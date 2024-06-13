@@ -3,6 +3,7 @@ using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.Repository;
 using Luxa.Services;
+using Luxa.Data.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,6 +68,13 @@ namespace Luxa
                     IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("GoogleKeys");
                     options.ClientId = googleAuthNSection["ClientId"];
                     options.ClientSecret = googleAuthNSection["ClientSecret"];
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.Redirect("/Home/Landing");
+                        return Task.CompletedTask;
+                    };
+
                 });
 
             var app = builder.Build();
