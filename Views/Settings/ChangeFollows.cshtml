@@ -1,0 +1,40 @@
+﻿@model Luxa.ViewModel.FollowsChangeVM
+
+<div class="container">
+    <div class="row">
+        @await Component.InvokeAsync("SettingsMenu")
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" id="itemHead">Zarządzaj prośbami o obserwacje</h5>
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Oczekujące prośby</h5>
+                            <div>
+                                @if (Model.PendingFollowRequests != null && Model.PendingFollowRequests.Any())
+                                {
+                                    foreach (var request in Model.PendingFollowRequests)
+                                    {
+                                        <div class="mb-2">
+                                            <p>@request.Follower.UserName</p>
+                                            <form method="post" asp-action="ApproveFollow" asp-route-requestId="@request.Id" style="display: inline;">
+                                                <button type="submit" class="btn btn-primary">Zatwierdź</button>
+                                            </form>
+                                            <form method="post" asp-action="RejectFollow" asp-route-requestId="@request.Id" style="display: inline;">
+                                                <button type="submit" class="btn btn-danger">Odrzuć</button>
+                                            </form>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p>No pending follow requests.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

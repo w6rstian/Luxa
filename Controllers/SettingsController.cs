@@ -1,10 +1,12 @@
 ﻿using Luxa.Data;
 using Luxa.Interfaces;
 using Luxa.Models;
+using Luxa.Services;
 using Luxa.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Blazor;
 using System.Drawing.Printing;
 
@@ -15,11 +17,16 @@ namespace Luxa.Controllers
         private readonly ISettingsService _settingsService;
         private readonly IUserService _userService;
         private readonly UserManager<UserModel> _userManager;
-        public SettingsController(ISettingsService settingsService, IUserService userService, UserManager<UserModel> userManager)
+        private readonly ApplicationDbContext _context;
+        private readonly NotificationService _notificationService;
+        public SettingsController(ISettingsService settingsService, IUserService userService, UserManager<UserModel> userManager,
+            ApplicationDbContext context, NotificationService notificationService)
         {
             _settingsService = settingsService;
             _userService = userService;
             _userManager = userManager;
+            _context = context;
+            _notificationService = notificationService;
         }
         public IActionResult Options()
         {
@@ -149,6 +156,60 @@ namespace Luxa.Controllers
 
             ViewData["BackgroundMessage"] = "Nie wybrano pliku.";
             return RedirectToAction("ChangeProfile");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangeFollows()
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            var followRequests = await _userService.GetPendingFollowRequests(user.Id);
+            var model = new FollowsChangeVM
+            {
+                PendingFollowRequests = followRequests
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ApproveFollow(int requestId)
+        {
+            var followRequest = await _context.FollowRequests
+                .Include(fr => fr.Followee).Include(fr => fr.Follower)
+                .FirstOrDefaultAsync(fr => fr.Id == requestId);
+
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
+
+            if (followRequest == null || followRequest.FolloweeId != currentUser.Id)
+                return NotFound();
+
+            followRequest.IsApproved = true;
+            await _context.SaveChangesAsync();
+
+            // powiadomienie o potwierdzeniu prosby o obserwacje
+            await _notificationService.SendFollowApprovedNotification(followRequest.Follower, currentUser);
+
+            return RedirectToAction("ChangeFollows");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> RejectFollow(int requestId)
+        {
+            var followRequest = await _context.FollowRequests
+                .Include(fr => fr.Followee)
+                .FirstOrDefaultAsync(fr => fr.Id == requestId);
+
+            var currentUser = _userService.GetCurrentLoggedInUser(User);
+
+            if (followRequest == null || followRequest.FolloweeId != currentUser.Id)
+                return NotFound();
+
+            _context.FollowRequests.Remove(followRequest);
+            await _context.SaveChangesAsync();
+
+            // powiadomienie o odrzuceniu prosby o obserwacje
+            await _notificationService.SendFollowRejectedNotification(followRequest.Follower, currentUser);
+
+            return RedirectToAction("ChangeFollows");
         }
     }
 }

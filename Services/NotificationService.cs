@@ -51,8 +51,8 @@ namespace Luxa.Services
                 UserId = followee.Id,
                 Notification = new NotificationModel
                 {
-                    Title = "New Follow Request",
-                    Description = $"{follower.UserName} chce cię obserwować."
+                    Title = "Nowa prośba o obserwację",
+                    Description = $"{follower.UserName} chce cię obserwować. Przejdź do ustawień konta, aby go zaakceptować."
                 }
             };
 
@@ -67,7 +67,7 @@ namespace Luxa.Services
                 UserId = follower.Id,
                 Notification = new NotificationModel
                 {
-                    Title = "Follow Request Approved",
+                    Title = "Zatwierdzona prośba o obserwację",
                     Description = $"{followee.UserName} zatwierdził twoja prośbę o obserwowanie."
                 }
             };
@@ -83,8 +83,8 @@ namespace Luxa.Services
                 UserId = follower.Id,
                 Notification = new NotificationModel
                 {
-                    Title = "Follow Request Rejected",
-                    Description = $"{followee.UserName} odrzucił twpją prośbę o obserwowanie."
+                    Title = "Odrzucona prośba o obserwację",
+                    Description = $"{followee.UserName} odrzucił twoją prośbę o obserwowanie."
                 }
             };
 

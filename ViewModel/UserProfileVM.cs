@@ -11,6 +11,6 @@
         public string? Description { get; set; } = "Hej, jestem użytkownikiem Luxy";
         public bool IsCurrentUserProfile { get; set; } = false;
         public bool IsFollowing { get; set; } = false;
-        public List<FollowModel> PendingFollowRequests { get; set; } = new List<FollowModel>(); //nie dziala
+        public List<FollowModel> PendingFollowRequests { get; set; } = new List<FollowModel>();
     }
 }
