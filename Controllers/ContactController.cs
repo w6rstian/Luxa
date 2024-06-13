@@ -1,5 +1,6 @@
 ﻿using Luxa.Interfaces;
 using Luxa.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Luxa.Controllers
@@ -14,12 +15,14 @@ namespace Luxa.Controllers
             _contactService = contactService;
             _userService = userService;
         }
-        public IActionResult UserContact()
+		[Authorize]
+		public IActionResult UserContact()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult UserContact(ContactVM contactVM)
+		[Authorize]
+		public IActionResult UserContact(ContactVM contactVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             var category = _contactService.GetEnumCategory(contactVM.Category);
@@ -27,14 +30,16 @@ namespace Luxa.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult GetDetailedCategory(string selectedValue)
+		[Authorize]
+		public IActionResult GetDetailedCategory(string selectedValue)
         {
             var select = _contactService.GetTextAndValueToSelect(selectedValue);
             //var detailedCategories = new List<SelectListItem>();
             //detailedCategories.AddRange(filteredList.Select(p => new SelectListItem { Text = p.Item2, Value = p.Item1 }));
             return Json(new { text = select.Item1, value = select.Item2 });
         }
-        public async Task<IActionResult> ContactList()
+		[Authorize(Roles = "admin,moderator")]
+		public async Task<IActionResult> ContactList()
         {
 
             //return View(contactsToDisplay);
@@ -45,7 +50,8 @@ namespace Luxa.Controllers
             //List <ContactListVM> lista = await _contactService.chuj2();
             return View(await _contactService.ShowContacts());
         }
-        [HttpPost]
+		[Authorize(Roles = "admin,moderator")]
+		[HttpPost]
         public bool EditState(string data) =>
             _contactService.PrepareToUpdateState(data).Result;
 

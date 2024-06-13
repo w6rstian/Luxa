@@ -57,7 +57,8 @@ namespace Luxa.Controllers
         //Ajax, Js
         //Index
         [HttpGet]
-        public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
+		[Authorize]
+		public async Task<IActionResult> LoadPhotos(int pageNumber, int pageSize)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             if (user == null)
@@ -68,7 +69,8 @@ namespace Luxa.Controllers
         }
         //Discover
         [HttpGet]
-        public async Task<IActionResult> LoadPhotosForDiscover(int pageNumber,
+		[Authorize]
+		public async Task<IActionResult> LoadPhotosForDiscover(int pageNumber,
             int pageSize,
             string? tag,
             string? category,

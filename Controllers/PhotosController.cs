@@ -38,8 +38,8 @@ namespace Luxa.Controllers
             //Bez Include się nie wyświetla ale trzeba to przerobić albo na vm albo pobawić się ViewBagami
             => View(await _context.Photo.Include(m => m.Owner).ToListAsync());
 
-
-        public IActionResult DownloadImage(int id)
+		[Authorize]
+		public IActionResult DownloadImage(int id)
         {
             var photo = _photoService.GetImageById(id);
             string filePath = Path.Combine(_hostEnvironment.WebRootPath, "Image/" + photo.Name);
@@ -53,6 +53,7 @@ namespace Luxa.Controllers
             string contentType = GetContentType(extension);
             return File(fileBytes, contentType, photo.Name);
         }
+
         private string GetContentType(string extension)
         {
             return extension.ToLower() switch
@@ -65,7 +66,7 @@ namespace Luxa.Controllers
             };
         }
 
-        /*public async Task<IActionResult> Index()
+		/*public async Task<IActionResult> Index()
         {
             var photos = await _photoService.GetAllImagesAsync();
             return View(photos);
@@ -74,8 +75,9 @@ namespace Luxa.Controllers
 
 
 
-        // GET: Photos/Details/5
-        public async Task<IActionResult> Details(int id)
+		// GET: Photos/Details/5
+		[Authorize]
+		public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
@@ -102,8 +104,9 @@ namespace Luxa.Controllers
             return View(photo);
         }
 
-        // GET: Photos/Create
-        public IActionResult Create()
+		// GET: Photos/Create
+		[Authorize]
+		public IActionResult Create()
         {
 
             if (_userManager.GetUserId(User) == null)
@@ -119,7 +122,8 @@ namespace Luxa.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+		[Authorize]
+		[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description,Category,AddTime,ImageFile")] Photo photo, string Tags)
         {
             if (string.IsNullOrEmpty(Tags)) 
@@ -136,8 +140,9 @@ namespace Luxa.Controllers
         }
 
 
-        // GET: Photos/Edit/5
-        public async Task<IActionResult> Edit(int id)
+		// GET: Photos/Edit/5
+		[Authorize]
+		public async Task<IActionResult> Edit(int id)
         {
 
             var photo = await _photoService.GetImageByIdAsync(id);
@@ -151,7 +156,8 @@ namespace Luxa.Controllers
 
         // POST: Photos/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+		[Authorize]
+		[ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerId,Name,Description,Category,Views,LikeCount,ImageFile")] Photo photo)
         {
             if (id != photo.Id)
@@ -199,8 +205,9 @@ namespace Luxa.Controllers
             return View(photo);
         }
 
-        // GET: Photos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+		// GET: Photos/Delete/5
+		[Authorize]
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -217,8 +224,9 @@ namespace Luxa.Controllers
             return View(photo);
         }
 
-        // POST: Photos/Delete/5
-        [HttpPost, ActionName("Delete")]
+		// POST: Photos/Delete/5
+		[Authorize]
+		[HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -243,7 +251,8 @@ namespace Luxa.Controllers
 
 
         [HttpPost]
-        public async Task<bool> LikeOrUnlikePhoto(int idPhoto)
+		[Authorize]
+		public async Task<bool> LikeOrUnlikePhoto(int idPhoto)
         {
             //var idPhoto = int.Parse(idPhotoString);            
             var user = _userService.GetCurrentLoggedInUser(User);
@@ -254,34 +263,5 @@ namespace Luxa.Controllers
                 ? _photoService.LikePhoto(idPhoto, user)
                 : _photoService.UnlikePhoto(idPhoto, user);
         }
-
-
-
-        /*
-        public IActionResult DownloadFile(int id, [Bind("Id,Owner,Name,Description,AddTime,ImageFile")] Photo photo)
-        {
-            *//*            var photo = _context.Photo.FindAsync(id).FirstOrDefaultAsync(m => m.Id == id);
-            *//*
-            //var filename = Path.Combine(_hostEnvironment.WebRootPath, "image", photo.Name);
-            var fileName = photo.ImageFile.FileName;
-            var memory = DownloadSingleFile(fileName, "wwwroot\\Image");
-            return File(memory.ToArray(), "image/png", photo.ImageFile.FileName);
-        }
-        private MemoryStream DownloadSingleFile(string filename, string uploadPath)
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), uploadPath, filename);
-            var memory = new MemoryStream();
-            if (System.IO.File.Exists(path))
-            {
-                var net = new System.Net.WebClient();
-                var data = net.DownloadData(path);
-                var content = new System.IO.MemoryStream(data);
-                memory = content;
-
-            }
-            memory.Position = 0;
-            return memory;
-        }*/
     }
-
 }
