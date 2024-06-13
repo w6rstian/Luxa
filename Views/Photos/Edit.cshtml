@@ -1,12 +1,11 @@
 ﻿@model Luxa.Models.Photo
 
 @{
-    ViewData["Title"] = "Edit Photo";
+    ViewData["Title"] = "Edycja zdjęcia";
 }
 
-<h1>Edit Photo</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>Photo</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,6 +13,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="OwnerId" />
+            <input type="hidden" asp-for="Owner" />
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="ImageFile" />
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
