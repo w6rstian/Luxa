@@ -97,6 +97,17 @@ namespace Luxa.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddLoginAsync(user, info);
+                //nadanie roli uzytkownikowi
+                var roleResult = await _userManager.AddToRoleAsync(user, UserRoles.Regular);
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View("SignIn");
+                }
+
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
