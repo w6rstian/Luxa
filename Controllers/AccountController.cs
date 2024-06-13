@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Luxa.Controllers
@@ -175,8 +174,8 @@ namespace Luxa.Controllers
             }
             return View(signUpVM);
         }
-		[Authorize]
-		public async Task<IActionResult> Logout()
+        [Authorize]
+        public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             HttpContext.Session.Clear();
@@ -215,9 +214,9 @@ namespace Luxa.Controllers
         {
             return View();
         }
-		//W fazie rozwoju
-		[Authorize(Roles = "admin,moderator")]
-		[HttpPost]
+        //W fazie rozwoju
+        [Authorize(Roles = "admin,moderator")]
+        [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserVM createUserVM)
         {
             if (ModelState.IsValid)
@@ -259,14 +258,14 @@ namespace Luxa.Controllers
 
             return View();
         }
-		[Authorize(Roles = "admin,moderator")]
-		[HttpPost]
+        [Authorize(Roles = "admin,moderator")]
+        [HttpPost]
         //[Authorize(Roles = "admin,moderator")]
         public async Task<IActionResult> DeleteUser(string Id)
         {
             await _userService.RemoveUserById(Id);
-			return Ok();
-		}
+            return Ok();
+        }
         [Authorize(Roles = "admin,moderator")]
         public async Task<IActionResult> EditUser(string Id)
         {
@@ -286,8 +285,8 @@ namespace Luxa.Controllers
 
             return View(editUserVM);
         }
-		[Authorize(Roles = "admin,moderator")]
-		[HttpPost]
+        [Authorize(Roles = "admin,moderator")]
+        [HttpPost]
         public async Task<IActionResult> EditUser(string Id, EditUserVM editUserVM)
         {
             if (string.IsNullOrEmpty(Id))
@@ -340,8 +339,8 @@ namespace Luxa.Controllers
             }
             return NotFound();
         }
-		[Authorize]
-		public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
+        [Authorize]
+        public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
         {
             return ViewComponent("ProfilePhoto", new { pageNumber, pageSize, userName });
         }
@@ -463,7 +462,19 @@ namespace Luxa.Controllers
                 if (followee.IsPrivate)
                 {
                     await _notificationService.SendFollowRequestNotification(followee, currentUser);
+                    TempData["FollowMessage"] = "Prośba o obserwację została wysłana i oczekuje na akceptację.";
+                    TempData["FollowStatus"] = "pending";
                 }
+                else
+                {
+                    TempData["FollowMessage"] = "Obserwujesz teraz użytkownika.";
+                    TempData["FollowStatus"] = "approved";
+                }
+            }
+            else if (!existingRequest.IsApproved)
+            {
+                TempData["FollowMessage"] = "Twoja prośba o obserwację jest w trakcie rozpatrywania.";
+                TempData["FollowStatus"] = "pending";
             }
 
             return RedirectToAction("UserProfile", new { userName });
@@ -487,6 +498,8 @@ namespace Luxa.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            TempData["FollowMessage"] = "Przestałeś obserwować użytkownika.";
+            TempData["FollowStatus"] = "none";
             return RedirectToAction("UserProfile", new { userName });
         }
     }
