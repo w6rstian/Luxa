@@ -157,7 +157,7 @@ namespace Luxa.Controllers
         // POST: Photos/Edit/5
         [HttpPost]
 		[Authorize]
-		[ValidateAntiForgeryToken]
+		//[ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerId,Name,Description,Category,Views,LikeCount,ImageFile")] Photo photo)
         {
             if (id != photo.Id)
@@ -182,7 +182,7 @@ namespace Luxa.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
             else
             {

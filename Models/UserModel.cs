@@ -15,16 +15,16 @@ namespace Luxa.Models
         {
             get
             {
-                int[] thresholds = [20, 50, 100, 200, 500, 1000, 5000];
-                for (int i = 1; i <= thresholds.Length; i++)
+                int[] thresholds = [10, 50, 100, 200, 500, 1000, 5000];
+                for (int i = 0; i <= thresholds.Length; i++)
                 {
                     if (Reputation < thresholds[i])
                     {
-                        return "Lv " + i;
+                        return "Lv " + (i+1).ToString();
                     }
                 }
 
-                return "Lv " + thresholds.Length + 1;
+                return "Lv " + (thresholds.Length + 1).ToString();
             }
         }
         public bool IsPrivate { get; set; } = false;

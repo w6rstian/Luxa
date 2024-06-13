@@ -4,11 +4,30 @@
     ViewData["Title"] = "Obserwowani użytkownicy";
 }
 
-<h2>Followed Users</h2>
+<style>
+    :root {
+        --darker-violet: #2b2735;
+        --dark-violet: #373341;
+        --light-violet: #4C3C78;
+        --lighter-violet: #614D99;
+        --yellowish: #FAF0E6;
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--yellowish);
+    }
+</style>
+
+<h2>Obserwowani użytkownicy</h2>
 
 <ul>
     @foreach (var user in Model)
     {
-        <li>@user.UserName</li>
+        <li>
+            <a asp-controller="Account" asp-action="UserProfile" asp-route-userName="@user.UserName">
+                @user.UserName
+            </a>
+        </li>
     }
 </ul>
