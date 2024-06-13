@@ -9,7 +9,7 @@
                     <h5 class="card-title" id="itemHead">Zarządzaj prośbami o obserwacje</h5>
                     <div class="card mt-4">
                         <div class="card-body">
-                            <h5 class="card-title">Pending Follow Requests</h5>
+                            <h5 class="card-title">Oczekujące prośby</h5>
                             <div>
                                 @if (Model.PendingFollowRequests != null && Model.PendingFollowRequests.Any())
                                 {
@@ -18,10 +18,10 @@
                                         <div class="mb-2">
                                             <p>@request.Follower.UserName</p>
                                             <form method="post" asp-action="ApproveFollow" asp-route-requestId="@request.Id" style="display: inline;">
-                                                <button type="submit" class="btn btn-primary">Approve</button>
+                                                <button type="submit" class="btn btn-primary">Zatwierdź</button>
                                             </form>
                                             <form method="post" asp-action="RejectFollow" asp-route-requestId="@request.Id" style="display: inline;">
-                                                <button type="submit" class="btn btn-danger">Reject</button>
+                                                <button type="submit" class="btn btn-danger">Odrzuć</button>
                                             </form>
                                         </div>
                                     }
