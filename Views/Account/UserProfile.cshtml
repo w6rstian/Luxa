@@ -117,7 +117,7 @@
         object-fit: cover;
     }
 </style>
-
+@* Właściciel profilu *@
 @if (Model.IsCurrentUserProfile)
 {
     <label id="bg-label" for="background-input">
@@ -147,6 +147,7 @@
 }
 else
 {
+    @* Inny użytkownik próbujący wyświetlić profil *@
     <div id="profile-wrapper">
         <div id="avatar">
             <img src="@Model.AvatarUrl" alt="Avatar" class="avatar" />
@@ -158,13 +159,13 @@ else
         @if (Model.IsFollowing)
         {
             <div id="edit-button">
-                <a class="btn btn-danger" asp-action="Unfollow" asp-route-userName="@Model.UserName">Unfollow</a>
+                <a class="btn btn-danger" asp-action="Unfollow" asp-controller="Account" asp-route-userName="@Model.UserName">Unfollow</a>
             </div>
         }
         else
         {
             <div id="edit-button">
-                <a class="btn btn-success" asp-action="Follow" asp-route-userName="@Model.UserName">Follow</a>
+                <a class="btn btn-success" asp-action="Follow" asp-controller="Account" asp-route-userName="@Model.UserName">Follow</a>
             </div>
         }
     </div>
@@ -178,8 +179,8 @@ else
         {
             <div>
                 <p>@request.Follower.UserName</p>
-                <a class="btn btn-primary" asp-action="ApproveFollow" asp-route-requestId="@request.Id">Approve</a>
-                <a class="btn btn-danger" asp-action="RejectFollow" asp-route-requestId="@request.Id">Reject</a>
+                <a class="btn btn-primary" asp-controller="Account" asp-action="ApproveFollow" asp-route-requestId="@request.Id">Approve</a>
+                <a class="btn btn-danger" asp-controller="Account" asp-action="RejectFollow" asp-route-requestId="@request.Id">Reject</a>
             </div>
         }
     </div>

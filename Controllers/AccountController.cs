@@ -328,12 +328,6 @@ namespace Luxa.Controllers
             }
             return NotFound();
         }
-        //Do tworzenia powiadomień ale jeszcze nic z tym nie robiłem
-        public IActionResult AdminNotifications()
-        {
-            return View();
-        }
-
         public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
         {
             return ViewComponent("ProfilePhoto", new { pageNumber, pageSize, userName });
@@ -488,7 +482,7 @@ namespace Luxa.Controllers
         public async Task<IActionResult> ApproveFollow(int requestId)
         {
             var followRequest = await _context.FollowRequests
-                .Include(fr => fr.Followee)
+                .Include(fr => fr.Followee).Include(fr => fr.Follower)
                 .FirstOrDefaultAsync(fr => fr.Id == requestId);
 
             var currentUser = _userService.GetCurrentLoggedInUser(User);
