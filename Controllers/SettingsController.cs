@@ -180,6 +180,15 @@ namespace Luxa.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> FollowedUsers()
+        {
+            var user = _userService.GetCurrentLoggedInUser(User);
+            var followedUsers = await _userService.GetFollowedUsers(user.Id);
+            return View(followedUsers);
+        }
+
         [Authorize]
         public async Task<IActionResult> ApproveFollow(int requestId)
         {

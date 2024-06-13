@@ -1,0 +1,14 @@
+﻿@model List<Luxa.Models.UserModel>
+
+@{
+    ViewData["Title"] = "Followed Users";
+}
+
+<h2>Followed Users</h2>
+
+<ul>
+    @foreach (var user in Model)
+    {
+        <li>@user.UserName</li>
+    }
+</ul>

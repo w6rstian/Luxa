@@ -103,6 +103,15 @@ namespace Luxa.Services
                 .Include(fr => fr.Follower)
                 .ToListAsync();
         }
+
+        public async Task<List<UserModel>> GetFollowedUsers(string userId)
+        {
+            return await _context.FollowRequests
+                .Where(fr => fr.FollowerId == userId && fr.IsApproved)
+                .Select(fr => fr.Followee)
+                .ToListAsync();
+        }
+
         public async Task<bool> IsOwnerOrAdmin(string? OwnerName, ClaimsPrincipal user) 
         {
             var loggedUser = GetCurrentLoggedInUser(user);
