@@ -12,5 +12,6 @@
         public bool IsCurrentUserProfile { get; set; } = false;
         public bool IsFollowing { get; set; } = false;
         public List<FollowModel> PendingFollowRequests { get; set; } = new List<FollowModel>();
+        public int FollowerCount { get; set; }
     }
 }

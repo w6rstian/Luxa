@@ -149,6 +149,9 @@
             <div id="edit-button">
                 <a class="btn btn-primary" asp-action="ChangeProfile" asp-controller="Settings">Edit Profile</a>
             </div>
+            <div>
+                <p>@Model.FollowerCount obserwujących</p>
+            </div>
         </div>
     </label>
     <form asp-action="UploadBackground" asp-controller="Account" enctype="multipart/form-data" method="post">
@@ -166,6 +169,9 @@ else
         <div id="name-desc">
             <h2>@Model.UserName</h2>
             <textarea readonly disabled>@Model.Description</textarea>
+        </div>
+        <div>
+            <p>@Model.FollowerCount obserwujących</p>
         </div>
         @if (Model.IsFollowing)
         {

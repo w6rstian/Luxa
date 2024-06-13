@@ -367,6 +367,9 @@ namespace Luxa.Controllers
                 var avatarUrl = !string.IsNullOrEmpty(profileUser.AvatarUrl) ? profileUser.AvatarUrl : "/assets/blank-profile-picture.png";
                 // domyslny avatar
                 var backgroundUrl = !string.IsNullOrEmpty(profileUser.BackgroundUrl) ? profileUser.BackgroundUrl : "/assets/prostokat.png";
+                //ilosc obserwujacych
+                var isFollowing = currentUser != null && await _userService.IsFollowing(currentUser.Id, profileUser.Id);
+                var followerCount = await _context.FollowRequests.CountAsync(fr => fr.FolloweeId == profileUser.Id && fr.IsApproved);
 
                 var model = new UserProfileVM
                 {
@@ -375,7 +378,9 @@ namespace Luxa.Controllers
                     BackgroundUrl = backgroundUrl,
                     Description = profileUser.Description,
                     IsCurrentUserProfile = currentUser.UserName == userName,
-                    IsFollowing = await _userService.IsFollowing(currentUser.Id, profileUser.Id),
+                    //IsFollowing = await _userService.IsFollowing(currentUser.Id, profileUser.Id),
+                    IsFollowing = isFollowing,
+                    FollowerCount = followerCount,
                     PendingFollowRequests = currentUser.UserName == userName
                         ? await _userService.GetPendingFollowRequests(currentUser.Id)
                         : new List<FollowModel>()
