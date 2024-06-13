@@ -21,7 +21,7 @@ namespace Luxa.Components
             //właściciel profilu
             var user = await _userService.GetUserByUserName(userName);
             //sprawdzenie dostępu do profilu (jeśli jest prywatny, zalogowany musi być właścicielem)
-            if (user == null || currentUser == null || !(user.IsPrivate && await _userService.IsFollowing(currentUser.Id, user.Id)))
+            if (user == null || currentUser == null || (user.IsPrivate && !await _userService.IsFollowing(currentUser.Id, user.Id)))
                 return Content(string.Empty);
             //pobieranie zdjęć z polubieniami oraz nazwą właściciela
             var photos = await _photoService.GetPhotosWithIsLikedForProfileAsync(pageNumber, pageSize, user);
