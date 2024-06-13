@@ -52,7 +52,6 @@ namespace Luxa.Controllers
                     var user = _userService.GetCurrentLoggedInUserWithPhotos(User);
                     if (user != null)
                     {
-                        //HttpContext.Session.Clear();
                         await _userService.UpdateReputation(user);
                         return RedirectToAction("Index", "Home");
                     }
@@ -176,8 +175,8 @@ namespace Luxa.Controllers
             }
             return View(signUpVM);
         }
-
-        public async Task<IActionResult> Logout()
+		[Authorize]
+		public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             HttpContext.Session.Clear();
@@ -216,9 +215,9 @@ namespace Luxa.Controllers
         {
             return View();
         }
-        //W fazie rozwoju
-
-        [HttpPost]
+		//W fazie rozwoju
+		[Authorize(Roles = "admin,moderator")]
+		[HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserVM createUserVM)
         {
             if (ModelState.IsValid)
@@ -260,7 +259,8 @@ namespace Luxa.Controllers
 
             return View();
         }
-        [HttpPost]
+		[Authorize(Roles = "admin,moderator")]
+		[HttpPost]
         //[Authorize(Roles = "admin,moderator")]
         public async Task<IActionResult> DeleteUser(string Id)
         {
@@ -286,7 +286,8 @@ namespace Luxa.Controllers
 
             return View(editUserVM);
         }
-        [HttpPost]
+		[Authorize(Roles = "admin,moderator")]
+		[HttpPost]
         public async Task<IActionResult> EditUser(string Id, EditUserVM editUserVM)
         {
             if (string.IsNullOrEmpty(Id))
@@ -339,7 +340,8 @@ namespace Luxa.Controllers
             }
             return NotFound();
         }
-        public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
+		[Authorize]
+		public async Task<IActionResult> LoadMorePhotosToProfile(int pageNumber, int pageSize, string userName)
         {
             return ViewComponent("ProfilePhoto", new { pageNumber, pageSize, userName });
         }

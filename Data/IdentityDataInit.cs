@@ -24,7 +24,7 @@ namespace Luxa.Data
                 //Admin
                 var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<UserModel>>();
                 string adminUserEmail = "admin@gmail.com";
-                var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
+                var adminUser = await userManager.FindByNameAsync("admin");
                 if (adminUser == null)
                 {
                     var newAdminUser = new UserModel()
@@ -34,8 +34,6 @@ namespace Luxa.Data
                         EmailConfirmed = true,
 
                     };
-                    /*var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-					var notifications = context.Notifications.ToList();*/
                     var notifacationForAdmin = new NotificationModel
                     {
                         Title = "Odpowiedzialność",
@@ -46,14 +44,32 @@ namespace Luxa.Data
                         " Można, tylko trzeba wypić energola. Na tym polega odpowiedzialność"
                     };
                     newAdminUser.UserNotifiacations.Add(new UserNotificationModel { User = newAdminUser, Notification = notifacationForAdmin });
-
-
                     await userManager.CreateAsync(newAdminUser, "123456789");
                     await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
                 }
+                //User
+                string userEmail = "user@gmail.com";
+                var regularUser = await userManager.FindByNameAsync("user");
+                if (regularUser == null)
+                {
+                    var newRegularUser = new UserModel()
+                    {
+                        UserName = "user",
+                        Email = userEmail,
+                        EmailConfirmed = true,
+
+                    };
+
+                    var notifacationForUser = new NotificationModel
+                    {
+                        Title = "Gratulacje użytkowniku!",
+                        Description = "Gratulacje użytkowniku! Zostałeś wybrany jako dzisiejszy zwycięzca darmowego ajfoą 6s, playstation 4 lub samsung galaxy s6"
+                    };
+                    newRegularUser.UserNotifiacations.Add(new UserNotificationModel { User = newRegularUser, Notification = notifacationForUser });
+                    await userManager.CreateAsync(newRegularUser, "123456789");
+                    await userManager.AddToRoleAsync(newRegularUser, UserRoles.Regular);
+                }
             }
         }
-
-
     }
 }

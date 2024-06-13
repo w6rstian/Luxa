@@ -67,6 +67,13 @@ namespace Luxa
                     IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("GoogleKeys");
                     options.ClientId = googleAuthNSection["ClientId"];
                     options.ClientSecret = googleAuthNSection["ClientSecret"];
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.Redirect("/Home/Landing");
+                        return Task.CompletedTask;
+                    };
+
                 });
 
             var app = builder.Build();

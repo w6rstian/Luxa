@@ -28,23 +28,27 @@ namespace Luxa.Controllers
             _context = context;
             _notificationService = notificationService;
         }
-        public IActionResult Options()
+		[Authorize]
+		public IActionResult Options()
         {
             return View();
         }
-        public IActionResult ChangePassword()
+		[Authorize]
+		public IActionResult ChangePassword()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(PasswordChangeVM passwordChange)
+		[Authorize]
+		public async Task<IActionResult> ChangePassword(PasswordChangeVM passwordChange)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             ViewData["Message"] = await _settingsService.ChangePassword(user, passwordChange.OldPassword, passwordChange.NewPassword);
             return View();
         }
         [HttpGet]
-        public IActionResult ChangeData()
+		[Authorize]
+		public IActionResult ChangeData()
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             var result = _settingsService.GetDataChangeVMFromUser(user);
@@ -56,21 +60,24 @@ namespace Luxa.Controllers
             return RedirectToAction("Error", "Home");
         }
         [HttpPost]
-        public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM)
+		[Authorize]
+		public async Task<IActionResult> ChangeData(DataChangeVM dataChangeVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             ViewData["Message"] = await _settingsService.ChangeData(user, ModelState.IsValid, dataChangeVM);
             return View(dataChangeVM);
         }
         [HttpGet]
-        public IActionResult ChangePrivacy()
+		[Authorize]
+		public IActionResult ChangePrivacy()
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             var result = new PrivacyChangeVM { IsPrivate = user?.IsPrivate ?? false };
             return View(result);
         }
         [HttpPost]
-        public async Task<IActionResult> ChangePrivacy(PrivacyChangeVM privacyChangeVM)
+		[Authorize]
+		public async Task<IActionResult> ChangePrivacy(PrivacyChangeVM privacyChangeVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             ViewData["Message"] = await _settingsService.ChangePrivacy(user, privacyChangeVM.IsPrivate);
@@ -79,7 +86,8 @@ namespace Luxa.Controllers
         }
         //zmiana opisu profilu
         [HttpGet]
-        public IActionResult ChangeProfile()
+		[Authorize]
+		public IActionResult ChangeProfile()
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             var result = new ProfileChangeVM { Description = user?.Description };
@@ -87,12 +95,13 @@ namespace Luxa.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeDescription(ProfileChangeVM profileChangeVM)
+		[Authorize]
+		public async Task<IActionResult> ChangeDescription(ProfileChangeVM profileChangeVM)
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             if (user == null)
             {
-                return RedirectToAction("Error", "Home");
+                return Unauthorized();
             }
 
             user.Description = profileChangeVM.Description;
@@ -109,6 +118,10 @@ namespace Luxa.Controllers
             if (avatar != null && avatar.Length > 0)
             {
                 var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
                 var fileName = Path.GetFileName(avatar.FileName);
                 var filePath = Path.Combine("wwwroot/avatars", fileName);
 
@@ -155,7 +168,8 @@ namespace Luxa.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangeFollows()
+		[Authorize]
+		public async Task<IActionResult> ChangeFollows()
         {
             var user = _userService.GetCurrentLoggedInUser(User);
             var followRequests = await _userService.GetPendingFollowRequests(user.Id);

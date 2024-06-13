@@ -5,6 +5,7 @@ using Luxa.Interfaces;
 using Luxa.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Luxa.Controllers
 {
@@ -30,8 +31,9 @@ namespace Luxa.Controllers
 
         }
 
-        // Akcja pobierająca komentarze dla określonego zdjęcia
-        public async Task<IActionResult> GetCommentsForPhoto(int photoId)
+		// Akcja pobierająca komentarze dla określonego zdjęcia
+		[Authorize]
+		public async Task<IActionResult> GetCommentsForPhoto(int photoId)
         {
             var comments = await _commentService.GetCommentsForPhoto(photoId);
             return PartialView("_CommentsPartial", comments);
@@ -39,7 +41,8 @@ namespace Luxa.Controllers
 
         // Akcja dodawania komentarza do zdjęcia
         [HttpPost]
-        public async Task<IActionResult> AddComment(string Content, int photoId)
+		[Authorize]
+		public async Task<IActionResult> AddComment(string Content, int photoId)
         {
             if (ModelState.IsValid)
             {
@@ -51,7 +54,8 @@ namespace Luxa.Controllers
 
         // Akcja usuwania komentarza z zdjęcia
         [HttpPost]
-        public async Task<IActionResult> RemoveComment(int commentId, int photoId)
+		[Authorize]
+		public async Task<IActionResult> RemoveComment(int commentId, int photoId)
         {
             await _commentService.RemoveComment(commentId);
             return RedirectToAction("Details", "Photos", new { id = photoId });
