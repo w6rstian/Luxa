@@ -89,7 +89,7 @@ namespace Luxa.Controllers
 
             var user = new UserModel
             {
-                UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
                 Email = info.Principal.FindFirstValue(ClaimTypes.Email)
             };
 
@@ -476,49 +476,6 @@ namespace Luxa.Controllers
             }
 
             return RedirectToAction("UserProfile", new { userName });
-        }
-
-        [Authorize]
-        public async Task<IActionResult> ApproveFollow(int requestId)
-        {
-            var followRequest = await _context.FollowRequests
-                .Include(fr => fr.Followee).Include(fr => fr.Follower)
-                .FirstOrDefaultAsync(fr => fr.Id == requestId);
-
-            var currentUser = _userService.GetCurrentLoggedInUser(User);
-
-            if (followRequest == null || followRequest.FolloweeId != currentUser.Id)
-                return NotFound();
-
-            followRequest.IsApproved = true;
-            //followRequest.IsMutual = await _context.FollowRequests.AnyAsync(fr => fr.FollowerId == followRequest.FolloweeId && fr.FolloweeId == followRequest.FollowerId && fr.IsApproved);
-            await _context.SaveChangesAsync();
-
-            // powiadomienie o potwierdzeniu prosby o obserwacje
-            await _notificationService.SendFollowApprovedNotification(followRequest.Follower, currentUser);
-
-            return RedirectToAction("UserProfile", new { userName = currentUser.UserName });
-        }
-
-        [Authorize]
-        public async Task<IActionResult> RejectFollow(int requestId)
-        {
-            var followRequest = await _context.FollowRequests
-                .Include(fr => fr.Followee)
-                .FirstOrDefaultAsync(fr => fr.Id == requestId);
-
-            var currentUser = _userService.GetCurrentLoggedInUser(User);
-
-            if (followRequest == null || followRequest.FolloweeId != currentUser.Id)
-                return NotFound();
-
-            _context.FollowRequests.Remove(followRequest);
-            await _context.SaveChangesAsync();
-
-            // powiadomienie o odrzuceniu prosby o obserwacje
-            // await _notificationService.SendFollowRejectedNotification(followRequest.Follower, currentUser);
-
-            return RedirectToAction("UserProfile", new { userName = currentUser.UserName });
         }
     }
 

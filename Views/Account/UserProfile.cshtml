@@ -171,21 +171,6 @@ else
     </div>
 }
 
-@if (Model.IsCurrentUserProfile)
-{
-    <div>
-        <h3>Pending Follow Requests</h3>
-        @foreach (var request in Model.PendingFollowRequests)
-        {
-            <div>
-                <p>@request.Follower.UserName</p>
-                <a class="btn btn-primary" asp-controller="Account" asp-action="ApproveFollow" asp-route-requestId="@request.Id">Approve</a>
-                <a class="btn btn-danger" asp-controller="Account" asp-action="RejectFollow" asp-route-requestId="@request.Id">Reject</a>
-            </div>
-        }
-    </div>
-}
-
 <div id="photo-gallery" class="photoGallery">
     @await Component.InvokeAsync("ProfilePhoto", new { pageNumber = 1, pageSize = 10, userName = Model.UserName })
 </div>
