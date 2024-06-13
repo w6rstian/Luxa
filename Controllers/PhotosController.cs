@@ -122,6 +122,11 @@ namespace Luxa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description,Category,AddTime,ImageFile")] Photo photo, string Tags)
         {
+            if (string.IsNullOrEmpty(Tags)) 
+            {
+                TempData["errorMessange"] = "Tagi nie mogą być puste. Dodajesz je za pomocą spacji lub przecinka.";
+                return View();
+            }
             var user = _userService.GetCurrentLoggedInUser(User);
             if (user == null)
                 return Unauthorized();

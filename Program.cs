@@ -3,7 +3,6 @@ using Luxa.Interfaces;
 using Luxa.Models;
 using Luxa.Repository;
 using Luxa.Services;
-using Luxa.Data.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
