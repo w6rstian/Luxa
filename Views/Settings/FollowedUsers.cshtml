@@ -13,6 +13,14 @@
         --yellowish: #FAF0E6;
     }
 
+    #usr-avatar {
+        width: 30px;
+        height: 30px;
+        border: 1px solid black;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
     a {
         text-decoration: none;
         color: var(--yellowish);
@@ -26,6 +34,7 @@
     {
         <li>
             <a asp-controller="Account" asp-action="UserProfile" asp-route-userName="@user.UserName">
+                <img id="usr-avatar" src="@user.AvatarUrl" />
                 @user.UserName
             </a>
         </li>
