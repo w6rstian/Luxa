@@ -11,8 +11,6 @@ Instruction:
 2. For Google login to work you need to download the package "Microsoft.AspNetCore.Authentication.Google"
  	- https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.Google (accessed 13/06/2024)
 
-Translated with DeepL.com (free version)
-
 Instrukcja:
 1. Połączenie kodu z bazą danych (Podejście code first)
 	- Utwórz nową bazę danych o np. nazwie LuxaDb 
